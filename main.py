@@ -32,12 +32,8 @@ def main() -> None:
                 # Fire bullet
                 bullets.append(Bullet(player.x, player.y, player.angle))
 
-        # Update objects
-        player.update()
-        for bullet in bullets:
-            bullet.update()
-        for asteroid in asteroids:
-            asteroid.update()
+
+        _update_objects(player, bullets, asteroids)
 
         # Remove expired bullets
         bullets = [bullet for bullet in bullets if bullet.lifetime > 0]
@@ -51,16 +47,27 @@ def main() -> None:
                     bullets.remove(bullet)
                     asteroids.append(Asteroid())  # Spawn a new one
 
-        # Draw objects
-        player.draw(screen)
-        for bullet in bullets:
-            bullet.draw(screen)
-        for asteroid in asteroids:
-            asteroid.draw(screen)
+        _draw_objects(player, screen, bullets, asteroids)
 
         pygame.display.flip()
 
     pygame.quit()
+
+def _draw_objects(player, screen, bullets, asteroids) -> None:
+    # Draw objects
+    player.draw(screen)
+    for bullet in bullets:
+        bullet.draw(screen)
+    for asteroid in asteroids:
+        asteroid.draw(screen)
+
+def _update_objects(player, bullets, asteroids) -> None:
+    # Update objects
+        player.update()
+        for bullet in bullets:
+            bullet.update()
+        for asteroid in asteroids:
+            asteroid.update()
 
 if __name__ == "__main__":
     main()
