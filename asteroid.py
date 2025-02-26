@@ -4,10 +4,8 @@ import math
 from config import WIDTH, HEIGHT, WHITE
 
 class Asteroid:
-    asteroids = []  # Class-level list to store asteroids
-
     def __init__(self):
-        """Generate an asteroid with random jagged edges."""
+        """Initialize an asteroid with random jagged edges."""
         self.x = random.randint(0, WIDTH)
         self.y = random.randint(0, HEIGHT)
         self.size = random.randint(30, 80)  # Asteroid size
@@ -15,22 +13,15 @@ class Asteroid:
         self.jitter_amount = self.size // 3  # Edge variation
         self.angle = random.uniform(0, 360)  # Movement direction
         self.speed = random.uniform(1, 3)  # Movement speed
-        self.shape = self._generate_jagged_shape()
-
-        Asteroid.asteroids.append(self)  # Automatically track this asteroid
-
-    @classmethod
-    def create(cls):
-        """Factory method to create and return an asteroid."""
-        return cls()
+        self.shape = self._generate_jagged_shape()  # Generate shape
 
     def _generate_jagged_shape(self):
         """Creates a jagged asteroid shape as a list of points."""
         points = []
         for i in range(self.sides):
-            angle = (i / self.sides) * 2 * math.pi  # Distribute points in a circle
+            angle = (i / self.sides) * 2 * math.pi  # Distribute points evenly around a circle
             jitter = random.randint(-self.jitter_amount, self.jitter_amount)  # Randomized edges
-            radius = self.size + jitter  # Adjusted radius
+            radius = self.size + jitter  # Adjusted radius for variation
             x = self.x + math.cos(angle) * radius
             y = self.y + math.sin(angle) * radius
             points.append((x, y))
@@ -60,17 +51,6 @@ class Asteroid:
         self.shape = [(x + dx, y + dy) for x, y in self.shape]
 
     def draw(self, screen):
-        """Draws the asteroid as an outline (wireframe)."""
+        """Draw the asteroid with an outline (wireframe)."""
         pygame.draw.polygon(screen, WHITE, self.shape, 1)
 
-    @classmethod
-    def update_all(cls):
-        """Update all asteroids."""
-        for asteroid in cls.asteroids:
-            asteroid.update()
-
-    @classmethod
-    def draw_all(cls, screen):
-        """Draw all asteroids."""
-        for asteroid in cls.asteroids:
-            asteroid.draw(screen)

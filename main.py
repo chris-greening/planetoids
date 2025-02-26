@@ -2,12 +2,11 @@ import pygame
 from player import Player
 from asteroid import Asteroid
 from bullet import Bullet
-from planet import Planet
+from game_state import GameState  # New centralized game manager
 import config
 import helpers
 
 def main() -> None:
-    # Initialize Pygame
     pygame.init()
 
     # Initialize window
@@ -18,11 +17,11 @@ def main() -> None:
     # Show start menu before the game starts
     helpers.show_start_menu(screen, clock)
 
-    # Game objects
+    # Create GameState instance to track all objects
+    game_state = GameState()
+    game_state.spawn_asteroids(5)  # Initial asteroids
+
     player = Player()
-    for _ in range(5):  # Create initial asteroids
-        Asteroid.create()
-    planet = Planet()
 
     running = True
     while running:
@@ -34,23 +33,17 @@ def main() -> None:
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                # Fire a bullet
-                Bullet.create(player.x, player.y, player.angle)
+                game_state.bullets.append(Bullet(player.x, player.y, player.angle))
 
-        # Update all objects
+        # Update game state
         keys = pygame.key.get_pressed()
         player.update(keys)
-        Bullet.update_all()
-        Asteroid.update_all()
-
-        # Check for collisions
-        helpers.check_for_collisions(Bullet.bullets, Asteroid.asteroids)
+        game_state.update_all()
+        game_state.check_for_collisions()
 
         # Draw everything
-        # planet.draw(screen)
         player.draw(screen)
-        Bullet.draw_all(screen)
-        Asteroid.draw_all(screen)
+        game_state.draw_all(screen)
 
         pygame.display.flip()
 
