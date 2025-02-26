@@ -25,7 +25,7 @@ class Planet:
         planet_surface = pygame.Surface((self.radius * 2, self.radius * 2), pygame.SRCALPHA)
 
         # Create a rough edge using random jitter
-        num_points = 100  # More points = smoother jittered edge
+        num_points = 50  # More points = smoother jittered edge
         points = []
         for i in range(num_points):
             angle = (i / num_points) * 2 * math.pi  # Full circle
