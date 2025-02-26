@@ -99,7 +99,8 @@ def _draw_objects(player, screen, bullets, asteroids) -> None:
 
 def _update_objects(player, bullets, asteroids) -> None:
     """Updates all game objects."""
-    player.update()
+    keys = pygame.key.get_pressed()  # Get key states
+    player.update(keys)  # Pass keys to player movement
     for bullet in bullets:
         bullet.update()
     for asteroid in asteroids:
