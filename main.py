@@ -18,9 +18,8 @@ def main() -> None:
     # Show start menu before the game starts
     helpers.show_start_menu(screen, clock)
 
-    # Game loop
+    # Game objects
     player = Player()
-    bullets = []
     asteroids = [Asteroid() for _ in range(5)]
     planet = Planet()
 
@@ -34,24 +33,29 @@ def main() -> None:
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                # Fire bullet
-                bullets.append(Bullet(player.x, player.y, player.angle))
+                # Fire a bullet using the class method
+                Bullet.create(player.x, player.y, player.angle)
 
-        helpers.update_objects(player, bullets, asteroids)
+        # Update objects
+        keys = pygame.key.get_pressed()
+        player.update(keys)
+        Bullet.update_all()  # Updates and removes expired bullets automatically
+        for asteroid in asteroids:
+            asteroid.update()
 
-        # Remove expired bullets
-        bullets = [bullet for bullet in bullets if bullet.lifetime > 0]
+        # Check for collisions
+        helpers.check_for_collisions(Bullet.bullets, asteroids)
 
-        helpers.check_for_collisions(bullets, asteroids)
-
+        # Draw everything
         # planet.draw(screen)
-        helpers.draw_objects(player, screen, bullets, asteroids)
+        player.draw(screen)
+        Bullet.draw_all(screen)  # Draw all bullets using classmethod
+        for asteroid in asteroids:
+            asteroid.draw(screen)
 
         pygame.display.flip()
 
     pygame.quit()
-
-
 
 if __name__ == "__main__":
     main()

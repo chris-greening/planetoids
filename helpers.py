@@ -56,6 +56,11 @@ def update_objects(player, bullets, asteroids) -> None:
     for asteroid in asteroids:
         asteroid.update()
 
+def remove_expired_bullets(bullets):
+    """Return list of expired bullets"""
+    bullets = [bullet for bullet in bullets if bullet.lifetime > 0]
+    return bullets
+
 def check_for_collisions(bullets, asteroids):
     # Check for bullet-asteroid collisions
     for bullet in bullets:
