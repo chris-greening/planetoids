@@ -1,7 +1,7 @@
 import pygame
 from player import Player
 from bullet import Bullet
-from game_state import GameState  # New centralized game manager
+from game_state import GameState
 import config
 import start_menu
 
