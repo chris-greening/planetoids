@@ -5,7 +5,7 @@ from config import WIDTH, HEIGHT, WHITE
 
 class Asteroid:
     def __init__(self):
-        """Initialize an asteroid with random jagged edges."""
+        """Initialize an asteroid with a fixed shape."""
         self.x = random.randint(0, WIDTH)
         self.y = random.randint(0, HEIGHT)
         self.size = random.randint(30, 80)  # Asteroid size
@@ -13,30 +13,38 @@ class Asteroid:
         self.jitter_amount = self.size // 3  # Edge variation
         self.angle = random.uniform(0, 360)  # Movement direction
         self.speed = random.uniform(1, 3)  # Movement speed
-        self.shape = self._generate_jagged_shape()  # Generate shape
+
+        # Generate shape *once* relative to (0,0)
+        self.shape_offsets = self._generate_jagged_shape()
+        self.update_shape()  # Set the initial shape
 
     def _generate_jagged_shape(self):
-        """Creates a jagged asteroid shape as a list of points."""
-        points = []
+        """Creates a jagged asteroid shape with fixed offsets."""
+        offsets = []
         for i in range(self.sides):
-            angle = (i / self.sides) * 2 * math.pi  # Distribute points evenly around a circle
-            jitter = random.randint(-self.jitter_amount, self.jitter_amount)  # Randomized edges
-            radius = self.size + jitter  # Adjusted radius for variation
-            x = self.x + math.cos(angle) * radius
-            y = self.y + math.sin(angle) * radius
-            points.append((x, y))
-        return points
+            angle = (i / self.sides) * 2 * math.pi
+            jitter = random.randint(-self.jitter_amount, self.jitter_amount)
+            radius = self.size + jitter
+            x_offset = math.cos(angle) * radius
+            y_offset = math.sin(angle) * radius
+            offsets.append((x_offset, y_offset))
+        return offsets  # Store relative offsets so shape remains constant
+
+    def update_shape(self):
+        """Update shape based on current position while keeping offsets constant."""
+        self.shape = [(self.x + ox, self.y + oy) for ox, oy in self.shape_offsets]
 
     def update(self):
-        """Moves the asteroid across the screen."""
+        """Moves the asteroid across the screen and ensures proper wraparound."""
         angle_rad = math.radians(self.angle)
         dx = math.cos(angle_rad) * self.speed
         dy = math.sin(angle_rad) * self.speed
 
+        # Update position
         self.x += dx
         self.y += dy
 
-        # Screen wraparound
+        # Screen wraparound logic
         if self.x < -self.size:
             self.x = WIDTH + self.size
         elif self.x > WIDTH + self.size:
@@ -47,10 +55,11 @@ class Asteroid:
         elif self.y > HEIGHT + self.size:
             self.y = -self.size
 
-        # Move shape points accordingly
-        self.shape = [(x + dx, y + dy) for x, y in self.shape]
+        # Update shape based on new position without changing offsets
+        self.update_shape()
 
     def draw(self, screen):
-        """Draw the asteroid with an outline (wireframe)."""
+        """Draw the asteroid as an outline (wireframe)."""
         pygame.draw.polygon(screen, WHITE, self.shape, 1)
+
 
