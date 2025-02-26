@@ -1,13 +1,13 @@
 import random
 import math
-import constants
+import config
 import pygame
 
 # Asteroid class
 class Asteroid:
     def __init__(self):
-        self.x = random.choice([random.randint(0, 100), random.randint(constants.WIDTH - 100, constants.WIDTH)])
-        self.y = random.choice([random.randint(0, 100), random.randint(constants.HEIGHT - 100, constants.HEIGHT)])
+        self.x = random.choice([random.randint(0, 100), random.randint(config.WIDTH - 100, config.WIDTH)])
+        self.y = random.choice([random.randint(0, 100), random.randint(config.HEIGHT - 100, config.HEIGHT)])
         self.size = random.randint(30, 50)
         self.angle = random.uniform(0, 360)
         self.speed = random.uniform(1, 3)
@@ -18,8 +18,8 @@ class Asteroid:
         self.y -= math.sin(angle_rad) * self.speed
 
         # Screen wraparound
-        self.x %= constants.WIDTH
-        self.y %= constants.HEIGHT
+        self.x %= config.WIDTH
+        self.y %= config.HEIGHT
 
     def draw(self, screen):
-        pygame.draw.circle(screen, constants.WHITE, (int(self.x), int(self.y)), self.size)
+        pygame.draw.circle(screen, config.WHITE, (int(self.x), int(self.y)), self.size)

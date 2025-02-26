@@ -1,12 +1,12 @@
 import math
 import pygame
-import constants
+import config
 
 # Player class
 class Player:
     def __init__(self):
-        self.x = constants.WIDTH / 2
-        self.y = constants.HEIGHT / 2
+        self.x = config.WIDTH / 2
+        self.y = config.HEIGHT / 2
         self.angle = 0  # Facing right (0 degrees)
         self.speed = 0
         self.velocity_x = 0
@@ -39,8 +39,8 @@ class Player:
         self.y += self.velocity_y
 
         # Screen wraparound
-        self.x %= constants.WIDTH
-        self.y %= constants.HEIGHT
+        self.x %= config.WIDTH
+        self.y %= config.HEIGHT
 
     def draw(self, screen):
         # Calculate triangle points
@@ -50,4 +50,4 @@ class Player:
         right = (self.x + math.cos(angle_rad - 2.5) * self.size * 0.6, self.y - math.sin(angle_rad - 2.5) * self.size * 0.6)
 
         # Draw the ship as a triangle
-        pygame.draw.polygon(screen, constants.WHITE, [front, left, right])
+        pygame.draw.polygon(screen, config.WHITE, [front, left, right])

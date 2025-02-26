@@ -1,6 +1,6 @@
 import math
 import pygame
-import constants
+import config
 
 # Bullet class
 class Bullet:
@@ -17,10 +17,10 @@ class Bullet:
         self.y -= math.sin(angle_rad) * self.speed
 
         # Screen wraparound
-        self.x %= constants.WIDTH
-        self.y %= constants.HEIGHT
+        self.x %= config.WIDTH
+        self.y %= config.HEIGHT
 
         self.lifetime -= 1  # Reduce lifetime
 
     def draw(self, screen):
-        pygame.draw.circle(screen, constants.WHITE, (int(self.x), int(self.y)), 3)
+        pygame.draw.circle(screen, config.WHITE, (int(self.x), int(self.y)), 3)

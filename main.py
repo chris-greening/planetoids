@@ -3,13 +3,13 @@ import math
 from player import Player
 from asteroid import Asteroid
 from bullet import Bullet
-import constants
+import config
 
 # Initialize Pygame
 pygame.init()
 
 # Initialize window
-screen = pygame.display.set_mode((constants.WIDTH, constants.HEIGHT))
+screen = pygame.display.set_mode((config.WIDTH, config.HEIGHT))
 pygame.display.set_caption("Asteroids Clone")
 clock = pygame.time.Clock()
 
@@ -26,8 +26,8 @@ asteroids = [Asteroid() for _ in range(5)]
 
 running = True
 while running:
-    screen.fill(constants.BLACK)
-    clock.tick(constants.FPS)
+    screen.fill(config.BLACK)
+    clock.tick(config.FPS)
 
     # Handle events
     for event in pygame.event.get():
