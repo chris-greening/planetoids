@@ -20,7 +20,8 @@ def main() -> None:
 
     # Game objects
     player = Player()
-    asteroids = [Asteroid() for _ in range(5)]
+    for _ in range(5):  # Create initial asteroids
+        Asteroid.create()
     planet = Planet()
 
     running = True
@@ -33,25 +34,23 @@ def main() -> None:
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                # Fire a bullet using the class method
+                # Fire a bullet
                 Bullet.create(player.x, player.y, player.angle)
 
-        # Update objects
+        # Update all objects
         keys = pygame.key.get_pressed()
         player.update(keys)
-        Bullet.update_all()  # Updates and removes expired bullets automatically
-        for asteroid in asteroids:
-            asteroid.update()
+        Bullet.update_all()
+        Asteroid.update_all()
 
         # Check for collisions
-        helpers.check_for_collisions(Bullet.bullets, asteroids)
+        helpers.check_for_collisions(Bullet.bullets, Asteroid.asteroids)
 
         # Draw everything
         # planet.draw(screen)
         player.draw(screen)
-        Bullet.draw_all(screen)  # Draw all bullets using classmethod
-        for asteroid in asteroids:
-            asteroid.draw(screen)
+        Bullet.draw_all(screen)
+        Asteroid.draw_all(screen)
 
         pygame.display.flip()
 
