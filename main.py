@@ -4,6 +4,7 @@ from player import Player
 from asteroid import Asteroid
 from bullet import Bullet
 import config
+import helpers
 
 # Initialize Pygame
 pygame.init()
@@ -50,7 +51,7 @@ while running:
     # Check for bullet-asteroid collisions
     for bullet in bullets:
         for asteroid in asteroids:
-            dist = math.sqrt((bullet.x - asteroid.x)**2 + (bullet.y - asteroid.y)**2)
+            dist = helpers.calculate_collision_distance(bullet, asteroid)
             if dist < asteroid.size:  # Collision detected
                 asteroids.remove(asteroid)
                 bullets.remove(bullet)
