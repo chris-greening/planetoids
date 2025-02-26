@@ -1,5 +1,4 @@
 import pygame
-import math
 from player import Player
 from asteroid import Asteroid
 from bullet import Bullet
@@ -13,12 +12,6 @@ pygame.init()
 screen = pygame.display.set_mode((config.WIDTH, config.HEIGHT))
 pygame.display.set_caption("Asteroids Clone")
 clock = pygame.time.Clock()
-
-# Helper function for rotation
-def rotate_center(image, angle, x, y):
-    rotated_image = pygame.transform.rotate(image, angle)
-    new_rect = rotated_image.get_rect(center=(x, y))
-    return rotated_image, new_rect.topleft
 
 # Game loop
 player = Player()
