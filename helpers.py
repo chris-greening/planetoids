@@ -1,6 +1,8 @@
 import math
 import config
 import pygame
+import helpers
+from asteroid import Asteroid
 
 def calculate_collision_distance(bullet, asteroid):
     dist = math.sqrt((bullet.x - asteroid.x)**2 + (bullet.y - asteroid.y)**2)
@@ -53,3 +55,13 @@ def update_objects(player, bullets, asteroids) -> None:
         bullet.update()
     for asteroid in asteroids:
         asteroid.update()
+
+def check_for_collisions(bullets, asteroids):
+    # Check for bullet-asteroid collisions
+    for bullet in bullets:
+        for asteroid in asteroids:
+            dist = helpers.calculate_collision_distance(bullet, asteroid)
+            if dist < asteroid.size:  # Collision detected
+                asteroids.remove(asteroid)
+                bullets.remove(bullet)
+                asteroids.append(Asteroid())  # Spawn a new one

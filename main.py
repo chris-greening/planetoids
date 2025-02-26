@@ -42,14 +42,7 @@ def main() -> None:
         # Remove expired bullets
         bullets = [bullet for bullet in bullets if bullet.lifetime > 0]
 
-        # Check for bullet-asteroid collisions
-        for bullet in bullets:
-            for asteroid in asteroids:
-                dist = helpers.calculate_collision_distance(bullet, asteroid)
-                if dist < asteroid.size:  # Collision detected
-                    asteroids.remove(asteroid)
-                    bullets.remove(bullet)
-                    asteroids.append(Asteroid())  # Spawn a new one
+        helpers.check_for_collisions(bullets, asteroids)
 
         # planet.draw(screen)
         helpers.draw_objects(player, screen, bullets, asteroids)
