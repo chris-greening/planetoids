@@ -51,7 +51,7 @@ def main() -> None:
                     bullets.remove(bullet)
                     asteroids.append(Asteroid())  # Spawn a new one
 
-        planet.draw(screen)
+        # planet.draw(screen)
         _draw_objects(player, screen, bullets, asteroids)
 
         pygame.display.flip()
