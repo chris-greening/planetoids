@@ -1,10 +1,9 @@
 import pygame
 from player import Player
-from asteroid import Asteroid
 from bullet import Bullet
 from game_state import GameState  # New centralized game manager
 import config
-import helpers
+import start_menu
 
 def main() -> None:
     pygame.init()
@@ -15,7 +14,7 @@ def main() -> None:
     clock = pygame.time.Clock()
 
     # Show start menu before the game starts
-    helpers.show_start_menu(screen, clock)
+    start_menu.show_start_menu(screen, clock)
 
     # Create GameState instance to track all objects
     game_state = GameState()
