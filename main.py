@@ -2,6 +2,7 @@ import pygame
 from player import Player
 from asteroid import Asteroid
 from bullet import Bullet
+from planet import Planet
 import config
 import helpers
 
@@ -18,6 +19,7 @@ def main() -> None:
     player = Player()
     bullets = []
     asteroids = [Asteroid() for _ in range(5)]
+    planet = Planet()
 
     running = True
     while running:
@@ -47,6 +49,7 @@ def main() -> None:
                     bullets.remove(bullet)
                     asteroids.append(Asteroid())  # Spawn a new one
 
+        planet.draw(screen)
         _draw_objects(player, screen, bullets, asteroids)
 
         pygame.display.flip()
