@@ -66,7 +66,7 @@ def _show_start_menu(screen, clock) -> None:
     while menu_running:
         screen.fill(config.BLACK)
 
-        _draw_text(screen, "ASTEROIDS CLONE", config.WIDTH // 2 - 150, config.HEIGHT // 3, font)
+        _draw_text(screen, "Planetoids!", config.WIDTH // 2 - 150, config.HEIGHT // 3, font)
         _draw_text(screen, "Press ENTER to Start", config.WIDTH // 2 - 140, config.HEIGHT // 2, font)
         _draw_text(screen, "Press ESC to Quit", config.WIDTH // 2 - 120, config.HEIGHT // 2 + 50, font)
 
