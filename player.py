@@ -16,6 +16,7 @@ class Player:
         self.particles = []  # Stores exhaust particles
         self.set_invincibility()
         self.trishot_active = False
+        self.powerup_timer = 0
 
     def shoot(self):
         """Fires bullets. If trishot is active, fire 3 shots at different angles."""
@@ -32,7 +33,7 @@ class Player:
     def enable_trishot(self):
         """Activates trishot mode for a limited time."""
         self.trishot_active = True
-        pygame.time.set_timer(pygame.USEREVENT + 1, 5000)  # 5 seconds
+        self.powerup_timer = 300
 
     def reset_position(self):
         """Resets player position, stops movement, and enables brief invincibility."""
@@ -53,6 +54,11 @@ class Player:
 
     def update(self, keys):
         """Handles movement, rotation, and particle effects."""
+        if self.powerup_timer > 0:
+            self.powerup_timer -= 1
+            if self.powerup_timer == 0:
+                self.trishot_active = False
+
         if self.invincibility_timer > 0:
             self.invincibility_timer -= 1
             if self.invincibility_timer == 0:

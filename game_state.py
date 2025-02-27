@@ -79,6 +79,7 @@ class GameState:
 
         self._draw_lives(screen)
         self._draw_level(screen)
+        self._draw_powerup_timer(screen)
 
     def check_powerup_collisions(self):
         """Checks if the player collects a powerup."""
@@ -151,6 +152,12 @@ class GameState:
         self.player.reset_position()
         self.player.invincible = True
         pygame.time.set_timer(pygame.USEREVENT + 2, 2000)  # 2 sec invincibility
+
+    def _draw_powerup_timer(self, screen):
+        """Draws a shrinking timer bar for active powerups."""
+        if self.player.powerup_timer > 0:
+            bar_width = int((self.player.powerup_timer / 300) * 200)  # Scale to 200px max
+            pygame.draw.rect(screen, (0, 255, 255), (config.WIDTH // 2 - 100, config.HEIGHT - 30, bar_width, 10))
 
     def game_over(self):
         """Ends the game and shows Game Over screen."""
