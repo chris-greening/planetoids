@@ -1,25 +1,25 @@
 import pygame
+from start_menu import StartMenu
 from player import Player
 from bullet import Bullet
 from game_state import GameState
 import config
-import start_menu
 
-def main() -> None:
+def main():
     pygame.init()
 
     # Initialize window
     screen = pygame.display.set_mode((config.WIDTH, config.HEIGHT))
-    pygame.display.set_caption("Asteroids Clone")
+    pygame.display.set_caption("Planetoids!")
     clock = pygame.time.Clock()
 
-    # Show start menu before the game starts
-    start_menu.show_start_menu(screen, clock)
+    # Show the start menu
+    start_menu = StartMenu(screen, clock)
+    start_menu.show()
 
-    # Create GameState instance to track all objects
+    # Create GameState instance
     game_state = GameState()
     game_state.spawn_asteroids(5)  # Initial asteroids
-
     player = Player()
 
     running = True
@@ -50,3 +50,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
