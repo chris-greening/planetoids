@@ -2,6 +2,7 @@ import pygame
 from player import Player
 from asteroid import Asteroid
 from bullet import Bullet
+import config
 
 class GameState:
     def __init__(self):
@@ -11,11 +12,14 @@ class GameState:
         self.asteroids = []
         self.lives = 3  # Number of player lives
         self.respawn_timer = 0  # Prevent instant respawn collisions
+        self.level = 1  # Start at level 1
 
     def check_for_clear_map(self):
         """Checks if all asteroids are destroyed and resets the map if so."""
         if not self.asteroids:  # If asteroid list is empty
+            self.level += 1
             self.spawn_asteroids(5)  # Reset the map with new asteroids
+            self.player.set_invincibility()
 
     def spawn_asteroids(self, count=5):
         """Spawn initial asteroids."""
@@ -48,6 +52,13 @@ class GameState:
 
         # Draw lives counter
         self._draw_lives(screen)
+        self._draw_level(screen)
+
+    def _draw_level(self, screen):
+        """Display current level number."""
+        font = pygame.font.Font(None, 36)
+        text = font.render(f"Level: {self.level}", True, config.WHITE)
+        screen.blit(text, (config.WIDTH - 120, 10))  # Display top-right
 
     def check_for_collisions(self, screen):
         """Check for bullet-asteroid and player-asteroid collisions."""

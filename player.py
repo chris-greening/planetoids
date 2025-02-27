@@ -13,8 +13,7 @@ class Player:
         self.size = 20  # Ship size
         self.thrusting = False
         self.particles = []  # Stores exhaust particles
-        self.invincible = False  # Prevent instant respawn death
-        self.invincibility_timer = 0  # Frames before invincibility expires
+        self.set_invincibility()
 
     def reset_position(self):
         """Resets player position, stops movement, and enables brief invincibility."""
@@ -24,8 +23,12 @@ class Player:
         self.velocity_x = 0
         self.velocity_y = 0
         self.thrusting = False  # Reset thrust effect
+        self.set_invincibility()
+
+    def set_invincibility(self, timer=120):
+        """Set the player as invincible"""
         self.invincible = True
-        self.invincibility_timer = 120  # 2 seconds of invincibility
+        self.invincibility_timer = timer  # 2 seconds of invincibility
 
     def update(self, keys):
         """Handles movement, rotation, and particle effects."""
