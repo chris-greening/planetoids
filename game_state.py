@@ -19,8 +19,9 @@ class GameState:
         self.paused = False
 
     def spawn_powerup(self, x, y):
-        """Occasionally spawns a powerup at the given location."""
-        if random.random() < 0.1:  # 10% chance on asteroid destruction
+        """Spawns a powerup only if none exist."""
+        if len(self.powerups) == 0 and random.random() < 0.2:  # 20% chance
+            print(f"Spawning powerup at ({x}, {y})")  # Debugging
             self.powerups.append(PowerUp(x, y))
 
     def toggle_pause(self):
@@ -83,7 +84,8 @@ class GameState:
         """Checks if the player collects a powerup."""
         for powerup in self.powerups[:]:
             if self.calculate_collision_distance(self.player, powerup) < powerup.radius + self.player.size:
-                self.apply_powerup(powerup.type)  # Grant effect
+                print(f"Player collected {powerup.type} powerup!")  # Debug
+                self.apply_powerup(powerup.type)
                 self.powerups.remove(powerup)  # Remove after collection
 
     def apply_powerup(self, power_type):
