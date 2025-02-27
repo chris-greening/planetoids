@@ -20,7 +20,7 @@ class GameState:
 
     def spawn_powerup(self, x, y):
         """Occasionally spawns a powerup at the given location."""
-        if random.random() < 0.2:  # 20% chance on asteroid destruction
+        if random.random() < 0.1:  # 10% chance on asteroid destruction
             self.powerups.append(PowerUp(x, y))
 
     def toggle_pause(self):
