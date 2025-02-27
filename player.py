@@ -106,3 +106,40 @@ class Player:
         )
         pygame.draw.polygon(screen, ORANGE, [thruster_tip, left, right])
 
+    def death_animation(self, screen):
+        """Plays a shattering effect when the player dies."""
+        explosion_particles = []  # Temporary explosion effect
+        fragments = []  # Pieces of the ship
+
+        angle_rad = math.radians(self.angle)
+
+        # Define original triangle points
+        front = (self.x + math.cos(angle_rad) * self.size, self.y - math.sin(angle_rad) * self.size)
+        left = (self.x + math.cos(angle_rad + 2.5) * self.size * 0.6, self.y - math.sin(angle_rad + 2.5) * self.size * 0.6)
+        right = (self.x + math.cos(angle_rad - 2.5) * self.size * 0.6, self.y - math.sin(angle_rad - 2.5) * self.size * 0.6)
+
+        # Split into 3 moving fragments
+        fragments.append({"pos": front, "vel": (random.uniform(-2, 2), random.uniform(-2, 2))})
+        fragments.append({"pos": left, "vel": (random.uniform(-2, 2), random.uniform(-2, 2))})
+        fragments.append({"pos": right, "vel": (random.uniform(-2, 2), random.uniform(-2, 2))})
+
+        # Generate explosion particles
+        for _ in range(15):
+            explosion_particles.append(Particle(self.x, self.y, random.uniform(0, 360), random.uniform(1, 3)))
+
+        # Animation loop
+        for _ in range(30):  # Roughly half a second of animation
+            screen.fill((0, 0, 0))  # Clear screen
+
+            # Draw ship fragments
+            for fragment in fragments:
+                fragment["pos"] = (fragment["pos"][0] + fragment["vel"][0], fragment["pos"][1] + fragment["vel"][1])
+                pygame.draw.polygon(screen, WHITE, [fragment["pos"], fragment["pos"], fragment["pos"]], 1)
+
+            # Draw explosion particles
+            for particle in explosion_particles:
+                particle.update()
+                particle.draw(screen)
+
+            pygame.display.flip()
+            pygame.time.delay(15)  # Small delay for smooth animation

@@ -41,7 +41,7 @@ def main():
         # Update game state
         keys = pygame.key.get_pressed()
         game_state.update_all(keys)
-        game_state.check_for_collisions()
+        game_state.check_for_collisions(screen)
 
         # Draw everything
         game_state.draw_all(screen)

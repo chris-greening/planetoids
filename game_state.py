@@ -44,7 +44,7 @@ class GameState:
         # Draw lives counter
         self._draw_lives(screen)
 
-    def check_for_collisions(self):
+    def check_for_collisions(self, screen):
         """Check for bullet-asteroid and player-asteroid collisions."""
         bullets_to_remove = []
         asteroids_to_remove = []
@@ -64,7 +64,7 @@ class GameState:
             for asteroid in self.asteroids:
                 dist = self.calculate_collision_distance(self.player, asteroid)
                 if dist < asteroid.size:  # Collision detected
-                    self.handle_player_death()
+                    self.handle_player_death(screen)  # Pass screen to function
 
         # Safely remove bullets & asteroids
         self.bullets = [b for b in self.bullets if b not in bullets_to_remove]
@@ -73,16 +73,20 @@ class GameState:
         # Add new split asteroids
         self.asteroids.extend(new_asteroids)
 
-    def handle_player_death(self):
-        """Handles player death (respawn or game over)."""
+
+    def handle_player_death(self, screen):
+        """Handles player death with an animation before respawn or game over."""
         if self.player.invincible:
-            return  # Don't kill the player if they are invincible after respawn
+            return  # Don't kill if invincible after respawn
+
+        self.player.death_animation(screen)  # Pass screen to death effect
 
         self.lives -= 1
         if self.lives > 0:
             self.respawn_player()
         else:
             self.game_over()
+
 
     def respawn_player(self):
         """Respawns the player at the center after a short delay."""
