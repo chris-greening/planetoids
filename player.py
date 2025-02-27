@@ -36,6 +36,7 @@ class Player:
 
     def reset_position(self):
         """Resets player position, stops movement, and enables brief invincibility."""
+        print("Resetting player position")  # Debugging
         self.x = WIDTH // 2
         self.y = HEIGHT // 2
         self.angle = 0

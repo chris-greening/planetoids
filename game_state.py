@@ -42,7 +42,9 @@ class GameState:
         """Update all game objects, including powerups."""
         if self.respawn_timer > 0:
             self.respawn_timer -= 1
+            print(f"Respawning in {self.respawn_timer} frames")  # Debug
             if self.respawn_timer == 0:
+                print("Respawning player now!")  # Debug
                 self.respawn_player()
         else:
             self.player.update(keys)
@@ -138,9 +140,14 @@ class GameState:
             self.game_over()
 
     def respawn_player(self):
-        """Respawns the player at the center after a short delay."""
-        self.respawn_timer = 60  # 1 second delay
-        self.player.reset_position()  # Now resets velocity and prevents instant death
+        """Respawns the player at the center after the timer expires."""
+        if self.respawn_timer > 0:
+            return  # Prevent accidental multiple calls
+
+        print("Respawning player!")  # Debugging
+        self.player.reset_position()
+        self.player.invincible = True
+        pygame.time.set_timer(pygame.USEREVENT + 2, 2000)  # 2 sec invincibility
 
     def game_over(self):
         """Ends the game and shows Game Over screen."""
