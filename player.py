@@ -3,6 +3,7 @@ import math
 import random
 from config import WIDTH, HEIGHT, WHITE, ORANGE
 from particle import Particle  # Import the new particle class
+from bullet import Bullet
 
 class Player:
     def __init__(self):
@@ -14,6 +15,24 @@ class Player:
         self.thrusting = False
         self.particles = []  # Stores exhaust particles
         self.set_invincibility()
+        self.trishot_active = False
+
+    def shoot(self):
+        """Fires bullets. If trishot is active, fire 3 shots at different angles."""
+        bullets = [
+            Bullet(self.x, self.y, self.angle)
+        ]
+
+        if self.trishot_active:
+            bullets.append(Bullet(self.x, self.y, self.angle - 10))  # Left shot
+            bullets.append(Bullet(self.x, self.y, self.angle + 10))  # Right shot
+
+        return bullets
+
+    def enable_trishot(self):
+        """Activates trishot mode for a limited time."""
+        self.trishot_active = True
+        pygame.time.set_timer(pygame.USEREVENT + 1, 5000)  # 5 seconds
 
     def reset_position(self):
         """Resets player position, stops movement, and enables brief invincibility."""
@@ -23,6 +42,7 @@ class Player:
         self.velocity_x = 0
         self.velocity_y = 0
         self.thrusting = False  # Reset thrust effect
+        self.trishot_active = False
         self.set_invincibility()
 
     def set_invincibility(self, timer=120):
