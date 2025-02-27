@@ -111,6 +111,7 @@ class GameState:
                     bullets_to_remove.append(bullet)
                     asteroids_to_remove.append(asteroid)
                     new_asteroids.extend(asteroid.split())  # Add split asteroids
+                    self.spawn_powerup(asteroid.x, asteroid.y)
 
         # Player vs Asteroid Collision
         if self.respawn_timer == 0:  # Only check if player is alive
