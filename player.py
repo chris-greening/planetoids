@@ -7,19 +7,33 @@ from particle import Particle  # Import the new particle class
 class Player:
     def __init__(self):
         """Initialize player with movement settings."""
-        self.x = WIDTH // 2
-        self.y = HEIGHT // 2
-        self.angle = 0
-        self.velocity_x = 0
-        self.velocity_y = 0
+        self.reset_position()
         self.acceleration = 0.1
         self.max_speed = 5
         self.size = 20  # Ship size
         self.thrusting = False
         self.particles = []  # Stores exhaust particles
+        self.invincible = False  # Prevent instant respawn death
+        self.invincibility_timer = 0  # Frames before invincibility expires
+
+    def reset_position(self):
+        """Resets player position, stops movement, and enables brief invincibility."""
+        self.x = WIDTH // 2
+        self.y = HEIGHT // 2
+        self.angle = 0
+        self.velocity_x = 0
+        self.velocity_y = 0
+        self.thrusting = False  # Reset thrust effect
+        self.invincible = True
+        self.invincibility_timer = 120  # 2 seconds of invincibility
 
     def update(self, keys):
         """Handles movement, rotation, and particle effects."""
+        if self.invincibility_timer > 0:
+            self.invincibility_timer -= 1
+            if self.invincibility_timer == 0:
+                self.invincible = False  # Invincibility expires
+
         self.thrusting = False  # Reset thrust effect
 
         if keys[pygame.K_LEFT]:
@@ -68,8 +82,9 @@ class Player:
         for particle in self.particles:
             particle.draw(screen)
 
-        # Draw ship
-        pygame.draw.polygon(screen, WHITE, [front, left, right], 1)
+        # Draw player (blink effect when invincible)
+        if not self.invincible or (self.invincibility_timer % 10 < 5):  # Blink effect
+            pygame.draw.polygon(screen, WHITE, [front, left, right], 1)
 
         # Draw thruster effect if accelerating
         if self.thrusting:
@@ -90,3 +105,4 @@ class Player:
             self.y + math.sin(angle_rad) * flicker_size * 2
         )
         pygame.draw.polygon(screen, ORANGE, [thruster_tip, left, right])
+
