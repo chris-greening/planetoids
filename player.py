@@ -51,6 +51,9 @@ class Player:
         self.velocity_y = 0
         self.thrusting = False  # Reset thrust effect
         self.trishot_active = False
+        self.shield_active = True  # Shield starts active
+        self.shield_cooldown = 0  # Time until shield recharges
+        self.last_shield_recharge = time.time()  # Track recharge time
         self.set_invincibility()
 
     def set_invincibility(self, timer=120):
@@ -117,7 +120,7 @@ class Player:
 
     def take_damage(self):
         """Handles damage logic: shield breaks first, then invincibility, then death."""
-        if self.shield_active:
+        if self.shield_active and not self.invincible:
             self.shield_active = False  # Break the shield
             self.last_shield_recharge = time.time()  # Start recharge timer
             self.set_invincibility()  # Trigger 2 seconds of invincibility
@@ -147,8 +150,18 @@ class Player:
             self._draw_shield(screen)
 
     def _draw_shield(self, screen):
-        """Draws a glowing shield around the player."""
-        pygame.draw.circle(screen, CYAN, (int(self.x), int(self.y)), self.size + 5, 2)  # Outer shield glow
+        """Draws a glowing shield around the player with a pulsing effect."""
+        pulse_intensity = int(50 + 30 * abs(math.sin(time.time() * 2)))  # Pulses over time
+        shield_color = (0, 255, 255, pulse_intensity)  # Cyan with alpha
+
+        pygame.draw.circle(screen, shield_color, (int(self.x), int(self.y)), self.size + 5, 2)
+
+        # When shield is broken, show a "shatter" effect
+        if not self.shield_active:
+            for _ in range(5):  # 5 pieces flying out
+                offset_x = random.randint(-10, 10)
+                offset_y = random.randint(-10, 10)
+                pygame.draw.circle(screen, (100, 100, 255), (int(self.x + offset_x), int(self.y + offset_y)), 3)
 
     def _generate_exhaust(self):
         """Adds new particles behind the ship."""
