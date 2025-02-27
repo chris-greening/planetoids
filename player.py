@@ -1,9 +1,10 @@
 import pygame
 import math
 import random
-from config import WIDTH, HEIGHT, WHITE, ORANGE
+from config import WIDTH, HEIGHT, WHITE, ORANGE, CYAN
 from particle import Particle  # Import the new particle class
 from bullet import Bullet
+import time
 
 class Player:
     def __init__(self):
@@ -17,6 +18,11 @@ class Player:
         self.set_invincibility()
         self.trishot_active = False
         self.powerup_timer = 0
+
+        # Shield system
+        self.shield_active = True  # Shield starts active
+        self.shield_cooldown = 0  # Time until shield recharges
+        self.last_shield_recharge = time.time()  # Track recharge time
 
     def shoot(self):
         """Fires bullets. If trishot is active, fire 3 shots at different angles."""
@@ -54,6 +60,8 @@ class Player:
 
     def update(self, keys):
         """Handles movement, rotation, and particle effects."""
+        self._handle_shield_regeneration()
+
         if self.powerup_timer > 0:
             self.powerup_timer -= 1
             if self.powerup_timer == 0:
@@ -99,6 +107,22 @@ class Player:
         for particle in self.particles:
             particle.update()
 
+    def _handle_shield_regeneration(self):
+        """Regenerates shield every 30 seconds if broken."""
+        if not self.shield_active:
+            time_since_break = time.time() - self.last_shield_recharge
+            if time_since_break >= 30:  # 30 seconds cooldown
+                self.shield_active = True  # Shield is restored
+                print("Shield recharged!")
+
+    def take_damage(self):
+        """Handles damage logic: shield breaks first, then invincibility, then death."""
+        if self.shield_active:
+            self.shield_active = False  # Break the shield
+            self.last_shield_recharge = time.time()  # Start recharge timer
+            self.set_invincibility()  # Trigger 2 seconds of invincibility
+            print("⚠️ Shield broken! Player is now invincible for 2 seconds.")
+
     def draw(self, screen):
         """Draws the player ship and particles."""
         angle_rad = math.radians(self.angle)
@@ -119,6 +143,12 @@ class Player:
         # Draw thruster effect if accelerating
         if self.thrusting:
             self._draw_thruster(screen, angle_rad, left, right)
+        if self.shield_active:
+            self._draw_shield(screen)
+
+    def _draw_shield(self, screen):
+        """Draws a glowing shield around the player."""
+        pygame.draw.circle(screen, CYAN, (int(self.x), int(self.y)), self.size + 5, 2)  # Outer shield glow
 
     def _generate_exhaust(self):
         """Adds new particles behind the ship."""

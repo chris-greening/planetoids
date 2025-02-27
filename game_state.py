@@ -134,6 +134,9 @@ class GameState:
         """Handles player death with an animation before respawn or game over."""
         if self.player.invincible:
             return  # Don't kill if invincible after respawn
+        if self.player.shield_active:
+            self.player.take_damage()
+            return
 
         self.player.death_animation(screen)  # Pass screen to death effect
 
