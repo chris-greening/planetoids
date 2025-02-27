@@ -22,7 +22,7 @@ class GameState:
         """Checks if all asteroids are destroyed and resets the map if so."""
         if not self.asteroids:  # If asteroid list is empty
             self.level += 1
-            self.spawn_asteroids(5)  # Reset the map with new asteroids
+            self.spawn_asteroids(5 + self.level * 2)  # Reset the map with new asteroids
             self.player.set_invincibility()
 
     def spawn_asteroids(self, count=5):
