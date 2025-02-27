@@ -1,7 +1,8 @@
 import pygame
 import math
-from config import WIDTH, HEIGHT, WHITE
 import random
+from config import WIDTH, HEIGHT, WHITE, ORANGE
+from particle import Particle  # Import the new particle class
 
 class Player:
     def __init__(self):
@@ -13,17 +14,19 @@ class Player:
         self.velocity_y = 0
         self.acceleration = 0.1
         self.max_speed = 5
-        self.thrusting = False
         self.size = 20  # Ship size
+        self.thrusting = False
+        self.particles = []  # Stores exhaust particles
 
     def update(self, keys):
-        """Handles movement and rotation."""
-        self.thrusting = False
+        """Handles movement, rotation, and particle effects."""
+        self.thrusting = False  # Reset thrust effect
+
         if keys[pygame.K_LEFT]:
             self.angle += 5
         if keys[pygame.K_RIGHT]:
             self.angle -= 5
-        if keys[pygame.K_UP]:
+        if keys[pygame.K_UP]:  # Apply thrust
             self.thrusting = True
             angle_rad = math.radians(self.angle)
             self.velocity_x += math.cos(angle_rad) * self.acceleration
@@ -36,6 +39,9 @@ class Player:
                 self.velocity_x *= factor
                 self.velocity_y *= factor
 
+            # Generate exhaust particles
+            self._generate_exhaust()
+
         # Apply movement
         self.x += self.velocity_x
         self.y += self.velocity_y
@@ -44,8 +50,13 @@ class Player:
         self.x %= WIDTH
         self.y %= HEIGHT
 
+        # Update and remove expired particles
+        self.particles = [p for p in self.particles if p.lifetime > 0]
+        for particle in self.particles:
+            particle.update()
+
     def draw(self, screen):
-        """Draws the player ship as an outlined triangle."""
+        """Draws the player ship and particles."""
         angle_rad = math.radians(self.angle)
 
         # Triangle points relative to the center
@@ -53,21 +64,29 @@ class Player:
         left = (self.x + math.cos(angle_rad + 2.5) * self.size * 0.6, self.y - math.sin(angle_rad + 2.5) * self.size * 0.6)
         right = (self.x + math.cos(angle_rad - 2.5) * self.size * 0.6, self.y - math.sin(angle_rad - 2.5) * self.size * 0.6)
 
-        pygame.draw.polygon(screen, WHITE, [front, left, right], 1)  # Outline only, no fill
+        # Draw particles first (so they appear behind the ship)
+        for particle in self.particles:
+            particle.draw(screen)
 
+        # Draw ship
+        pygame.draw.polygon(screen, WHITE, [front, left, right], 1)
+
+        # Draw thruster effect if accelerating
         if self.thrusting:
             self._draw_thruster(screen, angle_rad, left, right)
 
+    def _generate_exhaust(self):
+        """Adds new particles behind the ship."""
+        angle_rad = math.radians(self.angle)
+        exhaust_x = self.x - math.cos(angle_rad) * self.size * 1.2
+        exhaust_y = self.y + math.sin(angle_rad) * self.size * 1.2
+        self.particles.append(Particle(exhaust_x, exhaust_y, self.angle, random.uniform(1, 3)))
+
     def _draw_thruster(self, screen, angle_rad, left, right):
         """Draws a flickering thrust effect behind the ship."""
-        # Calculate thrust flicker effect
         flicker_size = random.uniform(self.size * 0.4, self.size * 0.6)
-
-        # Thruster position (slightly behind ship)
         thruster_tip = (
             self.x - math.cos(angle_rad) * flicker_size * 2,
             self.y + math.sin(angle_rad) * flicker_size * 2
         )
-
-        # Draw thruster triangle (glowing orange effect)
-        pygame.draw.polygon(screen, WHITE, [thruster_tip, left, right])
+        pygame.draw.polygon(screen, ORANGE, [thruster_tip, left, right])

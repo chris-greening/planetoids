@@ -8,7 +8,7 @@ def main():
     pygame.init()
 
     # Initialize window
-    screen = pygame.display.set_mode((config.WIDTH, config.HEIGHT))
+    screen = pygame.display.set_mode((config.WIDTH, config.HEIGHT), pygame.SRCALPHA)
     pygame.display.set_caption("Planetoids!")
     clock = pygame.time.Clock()
 
