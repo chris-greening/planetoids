@@ -38,16 +38,16 @@ class GameState:
         bullets_to_remove = []
         asteroids_to_remove = []
 
-        for bullet in self.bullets[:]:  # Iterate over a copy
-            for asteroid in self.asteroids[:]:  # Iterate over a copy
-                dist = self.calculate_collision_distance(bullet, asteroid)
-                if dist < asteroid.size:
-                    bullets_to_remove.append(bullet)
-                    asteroids_to_remove.append(asteroid)
+        for asteroid in self.asteroids[:]:  # Iterate over a copy
+            for bullet in self.bullets[:]:  # Iterate over a copy
+                    dist = self.calculate_collision_distance(bullet, asteroid)
+                    if dist < asteroid.size:
+                        bullets_to_remove.append(bullet)
+                        asteroids_to_remove.append(asteroid)
 
-                    # Asteroid splitting (Optional)
-                    if asteroid.size > 30:
-                        self.asteroids.append(Asteroid())  # Create a new one
+                        # Asteroid splitting (Optional)
+                        if asteroid.size > 30:
+                            self.asteroids.append(Asteroid())  # Create a new one
 
         # Safely remove bullets & asteroids
         self.bullets = [b for b in self.bullets if b not in bullets_to_remove]
