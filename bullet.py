@@ -1,6 +1,6 @@
 import math
 import pygame
-from config import WHITE
+from config import RED
 
 class Bullet:
     def __init__(self, x, y, angle):
@@ -19,4 +19,4 @@ class Bullet:
 
     def draw(self, screen):
         """Draw the bullet"""
-        pygame.draw.circle(screen, WHITE, (int(self.x), int(self.y)), 3)
+        pygame.draw.circle(screen, RED, (int(self.x), int(self.y)), 3)

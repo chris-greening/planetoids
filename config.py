@@ -6,6 +6,7 @@ FPS = 60
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 ORANGE = (255, 140, 0)
+RED = (255, 0, 0)
 
 # Random Planet Position & Size
 PLANET_X = random.randint(200, WIDTH - 200)
