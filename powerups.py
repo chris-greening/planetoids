@@ -1,6 +1,6 @@
 import pygame
 import random
-from config import WIDTH, HEIGHT, WHITE
+from config import WIDTH, HEIGHT, WHITE, CYAN
 
 class PowerUp:
     """Represents a floating power-up that grants abilities."""
@@ -26,10 +26,16 @@ class PowerUp:
         self.y %= HEIGHT
 
     def draw(self, screen):
-        """Draw the power-up as a small circle with its type indicated."""
-        pygame.draw.circle(screen, WHITE, (int(self.x), int(self.y)), self.radius, 1)
+        """Draw the power-up as a glowing neon blue circle."""
+        # Outer glow effect
+        pygame.draw.circle(screen, (0, 100, 255), (int(self.x), int(self.y)), self.radius + 4, 1)  # Soft glow
+        pygame.draw.circle(screen, (0, 150, 255), (int(self.x), int(self.y)), self.radius + 2, 1)  # Inner glow
 
-        # Draw text label (abbreviated)
+        # Main powerup shape
+        pygame.draw.circle(screen, CYAN, (int(self.x), int(self.y)), self.radius)
+
+        # Draw powerup type (letter)
         font = pygame.font.Font(None, 20)
-        text = font.render(self.type[0].upper(), True, WHITE)
+        text = font.render(self.type[0].upper(), True, (0, 0, 0))  # Black text for contrast
         screen.blit(text, (self.x - 5, self.y - 5))
+
