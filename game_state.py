@@ -2,7 +2,9 @@ import pygame
 from player import Player
 from asteroid import Asteroid
 from bullet import Bullet
+from powerups import PowerUp
 import config
+import random
 
 class GameState:
     def __init__(self):
@@ -10,10 +12,17 @@ class GameState:
         self.player = Player()
         self.bullets = []
         self.asteroids = []
+        self.powerups = []  # Track floating power-ups
         self.lives = 3  # Number of player lives
         self.respawn_timer = 0  # Prevent instant respawn collisions
         self.level = 1  # Start at level 1
         self.paused = False
+
+    def spawn_powerup(self, x, y):
+        """Spawns a powerup only if none exist."""
+        if len(self.powerups) == 0 and random.random() < 0.2:  # 20% chance
+            print(f"Spawning powerup at ({x}, {y})")  # Debugging
+            self.powerups.append(PowerUp(x, y))
 
     def toggle_pause(self):
         self.paused = not self.paused
@@ -31,22 +40,33 @@ class GameState:
             self.asteroids.append(Asteroid())
 
     def update_all(self, keys):
-        """Update all game objects and check for player respawn cooldown."""
+        """Update all game objects, including powerups."""
         if self.respawn_timer > 0:
-            self.respawn_timer -= 1  # Countdown to prevent instant death loop
+            self.respawn_timer -= 1
+            print(f"Respawning in {self.respawn_timer} frames")  # Debug
+            if self.respawn_timer == 0:
+                print("Respawning player now!")  # Debug
+                self.respawn_player()
         else:
             self.player.update(keys)
 
         for bullet in self.bullets:
             bullet.update()
-        self.bullets = [b for b in self.bullets if b.lifetime > 0]  # Cleanup expired bullets
+        self.bullets = [b for b in self.bullets if b.lifetime > 0]  
 
         for asteroid in self.asteroids:
             asteroid.update()
 
+        # Update powerups
+        for powerup in self.powerups:
+            powerup.update()
+
+        # Check if player collects a power-up
+        self.check_powerup_collisions()
+
     def draw_all(self, screen):
-        """Draw all game objects."""
-        if self.respawn_timer == 0:  # Only draw player if alive
+        """Draw all game objects, including power-ups."""
+        if self.respawn_timer == 0:
             self.player.draw(screen)
 
         for bullet in self.bullets:
@@ -54,9 +74,25 @@ class GameState:
         for asteroid in self.asteroids:
             asteroid.draw(screen)
 
-        # Draw lives counter
+        for powerup in self.powerups:
+            powerup.draw(screen)
+
         self._draw_lives(screen)
         self._draw_level(screen)
+        self._draw_powerup_timer(screen)
+
+    def check_powerup_collisions(self):
+        """Checks if the player collects a powerup."""
+        for powerup in self.powerups[:]:
+            if self.calculate_collision_distance(self.player, powerup) < powerup.radius + self.player.size:
+                print(f"Player collected {powerup.type} powerup!")  # Debug
+                self.apply_powerup(powerup.type)
+                self.powerups.remove(powerup)  # Remove after collection
+
+    def apply_powerup(self, power_type):
+        """Applies the collected power-up effect."""
+        if power_type == "trishot":
+            self.player.enable_trishot()
 
     def _draw_level(self, screen):
         """Display current level number."""
@@ -78,6 +114,7 @@ class GameState:
                     bullets_to_remove.append(bullet)
                     asteroids_to_remove.append(asteroid)
                     new_asteroids.extend(asteroid.split())  # Add split asteroids
+                    self.spawn_powerup(asteroid.x, asteroid.y)
 
         # Player vs Asteroid Collision
         if self.respawn_timer == 0:  # Only check if player is alive
@@ -107,9 +144,20 @@ class GameState:
             self.game_over()
 
     def respawn_player(self):
-        """Respawns the player at the center after a short delay."""
-        self.respawn_timer = 60  # 1 second delay
-        self.player.reset_position()  # Now resets velocity and prevents instant death
+        """Respawns the player at the center after the timer expires."""
+        if self.respawn_timer > 0:
+            return  # Prevent accidental multiple calls
+
+        print("Respawning player!")  # Debugging
+        self.player.reset_position()
+        self.player.invincible = True
+        pygame.time.set_timer(pygame.USEREVENT + 2, 2000)  # 2 sec invincibility
+
+    def _draw_powerup_timer(self, screen):
+        """Draws a shrinking timer bar for active powerups."""
+        if self.player.powerup_timer > 0:
+            bar_width = int((self.player.powerup_timer / 300) * 200)  # Scale to 200px max
+            pygame.draw.rect(screen, (0, 255, 255), (config.WIDTH // 2 - 100, config.HEIGHT - 30, bar_width, 10))
 
     def game_over(self):
         """Ends the game and shows Game Over screen."""

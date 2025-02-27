@@ -32,14 +32,13 @@ def main():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p:
                     game_state.toggle_pause()
+                elif event.key == pygame.K_c:
+                    game_state.clear_asteroids()
                 elif event.key == pygame.K_SPACE and not game_state.paused:
-                    game_state.bullets.append(
-                        Bullet(
-                            x=game_state.player.x,
-                            y=game_state.player.y,
-                            angle=game_state.player.angle
-                        )
-                    )
+                    game_state.bullets.extend(game_state.player.shoot())  # Handle trishot
+                
+            elif event.type == pygame.USEREVENT + 1:  # Trishot expiration event
+                game_state.player.trishot_active = False  # Disable trishot
 
         # If paused, show pause screen but allow event processing
         if game_state.paused:
