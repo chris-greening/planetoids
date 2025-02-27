@@ -1,6 +1,7 @@
 import pygame
 import math
 from config import WIDTH, HEIGHT, WHITE
+import random
 
 class Player:
     def __init__(self):
@@ -12,15 +13,18 @@ class Player:
         self.velocity_y = 0
         self.acceleration = 0.1
         self.max_speed = 5
+        self.thrusting = False
         self.size = 20  # Ship size
 
     def update(self, keys):
         """Handles movement and rotation."""
+        self.thrusting = False
         if keys[pygame.K_LEFT]:
             self.angle += 5
         if keys[pygame.K_RIGHT]:
             self.angle -= 5
         if keys[pygame.K_UP]:
+            self.thrusting = True
             angle_rad = math.radians(self.angle)
             self.velocity_x += math.cos(angle_rad) * self.acceleration
             self.velocity_y -= math.sin(angle_rad) * self.acceleration
@@ -50,3 +54,20 @@ class Player:
         right = (self.x + math.cos(angle_rad - 2.5) * self.size * 0.6, self.y - math.sin(angle_rad - 2.5) * self.size * 0.6)
 
         pygame.draw.polygon(screen, WHITE, [front, left, right], 1)  # Outline only, no fill
+
+        if self.thrusting:
+            self._draw_thruster(screen, angle_rad, left, right)
+
+    def _draw_thruster(self, screen, angle_rad, left, right):
+        """Draws a flickering thrust effect behind the ship."""
+        # Calculate thrust flicker effect
+        flicker_size = random.uniform(self.size * 0.4, self.size * 0.6)
+
+        # Thruster position (slightly behind ship)
+        thruster_tip = (
+            self.x - math.cos(angle_rad) * flicker_size * 2,
+            self.y + math.sin(angle_rad) * flicker_size * 2
+        )
+
+        # Draw thruster triangle (glowing orange effect)
+        pygame.draw.polygon(screen, WHITE, [thruster_tip, left, right])
