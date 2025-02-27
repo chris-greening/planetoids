@@ -27,7 +27,7 @@ class GameState:
         for bullet in self.bullets:
             bullet.update()
         self.bullets = [b for b in self.bullets if b.lifetime > 0]  # Cleanup expired bullets
-        
+
         for asteroid in self.asteroids:
             asteroid.update()
 
@@ -73,7 +73,6 @@ class GameState:
         # Add new split asteroids
         self.asteroids.extend(new_asteroids)
 
-
     def handle_player_death(self, screen):
         """Handles player death with an animation before respawn or game over."""
         if self.player.invincible:
@@ -87,12 +86,10 @@ class GameState:
         else:
             self.game_over()
 
-
     def respawn_player(self):
         """Respawns the player at the center after a short delay."""
         self.respawn_timer = 60  # 1 second delay
         self.player.reset_position()  # Now resets velocity and prevents instant death
-
 
     def game_over(self):
         """Ends the game and shows Game Over screen."""
