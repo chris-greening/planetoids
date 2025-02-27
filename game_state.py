@@ -12,6 +12,11 @@ class GameState:
         self.lives = 3  # Number of player lives
         self.respawn_timer = 0  # Prevent instant respawn collisions
 
+    def check_for_clear_map(self):
+        """Checks if all asteroids are destroyed and resets the map if so."""
+        if not self.asteroids:  # If asteroid list is empty
+            self.spawn_asteroids(5)  # Reset the map with new asteroids
+
     def spawn_asteroids(self, count=5):
         """Spawn initial asteroids."""
         for _ in range(count):
