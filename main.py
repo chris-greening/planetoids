@@ -8,7 +8,7 @@ def main():
     pygame.init()
 
     # Initialize window
-    screen = pygame.display.set_mode((config.WIDTH, config.HEIGHT), pygame.SRCALPHA)
+    screen = pygame.display.set_mode((config.WIDTH, config.HEIGHT), pygame.FULLSCREEN)
     pygame.display.set_caption("Planetoids!")
     clock = pygame.time.Clock()
 
@@ -25,18 +25,27 @@ def main():
         screen.fill(config.BLACK)
         clock.tick(config.FPS)
 
-        # Handle events
+        # Handle events (always process inputs)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                game_state.bullets.append(
-                    Bullet(
-                        x=game_state.player.x,
-                        y=game_state.player.y,
-                        angle=game_state.player.angle
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_p:
+                    game_state.toggle_pause()
+                elif event.key == pygame.K_SPACE and not game_state.paused:
+                    game_state.bullets.append(
+                        Bullet(
+                            x=game_state.player.x,
+                            y=game_state.player.y,
+                            angle=game_state.player.angle
+                        )
                     )
-                )
+
+        # If paused, show pause screen but allow event processing
+        if game_state.paused:
+            show_pause_screen(screen)
+            pygame.display.flip()
+            continue  # Skip game updates but allow event processing
 
         # Update game state
         keys = pygame.key.get_pressed()
@@ -50,6 +59,20 @@ def main():
         pygame.display.flip()
 
     pygame.quit()
+
+
+def show_pause_screen(screen):
+    """Displays a semi-transparent pause overlay."""
+    font = pygame.font.Font(None, 50)
+    text = font.render("PAUSED - Press P to Resume", True, config.WHITE)
+
+    # Draw a semi-transparent overlay
+    overlay = pygame.Surface((config.WIDTH, config.HEIGHT), pygame.SRCALPHA)
+    overlay.fill((0, 0, 0, 150))  # 150 alpha for slight transparency
+    screen.blit(overlay, (0, 0))
+
+    # Draw the text centered
+    screen.blit(text, (config.WIDTH // 2 - 200, config.HEIGHT // 2))
 
 if __name__ == "__main__":
     main()
