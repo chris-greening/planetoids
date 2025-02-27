@@ -1,6 +1,5 @@
 import pygame
 from start_menu import StartMenu
-from player import Player
 from bullet import Bullet
 from game_state import GameState
 import config
@@ -20,7 +19,6 @@ def main():
     # Create GameState instance
     game_state = GameState()
     game_state.spawn_asteroids(5)  # Initial asteroids
-    player = Player()
 
     running = True
     while running:
@@ -32,16 +30,20 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                game_state.bullets.append(Bullet(player.x, player.y, player.angle))
+                game_state.bullets.append(
+                    Bullet(
+                        x=game_state.player.x,
+                        y=game_state.player.y,
+                        angle=game_state.player.angle
+                    )
+                )
 
         # Update game state
         keys = pygame.key.get_pressed()
-        player.update(keys)
-        game_state.update_all()
+        game_state.update_all(keys)
         game_state.check_for_collisions()
 
         # Draw everything
-        player.draw(screen)
         game_state.draw_all(screen)
 
         pygame.display.flip()

@@ -1,10 +1,12 @@
 import math
 
 from asteroid import Asteroid
+from player import Player
 
 class GameState:
     def __init__(self):
         """GameState manages all game objects"""
+        self.player = Player()
         self.bullets = []
         self.asteroids = []
 
@@ -13,8 +15,9 @@ class GameState:
         for _ in range(count):
             self.asteroids.append(Asteroid())
 
-    def update_all(self):
+    def update_all(self, keys):
         """Update all game objects"""
+        self.player.update(keys)
         for bullet in self.bullets:
             bullet.update()
         self.bullets = [b for b in self.bullets if b.lifetime > 0]  # Cleanup expired bullets
@@ -23,6 +26,7 @@ class GameState:
             asteroid.update()
 
     def draw_all(self, screen):
+        self.player.draw(screen)
         """Draw all game objects"""
         for bullet in self.bullets:
             bullet.draw(screen)
