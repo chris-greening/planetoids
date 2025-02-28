@@ -63,6 +63,33 @@ class Player:
         self.invincible = True
         self.invincibility_timer = timer  # 2 seconds of invincibility
 
+    def _draw_shield_bar(self, screen):
+        """Draws a shield recharge bar in the top-left corner."""
+        bar_width = 120
+        bar_height = 12
+        bar_x, bar_y = 10, 40  # Position on screen
+
+        # Calculate recharge progress (0 to 1)
+        if self.shield_active:
+            progress = 1.0  # Full shield
+        else:
+            time_since_break = time.time() - self.last_shield_recharge
+            progress = min(time_since_break / 30, 1.0)  # Fill over 30 seconds
+
+        # Bar colors
+        border_color = (200, 200, 200)  # Light grey border
+        empty_color = (80, 80, 80)  # Dark grey when empty
+        fill_color = (0, 255, 255) if self.shield_active else (100, 100, 255)  # Cyan when full, blue when recharging
+
+        # Draw border
+        pygame.draw.rect(screen, border_color, (bar_x - 2, bar_y - 2, bar_width + 4, bar_height + 4), 2)
+
+        # Draw empty bar
+        pygame.draw.rect(screen, empty_color, (bar_x, bar_y, bar_width, bar_height))
+
+        # Draw progress fill
+        pygame.draw.rect(screen, fill_color, (bar_x, bar_y, bar_width * progress, bar_height))
+
     def update(self, keys):
         """Handles movement, rotation, and particle effects."""
         self._handle_shield_regeneration()
@@ -79,6 +106,9 @@ class Player:
 
         self.thrusting = False  # Reset thrust effect
 
+        if keys[pygame.K_ESCAPE]:  # Quit game on Escape
+            pygame.quit()
+            exit()
         if keys[pygame.K_LEFT]:
             self.angle += 5
         if keys[pygame.K_RIGHT]:
@@ -150,6 +180,7 @@ class Player:
             self._draw_thruster(screen, angle_rad, left, right)
         if self.shield_active:
             self._draw_shield(screen)
+        self._draw_shield_bar(screen)
 
     def _draw_shield(self, screen):
         """Draws a glowing shield around the player with a pulsing effect."""
