@@ -20,8 +20,12 @@ class Player:
         self.powerup_timer = 0
 
         # Shield system
-        self.shield_active = True  # Shield starts active
-        self.shield_cooldown = 0  # Time until shield recharges
+        self._activate_shield()
+
+    def _activate_shield(self):
+        """Activates the shield for a limited time."""
+        self.shield_active = True
+        self.shield_cooldown = 0
         self.last_shield_recharge = time.time()  # Track recharge time
 
     def shoot(self):
@@ -51,9 +55,7 @@ class Player:
         self.velocity_y = 0
         self.thrusting = False  # Reset thrust effect
         self.trishot_active = False
-        self.shield_active = True  # Shield starts active
-        self.shield_cooldown = 0  # Time until shield recharges
-        self.last_shield_recharge = time.time()  # Track recharge time
+        self._activate_shield()
         self.set_invincibility()
 
     def set_invincibility(self, timer=120):
