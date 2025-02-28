@@ -23,3 +23,15 @@ def apply_flicker(screen):
         flicker_surface = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
         flicker_surface.fill((255, 255, 255, 5))  # Slight white overlay
         screen.blit(flicker_surface, (0, 0))
+
+def apply_glow(screen):
+    """Creates a soft glow effect by blurring bright pixels."""
+    width, height = screen.get_size()
+
+    # Create a blurred surface
+    glow_surf = pygame.transform.smoothscale(screen, (width // 2, height // 2))
+    glow_surf = pygame.transform.smoothscale(glow_surf, (width, height))
+
+    # Overlay with transparency
+    glow_surf.set_alpha(100)  # Adjust glow intensity (higher = stronger glow)
+    screen.blit(glow_surf, (0, 0))
