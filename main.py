@@ -19,6 +19,7 @@ def main():
 
     # Create GameState instance
     game_state = GameState(screen)
+    game_state.crt_enabled = crt_enabled  # Apply initial CRT setting from start menu
     game_state.spawn_asteroids(5)  # Initial asteroids
 
     running = True
@@ -54,7 +55,7 @@ def main():
         # Draw everything
         game_state.draw_all(screen)
 
-        if crt_enabled:
+        if game_state.crt_enabled:
             crt_effect.apply_crt_effect(screen)
         pygame.display.flip()
 

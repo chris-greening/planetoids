@@ -10,21 +10,17 @@ import random
 class GameState:
     def __init__(self, screen):
         """GameState manages all game objects, including the player and asteroids."""
+        self.screen = screen
         self.player = Player()
         self.bullets = []
         self.asteroids = []
-        self.powerups = []  # Track floating power-ups
-        self.lives = 3  # Number of player lives
-        self.respawn_timer = 0  # Prevent instant respawn collisions
-        self.level = 1  # Start at level 1
+        self.powerups = []
+        self.lives = 3
+        self.respawn_timer = 0
+        self.level = 1
         self.paused = False
-        self.pause_menu = PauseMenu(screen)  # Create PauseMenu instance
-
-    def spawn_powerup(self, x, y):
-        """Spawns a powerup only if none exist."""
-        if len(self.powerups) == 0 and random.random() < 0.2:  # 20% chance
-            print(f"Spawning powerup at ({x}, {y})")  # Debugging
-            self.powerups.append(PowerUp(x, y))
+        self.pause_menu = PauseMenu(screen, self)  # Pass self to PauseMenu
+        self.crt_enabled = True  # Default CRT effect setting
 
     def toggle_pause(self):
         """Toggles pause and shows the pause screen."""
@@ -32,6 +28,12 @@ class GameState:
             self.paused = True
             self.pause_menu.show()  # Show pause menu
             self.paused = False  # Resume after exiting menu
+
+    def spawn_powerup(self, x, y):
+        """Spawns a powerup only if none exist."""
+        if len(self.powerups) == 0 and random.random() < 0.2:  # 20% chance
+            print(f"Spawning powerup at ({x}, {y})")  # Debugging
+            self.powerups.append(PowerUp(x, y))
 
     def check_for_clear_map(self):
         """Checks if all asteroids are destroyed and resets the map if so."""
