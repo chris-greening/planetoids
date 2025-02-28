@@ -2,6 +2,7 @@ import pygame
 from start_menu import StartMenu
 from bullet import Bullet
 from game_state import GameState
+import crt_effect
 import config
 
 def main():
@@ -55,6 +56,7 @@ def main():
         # Draw everything
         game_state.draw_all(screen)
 
+        crt_effect.apply_crt_effect(screen)
         pygame.display.flip()
 
     pygame.quit()
