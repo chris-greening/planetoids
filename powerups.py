@@ -31,7 +31,7 @@ class PowerUp:
 
         # Blinking effect (start blinking after 6 seconds, every 0.2s)
         elapsed_time = time.time() - self.spawn_time
-        if elapsed_time > 6 and int(elapsed_time * 5) % 2 == 0:
+        if elapsed_time > 10 and int(elapsed_time * 5) % 2 == 0:
             return  # Skip drawing to create blinking effect
 
         # Outer glow effect
@@ -48,7 +48,7 @@ class PowerUp:
 
     def is_expired(self):
         """Check if the power-up should disappear."""
-        return time.time() - self.spawn_time > 10  # Disappear after 10 seconds
+        return time.time() - self.spawn_time > 15  # Disappear after 10 seconds
 
 class TrishotPowerUp(PowerUp):
     """Trishot power-up that enables triple bullets for a limited time."""

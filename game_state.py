@@ -43,7 +43,7 @@ class GameState:
 
     def spawn_powerup(self, x, y):
         """Spawns a power-up with a probability, allowing multiple to exist at once."""
-        if random.random() < 0.1:
+        if len(self.powerups) < 3 and random.random() < .1:
             powerup_classes = [TrishotPowerUp]
             chosen_powerup = random.choice(powerup_classes)
             self.powerups.append(chosen_powerup(x, y))
