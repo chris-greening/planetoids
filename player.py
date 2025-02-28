@@ -106,9 +106,6 @@ class Player:
 
         self.thrusting = False  # Reset thrust effect
 
-        if keys[pygame.K_ESCAPE]:  # Quit game on Escape
-            pygame.quit()
-            exit()
         if keys[pygame.K_LEFT]:
             self.angle += 5
         if keys[pygame.K_RIGHT]:

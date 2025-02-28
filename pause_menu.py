@@ -68,11 +68,8 @@ class PauseMenu:
                         self._handle_options_selection()
                     else:
                         self._handle_pause_selection()
-                if event.key == pygame.K_ESCAPE:
-                    if self.options_mode:
-                        self.options_mode = False  # Return to pause menu
-                    else:
-                        self.running = False  # Unpause the game
+                if event.key == pygame.K_ESCAPE and self.options_mode:
+                    self.options_mode = False  # Return to pause menu
 
     def _handle_pause_selection(self):
         """Handles selection in the pause menu."""

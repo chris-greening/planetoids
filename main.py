@@ -29,9 +29,7 @@ def main():
 
         # Handle events (always process inputs)
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            elif event.type == pygame.KEYDOWN:
+            if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p:
                     game_state.toggle_pause()
                 elif event.key == pygame.K_SPACE and not game_state.paused:
