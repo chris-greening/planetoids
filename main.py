@@ -15,10 +15,11 @@ def main():
 
     # Show the start menu
     start_menu = StartMenu(screen, clock)
-    start_menu.show()
+    crt_enabled = start_menu.show()  # Returns True or False
 
     # Create GameState instance
-    game_state = GameState()
+    game_state = GameState(screen)
+    game_state.crt_enabled = crt_enabled  # Apply initial CRT setting from start menu
     game_state.spawn_asteroids(5)  # Initial asteroids
 
     running = True
@@ -28,13 +29,9 @@ def main():
 
         # Handle events (always process inputs)
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            elif event.type == pygame.KEYDOWN:
+            if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p:
                     game_state.toggle_pause()
-                elif event.key == pygame.K_c:
-                    game_state.clear_asteroids()
                 elif event.key == pygame.K_SPACE and not game_state.paused:
                     game_state.bullets.extend(game_state.player.shoot())  # Handle trishot
                 
@@ -43,8 +40,6 @@ def main():
 
         # If paused, show pause screen but allow event processing
         if game_state.paused:
-            show_pause_screen(screen)
-            pygame.display.flip()
             continue  # Skip game updates but allow event processing
 
         # Update game state
@@ -56,24 +51,11 @@ def main():
         # Draw everything
         game_state.draw_all(screen)
 
-        crt_effect.apply_crt_effect(screen)
+        if game_state.crt_enabled:
+            crt_effect.apply_crt_effect(screen)
         pygame.display.flip()
 
     pygame.quit()
-
-
-def show_pause_screen(screen):
-    """Displays a semi-transparent pause overlay."""
-    font = pygame.font.Font(None, 50)
-    text = font.render("PAUSED - Press P to Resume", True, config.WHITE)
-
-    # Draw a semi-transparent overlay
-    overlay = pygame.Surface((config.WIDTH, config.HEIGHT), pygame.SRCALPHA)
-    overlay.fill((0, 0, 0, 150))  # 150 alpha for slight transparency
-    screen.blit(overlay, (0, 0))
-
-    # Draw the text centered
-    screen.blit(text, (config.WIDTH // 2 - 200, config.HEIGHT // 2))
 
 if __name__ == "__main__":
     main()
