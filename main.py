@@ -34,8 +34,6 @@ def main():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p:
                     game_state.toggle_pause()
-                elif event.key == pygame.K_c:
-                    game_state.clear_asteroids()
                 elif event.key == pygame.K_SPACE and not game_state.paused:
                     game_state.bullets.extend(game_state.player.shoot())  # Handle trishot
                 
@@ -60,20 +58,6 @@ def main():
         pygame.display.flip()
 
     pygame.quit()
-
-
-def show_pause_screen(screen):
-    """Displays a semi-transparent pause overlay."""
-    font = pygame.font.Font(None, 50)
-    text = font.render("PAUSED - Press P to Resume", True, config.WHITE)
-
-    # Draw a semi-transparent overlay
-    overlay = pygame.Surface((config.WIDTH, config.HEIGHT), pygame.SRCALPHA)
-    overlay.fill((0, 0, 0, 150))  # 150 alpha for slight transparency
-    screen.blit(overlay, (0, 0))
-
-    # Draw the text centered
-    screen.blit(text, (config.WIDTH // 2 - 200, config.HEIGHT // 2))
 
 if __name__ == "__main__":
     main()
