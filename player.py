@@ -17,6 +17,7 @@ class Player:
         self.particles = []  # Stores exhaust particles
         self.set_invincibility()
         self.trishot_active = False
+        self.quadshot_active = False
         self.powerup_timer = 0
 
         # Shield system
@@ -29,19 +30,34 @@ class Player:
         self.last_shield_recharge = time.time()  # Track recharge time
 
     def shoot(self):
-        """Fires bullets. If trishot is active, fire 3 shots at different angles."""
-        bullets = [
-            Bullet(self.x, self.y, self.angle)
-        ]
+        """Shoots bullets. If QuadShot is active, fires in 4 directions."""
+        bullets = []
 
-        if self.trishot_active:
-            bullets.append(Bullet(self.x, self.y, self.angle - 10))  # Left shot
-            bullets.append(Bullet(self.x, self.y, self.angle + 10))  # Right shot
+        if self.quadshot_active:
+            angles = [self.angle, self.angle + 90, self.angle + 180, self.angle + 270]  # QuadShot based on player angle
+        elif self.trishot_active:
+            angles = [self.angle - 15, self.angle, self.angle + 15]  # Trishot spread
+        else:
+            angles = [self.angle]  # Normal shot
+
+        for angle in angles:
+            bullets.append(Bullet(self.x, self.y, angle))
 
         return bullets
 
+    def _disable_previous_shots(self):
+        self.trishot_active = False
+        self.quadshot_active = False
+
+    def enable_quadshot(self):
+        """Activates quadshot mode for a limited time."""
+        self._disable_previous_shots()
+        self.quadshot_active = True
+        self.powerup_timer = 300
+
     def enable_trishot(self):
         """Activates trishot mode for a limited time."""
+        self._disable_previous_shots()
         self.trishot_active = True
         self.powerup_timer = 300
 
@@ -97,7 +113,7 @@ class Player:
         if self.powerup_timer > 0:
             self.powerup_timer -= 1
             if self.powerup_timer == 0:
-                self.trishot_active = False
+                self._disable_previous_shots()
 
         if self.invincibility_timer > 0:
             self.invincibility_timer -= 1

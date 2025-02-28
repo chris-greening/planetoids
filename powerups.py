@@ -69,13 +69,23 @@ class ShieldPowerUp(PowerUp):
     """Shield power-up that reenables player's shield"""
 
     def __init__(self, x, y):
-        """Initialize the trishot power-up."""
+        """Initialize the shield power-up."""
         super().__init__(x, y)  # Use parent class constructor
 
     def apply(self, player):
-        """Grants the player trishot mode."""
+        """Grants the player shield."""
         player.activate_shield()
 
     def get_symbol(self):
-        """Display 'T' inside the power-up."""
+        """Display 'S' inside the power-up."""
         return "S"
+
+class QuadShotPowerUp(PowerUp):
+    """QuadShot power-up that enables four-directional bullets for a limited time."""
+
+    def apply(self, player):
+        """Grants the player QuadShot mode."""
+        player.enable_quadshot()
+
+    def get_symbol(self):
+        return "Q"  # Displays "Q" inside the power-up

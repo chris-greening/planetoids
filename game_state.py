@@ -3,7 +3,7 @@ from player import Player
 from asteroid import Asteroid
 from bullet import Bullet
 from powerups import PowerUp
-from powerups import TrishotPowerUp, ShieldPowerUp
+from powerups import TrishotPowerUp, ShieldPowerUp, QuadShotPowerUp
 from pause_menu import PauseMenu
 import config
 import random
@@ -44,10 +44,12 @@ class GameState:
     def spawn_powerup(self, x, y):
         """Spawns a power-up with a probability, allowing multiple to exist at once."""
         if len(self.powerups) < 3 and random.random() < .1:
-            powerup_classes = [TrishotPowerUp, ShieldPowerUp]
+            powerup_classes = [TrishotPowerUp, QuadShotPowerUp]
+            print(powerup_classes)
+            if not self.player.shield_active:
+                powerup_classes.append(ShieldPowerUp)
             chosen_powerup = random.choice(powerup_classes)
             self.powerups.append(chosen_powerup(x, y))
-
 
     def check_for_clear_map(self):
         """Checks if all asteroids are destroyed and resets the map if so."""
