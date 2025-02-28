@@ -3,11 +3,12 @@ from player import Player
 from asteroid import Asteroid
 from bullet import Bullet
 from powerups import PowerUp
+from pause_menu import PauseMenu
 import config
 import random
 
 class GameState:
-    def __init__(self):
+    def __init__(self, screen):
         """GameState manages all game objects, including the player and asteroids."""
         self.player = Player()
         self.bullets = []
@@ -17,6 +18,7 @@ class GameState:
         self.respawn_timer = 0  # Prevent instant respawn collisions
         self.level = 1  # Start at level 1
         self.paused = False
+        self.pause_menu = PauseMenu(screen)  # Create PauseMenu instance
 
     def spawn_powerup(self, x, y):
         """Spawns a powerup only if none exist."""
@@ -25,7 +27,11 @@ class GameState:
             self.powerups.append(PowerUp(x, y))
 
     def toggle_pause(self):
-        self.paused = not self.paused
+        """Toggles pause and shows the pause screen."""
+        if not self.paused:
+            self.paused = True
+            self.pause_menu.show()  # Show pause menu
+            self.paused = False  # Resume after exiting menu
 
     def check_for_clear_map(self):
         """Checks if all asteroids are destroyed and resets the map if so."""

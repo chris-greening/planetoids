@@ -18,7 +18,7 @@ def main():
     crt_enabled = start_menu.show()  # Returns True or False
 
     # Create GameState instance
-    game_state = GameState()
+    game_state = GameState(screen)
     game_state.spawn_asteroids(5)  # Initial asteroids
 
     running = True
@@ -43,8 +43,6 @@ def main():
 
         # If paused, show pause screen but allow event processing
         if game_state.paused:
-            show_pause_screen(screen)
-            pygame.display.flip()
             continue  # Skip game updates but allow event processing
 
         # Update game state
