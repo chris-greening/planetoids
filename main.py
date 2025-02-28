@@ -15,7 +15,7 @@ def main():
 
     # Show the start menu
     start_menu = StartMenu(screen, clock)
-    start_menu.show()
+    crt_enabled = start_menu.show()  # Returns True or False
 
     # Create GameState instance
     game_state = GameState()
@@ -56,7 +56,8 @@ def main():
         # Draw everything
         game_state.draw_all(screen)
 
-        crt_effect.apply_crt_effect(screen)
+        if crt_enabled:
+            crt_effect.apply_crt_effect(screen)
         pygame.display.flip()
 
     pygame.quit()
