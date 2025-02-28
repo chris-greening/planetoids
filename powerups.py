@@ -64,3 +64,18 @@ class TrishotPowerUp(PowerUp):
     def get_symbol(self):
         """Display 'T' inside the power-up."""
         return "T"
+
+class ShieldPowerUp(PowerUp):
+    """Shield power-up that reenables player's shield"""
+
+    def __init__(self, x, y):
+        """Initialize the trishot power-up."""
+        super().__init__(x, y)  # Use parent class constructor
+
+    def apply(self, player):
+        """Grants the player trishot mode."""
+        player.activate_shield()
+
+    def get_symbol(self):
+        """Display 'T' inside the power-up."""
+        return "S"

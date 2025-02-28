@@ -20,9 +20,9 @@ class Player:
         self.powerup_timer = 0
 
         # Shield system
-        self._activate_shield()
+        self.activate_shield()
 
-    def _activate_shield(self):
+    def activate_shield(self):
         """Activates the shield for a limited time."""
         self.shield_active = True
         self.shield_cooldown = 0
@@ -55,7 +55,7 @@ class Player:
         self.velocity_y = 0
         self.thrusting = False  # Reset thrust effect
         self.trishot_active = False
-        self._activate_shield()
+        self.activate_shield()
         self.set_invincibility()
 
     def set_invincibility(self, timer=120):
