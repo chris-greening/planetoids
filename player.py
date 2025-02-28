@@ -1,9 +1,10 @@
 import pygame
 import math
 import random
-from config import WIDTH, HEIGHT, WHITE, ORANGE
+from config import WIDTH, HEIGHT, WHITE, ORANGE, CYAN
 from particle import Particle  # Import the new particle class
 from bullet import Bullet
+import time
 
 class Player:
     def __init__(self):
@@ -17,6 +18,15 @@ class Player:
         self.set_invincibility()
         self.trishot_active = False
         self.powerup_timer = 0
+
+        # Shield system
+        self._activate_shield()
+
+    def _activate_shield(self):
+        """Activates the shield for a limited time."""
+        self.shield_active = True
+        self.shield_cooldown = 0
+        self.last_shield_recharge = time.time()  # Track recharge time
 
     def shoot(self):
         """Fires bullets. If trishot is active, fire 3 shots at different angles."""
@@ -45,6 +55,7 @@ class Player:
         self.velocity_y = 0
         self.thrusting = False  # Reset thrust effect
         self.trishot_active = False
+        self._activate_shield()
         self.set_invincibility()
 
     def set_invincibility(self, timer=120):
@@ -52,8 +63,37 @@ class Player:
         self.invincible = True
         self.invincibility_timer = timer  # 2 seconds of invincibility
 
+    def _draw_shield_bar(self, screen):
+        """Draws a shield recharge bar in the top-left corner."""
+        bar_width = 120
+        bar_height = 12
+        bar_x, bar_y = 10, 40  # Position on screen
+
+        # Calculate recharge progress (0 to 1)
+        if self.shield_active:
+            progress = 1.0  # Full shield
+        else:
+            time_since_break = time.time() - self.last_shield_recharge
+            progress = min(time_since_break / 30, 1.0)  # Fill over 30 seconds
+
+        # Bar colors
+        border_color = (200, 200, 200)  # Light grey border
+        empty_color = (80, 80, 80)  # Dark grey when empty
+        fill_color = (0, 255, 255) if self.shield_active else (100, 100, 255)  # Cyan when full, blue when recharging
+
+        # Draw border
+        pygame.draw.rect(screen, border_color, (bar_x - 2, bar_y - 2, bar_width + 4, bar_height + 4), 2)
+
+        # Draw empty bar
+        pygame.draw.rect(screen, empty_color, (bar_x, bar_y, bar_width, bar_height))
+
+        # Draw progress fill
+        pygame.draw.rect(screen, fill_color, (bar_x, bar_y, bar_width * progress, bar_height))
+
     def update(self, keys):
         """Handles movement, rotation, and particle effects."""
+        self._handle_shield_regeneration()
+
         if self.powerup_timer > 0:
             self.powerup_timer -= 1
             if self.powerup_timer == 0:
@@ -66,6 +106,9 @@ class Player:
 
         self.thrusting = False  # Reset thrust effect
 
+        if keys[pygame.K_ESCAPE]:  # Quit game on Escape
+            pygame.quit()
+            exit()
         if keys[pygame.K_LEFT]:
             self.angle += 5
         if keys[pygame.K_RIGHT]:
@@ -99,6 +142,22 @@ class Player:
         for particle in self.particles:
             particle.update()
 
+    def _handle_shield_regeneration(self):
+        """Regenerates shield every 30 seconds if broken."""
+        if not self.shield_active:
+            time_since_break = time.time() - self.last_shield_recharge
+            if time_since_break >= 30:  # 30 seconds cooldown
+                self.shield_active = True  # Shield is restored
+                print("Shield recharged!")
+
+    def take_damage(self):
+        """Handles damage logic: shield breaks first, then invincibility, then death."""
+        if self.shield_active and not self.invincible:
+            self.shield_active = False  # Break the shield
+            self.last_shield_recharge = time.time()  # Start recharge timer
+            self.set_invincibility()  # Trigger 2 seconds of invincibility
+            print("⚠️ Shield broken! Player is now invincible for 2 seconds.")
+
     def draw(self, screen):
         """Draws the player ship and particles."""
         angle_rad = math.radians(self.angle)
@@ -119,6 +178,23 @@ class Player:
         # Draw thruster effect if accelerating
         if self.thrusting:
             self._draw_thruster(screen, angle_rad, left, right)
+        if self.shield_active:
+            self._draw_shield(screen)
+        self._draw_shield_bar(screen)
+
+    def _draw_shield(self, screen):
+        """Draws a glowing shield around the player with a pulsing effect."""
+        pulse_intensity = int(50 + 30 * abs(math.sin(time.time() * 2)))  # Pulses over time
+        shield_color = (0, 255, 255, pulse_intensity)  # Cyan with alpha
+
+        pygame.draw.circle(screen, shield_color, (int(self.x), int(self.y)), self.size + 5, 2)
+
+        # When shield is broken, show a "shatter" effect
+        if not self.shield_active:
+            for _ in range(5):  # 5 pieces flying out
+                offset_x = random.randint(-10, 10)
+                offset_y = random.randint(-10, 10)
+                pygame.draw.circle(screen, (100, 100, 255), (int(self.x + offset_x), int(self.y + offset_y)), 3)
 
     def _generate_exhaust(self):
         """Adds new particles behind the ship."""

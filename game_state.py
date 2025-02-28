@@ -134,6 +134,9 @@ class GameState:
         """Handles player death with an animation before respawn or game over."""
         if self.player.invincible:
             return  # Don't kill if invincible after respawn
+        if self.player.shield_active:
+            self.player.take_damage()
+            return
 
         self.player.death_animation(screen)  # Pass screen to death effect
 
@@ -168,7 +171,7 @@ class GameState:
     def _draw_lives(self, screen):
         """Display player lives on the screen."""
         font = pygame.font.Font(None, 36)
-        text = font.render(f"Lives: {self.lives}", True, (255, 255, 255))
+        text = font.render(f"Lives: {self.lives}", True, config.WHITE)
         screen.blit(text, (10, 10))
 
     def calculate_collision_distance(self, obj1, obj2):
