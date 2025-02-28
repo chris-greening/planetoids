@@ -73,7 +73,7 @@ class GameState:
 
         for bullet in self.bullets:
             bullet.update()
-        self.bullets = [b for b in self.bullets if b.lifetime > 0]  
+        self.bullets = [b for b in self.bullets if b.lifetime > 0] 
 
         for asteroid in self.asteroids:
             asteroid.update()
@@ -81,6 +81,7 @@ class GameState:
         # Update powerups
         for powerup in self.powerups:
             powerup.update()
+        self.powerups = [p for p in self.powerups if not p.is_expired()]
 
         # Check if player collects a power-up
         self.check_powerup_collisions()

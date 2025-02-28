@@ -1,6 +1,7 @@
 import pygame
 import random
-from config import WIDTH, HEIGHT, WHITE, CYAN
+import time
+from config import WIDTH, HEIGHT, CYAN
 
 class PowerUp:
     """Base class for all power-ups."""
@@ -10,39 +11,44 @@ class PowerUp:
         self.x = x
         self.y = y
         self.radius = radius
-        self.speed_x = random.uniform(-1.5, 1.5)  # Random float speed
+        self.speed_x = random.uniform(-1.5, 1.5)
         self.speed_y = random.uniform(-1.5, 1.5)
+        self.spawn_time = time.time()  # Store the spawn time
 
     def update(self):
-        """Move the power-up around the screen."""
+        """Move the power-up and handle expiration."""
         self.x += self.speed_x
         self.y += self.speed_y
 
-        # Screen wraparound (like asteroids)
+        # Screen wraparound
         self.x %= WIDTH
         self.y %= HEIGHT
 
     def draw(self, screen):
-        """Draw the power-up as a glowing neon blue circle."""
+        """Draw the power-up, with a blinking effect before expiration."""
+        if self.is_expired():
+            return  # Do not draw expired power-ups
+
+        # Blinking effect (start blinking after 6 seconds, every 0.2s)
+        elapsed_time = time.time() - self.spawn_time
+        if elapsed_time > 6 and int(elapsed_time * 5) % 2 == 0:
+            return  # Skip drawing to create blinking effect
+
         # Outer glow effect
-        pygame.draw.circle(screen, (0, 100, 255), (int(self.x), int(self.y)), self.radius + 4, 1)  # Soft glow
-        pygame.draw.circle(screen, (0, 150, 255), (int(self.x), int(self.y)), self.radius + 2, 1)  # Inner glow
+        pygame.draw.circle(screen, (0, 100, 255), (int(self.x), int(self.y)), self.radius + 4, 1)
+        pygame.draw.circle(screen, (0, 150, 255), (int(self.x), int(self.y)), self.radius + 2, 1)
 
         # Main powerup shape
         pygame.draw.circle(screen, CYAN, (int(self.x), int(self.y)), self.radius)
 
         # Draw powerup type (letter)
         font = pygame.font.Font(None, 20)
-        text = font.render(self.get_symbol(), True, (0, 0, 0))  # Black text for contrast
+        text = font.render(self.get_symbol(), True, (0, 0, 0))
         screen.blit(text, (self.x - 5, self.y - 5))
 
-    def apply(self, player):
-        """Apply the effect of the power-up (to be overridden by subclasses)."""
-        raise NotImplementedError("PowerUp subclasses must implement `apply()`.")
-
-    def get_symbol(self):
-        """Return the symbol to display inside the power-up."""
-        return "?"
+    def is_expired(self):
+        """Check if the power-up should disappear."""
+        return time.time() - self.spawn_time > 10  # Disappear after 10 seconds
 
 class TrishotPowerUp(PowerUp):
     """Trishot power-up that enables triple bullets for a limited time."""
