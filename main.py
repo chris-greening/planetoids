@@ -56,6 +56,8 @@ def main():
         # Draw everything
         game_state.draw_all(screen)
 
+        crt_effect.apply_flicker(screen)
+        crt_effect.apply_pixelation(screen, scale_factor=2)
         crt_effect.apply_scanlines(screen)
         pygame.display.flip()
 
