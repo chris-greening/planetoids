@@ -42,10 +42,11 @@ class GameState:
             self.paused = False  # Resume after exiting menu
 
     def spawn_powerup(self, x, y):
-        """Spawns a powerup only if none exist."""
-        if len(self.powerups) == 0 and random.random() < 0.2:  # 20% chance
-            print(f"Spawning powerup at ({x}, {y})")  # Debugging
-            self.powerups.append(TrishotPowerUp(x, y))  # Spawn Trishot specifically
+        """Spawns a power-up with a probability, allowing multiple to exist at once."""
+        if random.random() < 0.1:
+            powerup_classes = [TrishotPowerUp]
+            chosen_powerup = random.choice(powerup_classes)
+            self.powerups.append(chosen_powerup(x, y))
 
 
     def check_for_clear_map(self):
