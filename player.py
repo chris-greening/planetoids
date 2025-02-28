@@ -51,6 +51,12 @@ class Player:
         self.quadshot_active = False
         self.ricochet_active = False
 
+    def enable_invincibility(self):
+        """Activates quadshot mode for a limited time."""
+        self._disable_previous_shots()
+        self.set_invincibility(timer=300)
+        self.powerup_timer = 300
+
     def enable_ricochet(self):
         """Activates quadshot mode for a limited time."""
         self._disable_previous_shots()

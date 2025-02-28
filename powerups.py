@@ -101,3 +101,13 @@ class RicochetShotPowerUp(PowerUp):
 
     def get_symbol(self):
         return "R"  # Displays "R" inside the power-up
+
+class InvincibilityPowerUp(PowerUp):
+    """Invincibility powerup"""
+
+    def apply(self, player):
+        """Grants the player Invincibility mode."""
+        player.enable_invincibility()
+
+    def get_symbol(self):
+        return "I"  # Displays "I" inside the power-up
