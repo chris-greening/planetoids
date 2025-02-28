@@ -21,6 +21,12 @@ class GameState:
         self.paused = False
         self.pause_menu = PauseMenu(screen, self)  # Pass self to PauseMenu
         self.crt_enabled = True  # Default CRT effect setting
+        self.score = 0  # Initialize score
+
+    def update_score(self, asteroid):
+        """Increase score based on asteroid size."""
+        self.score += int(50 / asteroid.size)  # Larger asteroids give less, smaller give more
+        print(f"Score: {self.score}")  # Debugging
 
     def toggle_pause(self):
         """Toggles pause and shows the pause screen."""
@@ -88,6 +94,13 @@ class GameState:
         self._draw_lives(screen)
         self._draw_level(screen)
         self._draw_powerup_timer(screen)
+        self._draw_score(screen)  # Draw score
+
+    def _draw_score(self, screen):
+        """Displays the score in the top-right corner."""
+        font = pygame.font.Font(None, 36)  # Score font
+        score_text = font.render(f"Score: {self.score}", True, config.WHITE)
+        screen.blit(score_text, (config.WIDTH - 150, 20))  # Position in top-right
 
     def check_powerup_collisions(self):
         """Checks if the player collects a powerup."""
@@ -119,6 +132,7 @@ class GameState:
             for asteroid in self.asteroids[:]:  # Iterate over a copy
                 dist = self.calculate_collision_distance(bullet, asteroid)
                 if dist < asteroid.size:
+                    self.update_score(asteroid)
                     bullets_to_remove.append(bullet)
                     asteroids_to_remove.append(asteroid)
                     new_asteroids.extend(asteroid.split())  # Add split asteroids
