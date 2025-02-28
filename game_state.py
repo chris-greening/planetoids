@@ -25,7 +25,12 @@ class GameState:
 
     def update_score(self, asteroid):
         """Increase score based on asteroid size."""
-        self.score += int(50 / asteroid.size)  # Larger asteroids give less, smaller give more
+        if asteroid.size >= 40:  # Large asteroid
+            self.score += 100
+        elif asteroid.size >= 20:  # Medium asteroid
+            self.score += 200
+        else:  # Small asteroid
+            self.score += 300
         print(f"Score: {self.score}")  # Debugging
 
     def toggle_pause(self):
@@ -119,7 +124,7 @@ class GameState:
         """Display current level number."""
         font = pygame.font.Font(None, 36)
         text = font.render(f"Level: {self.level}", True, config.WHITE)
-        screen.blit(text, (config.WIDTH - 120, 10))  # Display top-right
+        screen.blit(text, (config.WIDTH - 120, config.HEIGHT - 30))  # Display bottom-right
 
     def check_for_collisions(self, screen):
         """Check for bullet-asteroid and player-asteroid collisions."""
