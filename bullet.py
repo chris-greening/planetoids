@@ -3,12 +3,13 @@ import pygame
 from config import RED
 
 class Bullet:
-    def __init__(self, x, y, angle):
+    def __init__(self, x, y, angle, ricochet=False):
         self.x = x
         self.y = y
         self.angle = angle
         self.speed = 8
         self.lifetime = 60
+        self.ricochet = ricochet
 
     def update(self):
         """Move the bullet and reduce its lifetime"""

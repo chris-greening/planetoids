@@ -89,3 +89,15 @@ class QuadShotPowerUp(PowerUp):
 
     def get_symbol(self):
         return "Q"  # Displays "Q" inside the power-up
+
+import random
+
+class RicochetShotPowerUp(PowerUp):
+    """Ricochet Shot power-up that makes bullets bounce off asteroids once."""
+
+    def apply(self, player):
+        """Grants the player Ricochet mode."""
+        player.enable_ricochet()
+
+    def get_symbol(self):
+        return "R"  # Displays "R" inside the power-up

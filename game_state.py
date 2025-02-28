@@ -3,7 +3,7 @@ from player import Player
 from asteroid import Asteroid
 from bullet import Bullet
 from powerups import PowerUp
-from powerups import TrishotPowerUp, ShieldPowerUp, QuadShotPowerUp
+from powerups import TrishotPowerUp, ShieldPowerUp, QuadShotPowerUp, RicochetShotPowerUp
 from pause_menu import PauseMenu
 import config
 import random
@@ -44,7 +44,7 @@ class GameState:
     def spawn_powerup(self, x, y):
         """Spawns a power-up with a probability, allowing multiple to exist at once."""
         if len(self.powerups) < 3 and random.random() < .1:
-            powerup_classes = [TrishotPowerUp, QuadShotPowerUp]
+            powerup_classes = [TrishotPowerUp, QuadShotPowerUp, RicochetShotPowerUp]
             print(powerup_classes)
             if not self.player.shield_active:
                 powerup_classes.append(ShieldPowerUp)
@@ -147,6 +147,11 @@ class GameState:
                     asteroids_to_remove.append(asteroid)
                     new_asteroids.extend(asteroid.split())  # Add split asteroids
                     self.spawn_powerup(asteroid.x, asteroid.y)
+
+                    if self.player.ricochet_active and not bullet.ricochet:
+                        new_angle = random.randint(0, 360)  # Random ricochet angle
+                        ricochet_bullet = Bullet(asteroid.x, asteroid.y, new_angle, ricochet=True)
+                        self.bullets.append(ricochet_bullet)  # Add the new bullet to the game
 
         # Player vs Asteroid Collision
         if self.respawn_timer == 0:  # Only check if player is alive
