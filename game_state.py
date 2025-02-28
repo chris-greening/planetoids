@@ -3,6 +3,7 @@ from player import Player
 from asteroid import Asteroid
 from bullet import Bullet
 from powerups import PowerUp
+from powerups import TrishotPowerUp
 from pause_menu import PauseMenu
 import config
 import random
@@ -44,7 +45,8 @@ class GameState:
         """Spawns a powerup only if none exist."""
         if len(self.powerups) == 0 and random.random() < 0.2:  # 20% chance
             print(f"Spawning powerup at ({x}, {y})")  # Debugging
-            self.powerups.append(PowerUp(x, y))
+            self.powerups.append(TrishotPowerUp(x, y))  # Spawn Trishot specifically
+
 
     def check_for_clear_map(self):
         """Checks if all asteroids are destroyed and resets the map if so."""
@@ -108,17 +110,16 @@ class GameState:
         screen.blit(score_text, (config.WIDTH - 150, 20))  # Position in top-right
 
     def check_powerup_collisions(self):
-        """Checks if the player collects a powerup."""
+        """Checks if the player collects a power-up."""
         for powerup in self.powerups[:]:
             if self.calculate_collision_distance(self.player, powerup) < powerup.radius + self.player.size:
-                print(f"Player collected {powerup.type} powerup!")  # Debug
-                self.apply_powerup(powerup.type)
+                print(f"Player collected {powerup.__class__.__name__}!")  # Debug
+                self.apply_powerup(powerup)  # Pass powerup instance
                 self.powerups.remove(powerup)  # Remove after collection
 
-    def apply_powerup(self, power_type):
+    def apply_powerup(self, powerup):
         """Applies the collected power-up effect."""
-        if power_type == "trishot":
-            self.player.enable_trishot()
+        powerup.apply(self.player)  # Call the power-up's apply() method
 
     def _draw_level(self, screen):
         """Display current level number."""

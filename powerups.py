@@ -3,16 +3,13 @@ import random
 from config import WIDTH, HEIGHT, WHITE, CYAN
 
 class PowerUp:
-    """Represents a floating power-up that grants abilities."""
-    
-    TYPES = ["trishot"]  # Expandable list of powerups
+    """Base class for all power-ups."""
 
-    def __init__(self, x, y, power_type=None):
-        """Initialize powerup with a random type if none is provided."""
+    def __init__(self, x, y, radius=10):
+        """Initialize power-up properties."""
         self.x = x
         self.y = y
-        self.radius = 10  # Size of the power-up
-        self.type = power_type if power_type else random.choice(PowerUp.TYPES)
+        self.radius = radius
         self.speed_x = random.uniform(-1.5, 1.5)  # Random float speed
         self.speed_y = random.uniform(-1.5, 1.5)
 
@@ -36,6 +33,28 @@ class PowerUp:
 
         # Draw powerup type (letter)
         font = pygame.font.Font(None, 20)
-        text = font.render(self.type[0].upper(), True, (0, 0, 0))  # Black text for contrast
+        text = font.render(self.get_symbol(), True, (0, 0, 0))  # Black text for contrast
         screen.blit(text, (self.x - 5, self.y - 5))
 
+    def apply(self, player):
+        """Apply the effect of the power-up (to be overridden by subclasses)."""
+        raise NotImplementedError("PowerUp subclasses must implement `apply()`.")
+
+    def get_symbol(self):
+        """Return the symbol to display inside the power-up."""
+        return "?"
+
+class TrishotPowerUp(PowerUp):
+    """Trishot power-up that enables triple bullets for a limited time."""
+
+    def __init__(self, x, y):
+        """Initialize the trishot power-up."""
+        super().__init__(x, y)  # Use parent class constructor
+
+    def apply(self, player):
+        """Grants the player trishot mode."""
+        player.enable_trishot()
+
+    def get_symbol(self):
+        """Display 'T' inside the power-up."""
+        return "T"
