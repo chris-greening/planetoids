@@ -90,8 +90,6 @@ class QuadShotPowerUp(PowerUp):
     def get_symbol(self):
         return "Q"  # Displays "Q" inside the power-up
 
-import random
-
 class RicochetShotPowerUp(PowerUp):
     """Ricochet Shot power-up that makes bullets bounce off asteroids once."""
 

@@ -49,9 +49,9 @@ class GameState:
             powerup_classes = [
                 # TrishotPowerUp,
                 # QuadShotPowerUp,
-                # RicochetShotPowerUp,
+                RicochetShotPowerUp,
                 # InvincibilityPowerUp,
-                TemporalSlowdownPowerUp
+                # TemporalSlowdownPowerUp
             ]
             print(powerup_classes)
             if not self.player.shield_active:
@@ -174,6 +174,7 @@ class GameState:
             for asteroid in self.asteroids[:]:  # Iterate over a copy
                 dist = self.calculate_collision_distance(bullet, asteroid)
                 if dist < asteroid.size:
+                    bullet.on_hit_asteroid(asteroid)
                     self.update_score(asteroid)
                     bullets_to_remove.append(bullet)
                     asteroids_to_remove.append(asteroid)

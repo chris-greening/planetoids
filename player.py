@@ -19,6 +19,7 @@ class Player:
         self.trishot_active = False
         self.quadshot_active = False
         self.ricochet_active = False
+        self.ricochet_piercing = False
         self.powerup_timer = 0
 
         # Shield system
@@ -50,6 +51,7 @@ class Player:
         self.trishot_active = False
         self.quadshot_active = False
         self.ricochet_active = False
+        self.ricochet_piercing = False
 
     def enable_invincibility(self):
         """Activates quadshot mode for a limited time."""
@@ -61,6 +63,7 @@ class Player:
         """Activates quadshot mode for a limited time."""
         self._disable_previous_shots()
         self.ricochet_active = True
+        self.ricochet_piercing = True
         self.powerup_timer = 300
 
     def enable_quadshot(self):
