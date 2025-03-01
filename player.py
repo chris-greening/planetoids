@@ -86,6 +86,8 @@ class Player:
         self.angle = 0
         self.velocity_x = 0
         self.velocity_y = 0
+        self.base_velocity_x = 0
+        self.base_velocity_y = 0
         self.thrusting = False  # Reset thrust effect
         self.trishot_active = False
         self.activate_shield()
@@ -124,7 +126,8 @@ class Player:
         pygame.draw.rect(screen, fill_color, (bar_x, bar_y, bar_width * progress, bar_height))
 
     def update(self, keys):
-        """Handles movement, rotation, and particle effects."""
+        """Handles movement, rotation, and particle effects in a momentum-based system."""
+
         self._handle_shield_regeneration()
 
         if self.powerup_timer > 0:
@@ -139,38 +142,48 @@ class Player:
 
         self.thrusting = False  # Reset thrust effect
 
+        # **Rotation**
         if keys[pygame.K_LEFT]:
             self.angle += 5
         if keys[pygame.K_RIGHT]:
             self.angle -= 5
-        if keys[pygame.K_UP]:  # Apply thrust
+
+        # **Apply Thrust (Momentum-Based)**
+        if keys[pygame.K_UP]:
             self.thrusting = True
             angle_rad = math.radians(self.angle)
             self.velocity_x += math.cos(angle_rad) * self.acceleration
             self.velocity_y -= math.sin(angle_rad) * self.acceleration
 
-            # Limit speed
-            speed = math.sqrt(self.velocity_x**2 + self.velocity_y**2)
-            if speed > self.max_speed:
-                factor = self.max_speed / speed
-                self.velocity_x *= factor
-                self.velocity_y *= factor
-
-            # Generate exhaust particles
+            # **Generate exhaust particles**
             self._generate_exhaust()
 
-        # Apply movement
+        # **Limit Speed to Max**
+        speed = math.sqrt(self.velocity_x**2 + self.velocity_y**2)
+        if speed > self.max_speed:
+            factor = self.max_speed / speed
+            self.velocity_x *= factor
+            self.velocity_y *= factor
+
+        # **Update Base Velocity Only If No Slow Effects**
+        if not getattr(self, "slowed_by_ice", False):  # Ensure slowdown doesn't overwrite true base speed
+            self.base_velocity_x = self.velocity_x
+            self.base_velocity_y = self.velocity_y
+
+        # **Apply Movement (Momentum-Driven)**
         self.x += self.velocity_x
         self.y += self.velocity_y
 
-        # Screen wraparound
+        # **Screen Wraparound (Classic Asteroids Effect)**
         self.x %= WIDTH
         self.y %= HEIGHT
 
-        # Update and remove expired particles
+        # **Update and Remove Expired Particles**
         self.particles = [p for p in self.particles if p.lifetime > 0]
         for particle in self.particles:
             particle.update()
+
+
 
     def _handle_shield_regeneration(self):
         """Regenerates shield every 30 seconds if broken."""

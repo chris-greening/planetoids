@@ -1,17 +1,17 @@
 import pygame
 from player import Player
-from asteroid import Asteroid
+from asteroid import Asteroid, ExplodingAsteroid, IceAsteroid
 from bullet import Bullet
-from powerups import PowerUp
-from powerups import TrishotPowerUp, ShieldPowerUp, QuadShotPowerUp, RicochetShotPowerUp, InvincibilityPowerUp, TemporalSlowdownPowerUp
+from powerups import PowerUp, TemporalSlowdownPowerUp
 from pause_menu import PauseMenu
 import config
 import random
 
 class GameState:
-    def __init__(self, screen):
+    def __init__(self, screen, crt_enabled):
         """GameState manages all game objects, including the player and asteroids."""
         self.screen = screen
+        self.crt_enabled = crt_enabled
         self.player = Player()
         self.bullets = []
         self.asteroids = []
@@ -20,77 +20,89 @@ class GameState:
         self.respawn_timer = 0
         self.level = 1
         self.paused = False
-        self.pause_menu = PauseMenu(screen, self)  # Pass self to PauseMenu
-        self.crt_enabled = True  # Default CRT effect setting
-        self.score = 0  # Initialize score
-        self.asteroid_slowdown_active = False  # Tracks whether slow-motion is on
+        self.pause_menu = PauseMenu(screen, self)
+        self.score = 0
+        self.asteroid_slowdown_active = False
         self.slowdown_timer = 0
 
     def update_score(self, asteroid):
         """Increase score based on asteroid size."""
-        if asteroid.size >= 40:  # Large asteroid
+        if asteroid.size >= 40:
             self.score += 100
-        elif asteroid.size >= 20:  # Medium asteroid
+        elif asteroid.size >= 20:
             self.score += 200
-        else:  # Small asteroid
+        else:
             self.score += 300
-        print(f"Score: {self.score}")  # Debugging
+        print(f"Score: {self.score}")
 
     def toggle_pause(self):
         """Toggles pause and shows the pause screen."""
         if not self.paused:
             self.paused = True
-            self.pause_menu.show()  # Show pause menu
-            self.paused = False  # Resume after exiting menu
+            self.pause_menu.show()
+            self.paused = False
 
     def spawn_powerup(self, x, y):
         """Spawns a power-up with a probability, allowing multiple to exist at once."""
         if len(self.powerups) < 3 and random.random() < .1:
-            powerup_classes = [
-                TrishotPowerUp,
-                QuadShotPowerUp,
-                RicochetShotPowerUp,
-                InvincibilityPowerUp,
-                TemporalSlowdownPowerUp
-            ]
-            print(powerup_classes)
+            powerup_classes = PowerUp.get_powerups()
             if not self.player.shield_active:
-                powerup_classes.append(ShieldPowerUp)
+                powerup_classes = [
+                    p for p in powerup_classes if p.__name__ != "ShieldPowerUp"
+                ]
             chosen_powerup = random.choice(powerup_classes)
             self.powerups.append(chosen_powerup(x, y))
 
     def check_for_clear_map(self):
         """Checks if all asteroids are destroyed and resets the map if so."""
-        if not self.asteroids:  # If asteroid list is empty
+        if not self.asteroids:
             self.level += 1
-            self.spawn_asteroids(5 + self.level * 2)  # Reset the map with new asteroids
+            self.spawn_asteroids(5 + self.level * 2)
             self.player.set_invincibility()
 
     def spawn_asteroids(self, count=5):
         """Spawn initial asteroids."""
         for _ in range(count):
-            self.asteroids.append(Asteroid())
+            if random.random() < .02:
+                self.asteroids.append(ExplodingAsteroid())
+            # elif random.random() < .5:
+            #     self.asteroids.append(IceAsteroid())
+            else:
+                self.asteroids.append(Asteroid())
 
     def update_all(self, keys):
-        """Update all game objects, including powerups."""
-        slowdown_factor = 0.3 if self.asteroid_slowdown_active else 1  # Slowdown effect
+        """Update all game objects, including power-ups and explosions."""
+        self.player.slowed_by_ice = False
+
+        # Handle player respawn
         if self.respawn_timer > 0:
             self.respawn_timer -= 1
-            print(f"Respawning in {self.respawn_timer} frames")  # Debug
+            print(f"Respawning in {self.respawn_timer} frames")
             if self.respawn_timer == 0:
-                print("Respawning player now!")  # Debug
+                print("Respawning player now!")
                 self.respawn_player()
         else:
             self.player.update(keys)
 
+        # Update bullets
         for bullet in self.bullets:
             bullet.update()
         self.bullets = [b for b in self.bullets if b.lifetime > 0]
 
+        # Update asteroids and handle explosion removals
+        asteroids_to_remove = []
         for asteroid in self.asteroids:
-            asteroid.update(self)
+            if isinstance(asteroid, ExplodingAsteroid) and asteroid.exploding:
+                asteroid.update_explosion()
+                if asteroid.explosion_timer <= 0:  # Remove after explosion ends
+                    asteroids_to_remove.append(asteroid)
+            else:
+                asteroid.update(self)
 
-        # Update powerups
+        # Remove exploding asteroids after animation finishes
+        self.asteroids = [a for a in self.asteroids if a not in asteroids_to_remove]
+
+        # Update power-ups
         for powerup in self.powerups:
             powerup.update()
         self.powerups = [p for p in self.powerups if not p.is_expired()]
@@ -98,10 +110,14 @@ class GameState:
         # Check if player collects a power-up
         self.check_powerup_collisions()
 
+        if not self.player.slowed_by_ice:
+            self.player.velocity_x = max(self.player.velocity_x, self.player.base_velocity_x)
+            self.player.velocity_y = max(self.player.velocity_y, self.player.base_velocity_y)
+
     def handle_powerup_expiration(self, event):
         """Handles expiration events for power-ups."""
-        if event.type == pygame.USEREVENT + 5:  # Slowdown expiration
-            self.asteroid_slowdown_active = False  # Restore normal speed
+        if event.type == pygame.USEREVENT + 5:
+            self.asteroid_slowdown_active = False
 
     def draw_all(self, screen):
         """Draw all game objects, including power-ups."""
@@ -112,7 +128,8 @@ class GameState:
             bullet.draw(screen)
         for asteroid in self.asteroids:
             asteroid.draw(screen)
-
+            if isinstance(asteroid, ExplodingAsteroid) and asteroid.exploding:
+                asteroid.draw_explosion(screen)
         for powerup in self.powerups:
             powerup.draw(screen)
 
@@ -121,6 +138,9 @@ class GameState:
         self._draw_powerup_timer(screen)
         self._draw_score(screen)  # Draw score
 
+        self._asteroid_slowdown_active(screen)
+
+    def _asteroid_slowdown_active(self, screen):
         # Draw slowdown visual effect
         if self.asteroid_slowdown_active:
             # Calculate elapsed time since slowdown started
@@ -134,6 +154,7 @@ class GameState:
             overlay = pygame.Surface((config.WIDTH, config.HEIGHT), pygame.SRCALPHA)
             overlay.fill((0, 150, 255, fade_intensity))  # Softer cyan overlay
             screen.blit(overlay, (0, 0))
+
     def _draw_score(self, screen):
         """Displays the score in the top-right corner."""
         font = pygame.font.Font(None, 36)  # Score font
@@ -163,45 +184,66 @@ class GameState:
         text = font.render(f"Level: {self.level}", True, config.WHITE)
         screen.blit(text, (config.WIDTH - 120, config.HEIGHT - 30))  # Display bottom-right
 
-    def check_for_collisions(self, screen):
-        """Check for bullet-asteroid and player-asteroid collisions."""
+    def _handle_bullet_asteroid_collision(self):
         bullets_to_remove = []
         asteroids_to_remove = []
         new_asteroids = []
 
-        # Bullet vs Asteroid Collision
         for bullet in self.bullets[:]:  # Iterate over a copy
             for asteroid in self.asteroids[:]:  # Iterate over a copy
                 dist = self.calculate_collision_distance(bullet, asteroid)
                 if dist < asteroid.size:
                     bullet.on_hit_asteroid(asteroid)
                     self.update_score(asteroid)
+
+                    if isinstance(asteroid, ExplodingAsteroid):
+                        if not asteroid.exploding:  # Start explosion if not already started
+                            asteroid.explode(self.asteroids)
+
+                        # The explosion should not remove the asteroid immediately
+                        exploded_asteroids = asteroid.explode(self.asteroids)
+                        for exploded_asteroid in exploded_asteroids:
+                            self.update_score(exploded_asteroid)  # Score for each destroyed asteroid
+                            asteroids_to_remove.append(exploded_asteroid)  # Remove after explosion
+                            new_asteroids.extend(exploded_asteroid.split())
+
+                    else:
+                        asteroids_to_remove.append(asteroid)  # Non-exploding asteroids get removed normally
+                        new_asteroids.extend(asteroid.split())  # Add split asteroids
+
                     if not bullet.piercing:
                         bullets_to_remove.append(bullet)
-                    asteroids_to_remove.append(asteroid)
-                    new_asteroids.extend(asteroid.split())  # Add split asteroids
+
                     self.spawn_powerup(asteroid.x, asteroid.y)
 
                     if self.player.ricochet_active and not bullet.ricochet:
                         new_angle = random.randint(0, 360)  # Random ricochet angle
                         ricochet_bullet = Bullet(asteroid.x, asteroid.y, new_angle, ricochet=True)
-                        self.bullets.append(ricochet_bullet)  # Add the new bullet to the game
+                        self.bullets.append(ricochet_bullet)
 
-        # Player vs Asteroid Collision
-        if self.respawn_timer == 0:  # Only check if player is alive
-            for asteroid in self.asteroids:
-                dist = self.calculate_collision_distance(self.player, asteroid)
-                if dist < asteroid.size:  # Collision detected
-                    self.handle_player_death(screen)  # Pass screen to function
-
-        # Safely remove bullets & asteroids
-        self.bullets = [b for b in self.bullets if b not in bullets_to_remove]
-        self.asteroids = [a for a in self.asteroids if a not in asteroids_to_remove]
+        # Remove only **non-exploding** asteroids immediately
+        self.asteroids = [a for a in self.asteroids if a not in asteroids_to_remove or (isinstance(a, ExplodingAsteroid) and a.exploding)]
 
         # Add new split asteroids
         self.asteroids.extend(new_asteroids)
 
-    def handle_player_death(self, screen):
+        # Remove bullets
+        self.bullets = [b for b in self.bullets if b not in bullets_to_remove]
+
+
+    def _handle_player_asteroid_collision(self, screen):
+        if self.respawn_timer == 0:  # Only check if player is alive
+            for asteroid in self.asteroids:
+                dist = self.calculate_collision_distance(self.player, asteroid)
+                if dist < asteroid.size:  # Collision detected
+                    self.handle_player_collision(screen)  # Pass screen to function
+
+    def check_for_collisions(self, screen):
+        """Check for bullet-asteroid and player-asteroid collisions."""
+        self._handle_bullet_asteroid_collision()
+        self._handle_player_asteroid_collision(screen)
+
+    def handle_player_collision(self, screen):
         """Handles player death with an animation before respawn or game over."""
         if self.player.invincible:
             return  # Don't kill if invincible after respawn
