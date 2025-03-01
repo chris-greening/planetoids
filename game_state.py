@@ -113,6 +113,9 @@ class GameState:
         self._draw_powerup_timer(screen)
         self._draw_score(screen)  # Draw score
 
+        self._asteroid_slowdown_active(screen)
+
+    def _asteroid_slowdown_active(self, screen):
         # Draw slowdown visual effect
         if self.asteroid_slowdown_active:
             # Calculate elapsed time since slowdown started
