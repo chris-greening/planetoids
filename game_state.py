@@ -176,7 +176,8 @@ class GameState:
                 if dist < asteroid.size:
                     bullet.on_hit_asteroid(asteroid)
                     self.update_score(asteroid)
-                    bullets_to_remove.append(bullet)
+                    if not bullet.piercing:
+                        bullets_to_remove.append(bullet)
                     asteroids_to_remove.append(asteroid)
                     new_asteroids.extend(asteroid.split())  # Add split asteroids
                     self.spawn_powerup(asteroid.x, asteroid.y)
