@@ -1,6 +1,6 @@
 import pygame
 from player import Player
-from asteroid import Asteroid
+from asteroid import Asteroid, ExplodingAsteroid
 from bullet import Bullet
 from powerups import PowerUp, TemporalSlowdownPowerUp
 from pause_menu import PauseMenu
@@ -63,7 +63,10 @@ class GameState:
     def spawn_asteroids(self, count=5):
         """Spawn initial asteroids."""
         for _ in range(count):
-            self.asteroids.append(Asteroid())
+            if random.random() < .5:
+                self.asteroids.append(ExplodingAsteroid())
+            else:
+                self.asteroids.append(Asteroid())
 
     def update_all(self, keys):
         """Update all game objects, including powerups."""
@@ -83,7 +86,6 @@ class GameState:
         for asteroid in self.asteroids:
             asteroid.update(self)
 
-        # Update powerups
         for powerup in self.powerups:
             powerup.update()
         self.powerups = [p for p in self.powerups if not p.is_expired()]
@@ -159,7 +161,7 @@ class GameState:
         text = font.render(f"Level: {self.level}", True, config.WHITE)
         screen.blit(text, (config.WIDTH - 120, config.HEIGHT - 30))  # Display bottom-right
 
-    def _handle_bullet_vs_asteroid_collision(self):
+    def _handle_bullet_asteroid_collision(self):
         bullets_to_remove = []
         asteroids_to_remove = []
         new_asteroids = []
@@ -169,6 +171,13 @@ class GameState:
                 if dist < asteroid.size:
                     bullet.on_hit_asteroid(asteroid)
                     self.update_score(asteroid)
+
+                    if isinstance(asteroid, ExplodingAsteroid):
+                        exploded_asteroids = asteroid.explode(self.asteroids)
+                        for exploded_asteroid in exploded_asteroids:
+                            self.update_score(asteroid)
+                            asteroids_to_remove.extend(exploded_asteroids)
+                            new_asteroids.extend(exploded_asteroid.split())
                     if not bullet.piercing:
                         bullets_to_remove.append(bullet)
                     asteroids_to_remove.append(asteroid)
@@ -179,20 +188,6 @@ class GameState:
                         new_angle = random.randint(0, 360)  # Random ricochet angle
                         ricochet_bullet = Bullet(asteroid.x, asteroid.y, new_angle, ricochet=True)
                         self.bullets.append(ricochet_bullet)  # Add the new bullet to the game
-        return bullets_to_remove, asteroids_to_remove, new_asteroids
-
-    def check_for_collisions(self, screen):
-        """Check for bullet-asteroid and player-asteroid collisions."""
-
-        bullets_to_remove, asteroids_to_remove, new_asteroids = self._handle_bullet_vs_asteroid_collision()
-
-        # Player vs Asteroid Collision
-        if self.respawn_timer == 0:  # Only check if player is alive
-            for asteroid in self.asteroids:
-                dist = self.calculate_collision_distance(self.player, asteroid)
-                if dist < asteroid.size:  # Collision detected
-                    self.handle_player_death(screen)  # Pass screen to function
-
         # Safely remove bullets & asteroids
         self.bullets = [b for b in self.bullets if b not in bullets_to_remove]
         self.asteroids = [a for a in self.asteroids if a not in asteroids_to_remove]
@@ -200,7 +195,19 @@ class GameState:
         # Add new split asteroids
         self.asteroids.extend(new_asteroids)
 
-    def handle_player_death(self, screen):
+    def _handle_player_asteroid_collision(self, screen):
+        if self.respawn_timer == 0:  # Only check if player is alive
+            for asteroid in self.asteroids:
+                dist = self.calculate_collision_distance(self.player, asteroid)
+                if dist < asteroid.size:  # Collision detected
+                    self.handle_player_collision(screen)  # Pass screen to function
+
+    def check_for_collisions(self, screen):
+        """Check for bullet-asteroid and player-asteroid collisions."""
+        self._handle_bullet_asteroid_collision()
+        self._handle_player_asteroid_collision(screen)
+
+    def handle_player_collision(self, screen):
         """Handles player death with an animation before respawn or game over."""
         if self.player.invincible:
             return  # Don't kill if invincible after respawn

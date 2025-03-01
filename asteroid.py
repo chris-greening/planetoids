@@ -1,7 +1,7 @@
 import pygame
 import random
 import math
-from config import WIDTH, HEIGHT, WHITE
+from config import WIDTH, HEIGHT, WHITE, ORANGE
 
 class Asteroid:
     def __init__(self, x=None, y=None, size=80, stage=3):
@@ -101,3 +101,26 @@ class Asteroid:
             return [asteroid1, asteroid2]
 
         return []  # If the asteroid is at the smallest stage, it disappears
+
+class ExplodingAsteroid(Asteroid):
+    """Asteroid that explodes and destroys nearby asteroids upon impact."""
+    def __init__(self, x=None, y=None, size=80, stage=3, explosion_radius=300):
+        super().__init__(x, y, size, stage)
+        self.explosion_radius = explosion_radius
+
+    def draw(self, screen):
+        """Draw the asteroid with an orange color fill and outline."""
+        pygame.draw.polygon(screen, ORANGE, self.shape)  # Filled polygon
+        pygame.draw.polygon(screen, (255, 100, 0), self.shape, 2)  # Slightly darker outline
+
+    def explode(self, asteroids):
+        """Destroys all asteroids within a certain radius."""
+        destroyed_asteroids = []
+
+        for asteroid in asteroids:
+            if asteroid is not self:
+                distance = math.sqrt((asteroid.x - self.x) ** 2 + (asteroid.y - self.y) ** 2)
+                if distance <= self.explosion_radius:
+                    destroyed_asteroids.append(asteroid)
+
+        return destroyed_asteroids  # Return list of asteroids to remove
