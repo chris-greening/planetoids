@@ -216,3 +216,74 @@ class ExplodingAsteroid(Asteroid):
 
         if shockwave_radius > 0:
             pygame.draw.circle(screen, RED_ORANGE, (int(self.x), int(self.y)), int(shockwave_radius), 2)
+
+class IceAsteroid(Asteroid):
+    """Asteroid that leaves a visible ice trail and slows the player when touched."""
+
+    def __init__(self, x=None, y=None, size=80, stage=3):
+        super().__init__(x, y, size, stage)
+        self.ice_trail = []  # Stores ice trail positions
+        self.trail_max_length = 50  # **Increase trail length**
+        self.ice_slowdown_factor = 0.6  # Reduces player speed by 40%
+        self.trail_spacing = 5  # **Distance between trail drops**
+
+    def update(self, game_state):
+        """Move the asteroid and leave an ice trail behind it."""
+        super().update(game_state)
+
+        # **Only add a new ice patch every few frames (reduces clutter)**
+        if not self.ice_trail or math.hypot(self.x - self.ice_trail[-1][0], self.y - self.ice_trail[-1][1]) > self.trail_spacing:
+            self.ice_trail.append((self.x, self.y))
+
+        # **Limit Trail Length**
+        if len(self.ice_trail) > self.trail_max_length:
+            self.ice_trail.pop(0)  # Remove oldest ice patch
+
+        # **Check if Player is Touching Ice**
+        player_on_ice = False
+        for ice_x, ice_y in self.ice_trail:
+            if math.sqrt((game_state.player.x - ice_x) ** 2 + (game_state.player.y - ice_y) ** 2) < self.size / 2:
+                player_on_ice = True
+
+                # **Gradual slowdown instead of instant velocity drop**
+                if not game_state.player.slowed_by_ice:
+                    game_state.player.velocity_x *= 0.85  # Reduce speed smoothly
+                    game_state.player.velocity_y *= 0.85
+                    game_state.player.slowed_by_ice = True  # Mark slowdown applied
+
+                # **Ensure player still has some movement**
+                min_speed = 1.5  # Minimum movement speed
+                if abs(game_state.player.velocity_x) < min_speed:
+                    game_state.player.velocity_x = min_speed if game_state.player.velocity_x > 0 else -min_speed
+                if abs(game_state.player.velocity_y) < min_speed:
+                    game_state.player.velocity_y = min_speed if game_state.player.velocity_y > 0 else -min_speed
+
+        # **If Player Leaves Ice, Remove Slowdown**
+        if not player_on_ice:
+            game_state.player.slowed_by_ice = False
+
+
+
+    def draw(self, screen):
+        """Draw the asteroid and its ice trail with better visuals."""
+
+        ICE_BLUE = (173, 216, 230, 100)  # Light blue with transparency
+        DARK_ICE = (100, 149, 237)  # Darker blue for asteroid outline
+
+        ice_surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)  # Enable transparency
+
+        # **Draw Ice Trail (Wider and Transparent)**
+        for i, (ice_x, ice_y) in enumerate(self.ice_trail):
+            size = 18 - (i // 3)  # Larger initial size, gradually smaller
+            size = max(size, 10)  # Minimum size for visibility
+            alpha = max(200 - (i * 5), 50)  # Fades out over time
+
+            # **Transparent Ice Trail**
+            pygame.draw.circle(ice_surface, (173, 216, 230, alpha), (int(ice_x), int(ice_y)), size)
+
+        # **Blit the transparent surface onto the screen**
+        screen.blit(ice_surface, (0, 0))
+
+        # **Draw the Ice Asteroid**
+        pygame.draw.polygon(screen, ICE_BLUE[:3], self.shape)  # Remove alpha for asteroid
+        pygame.draw.polygon(screen, DARK_ICE, self.shape, 2)  # Outline

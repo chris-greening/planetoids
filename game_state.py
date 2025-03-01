@@ -1,6 +1,6 @@
 import pygame
 from player import Player
-from asteroid import Asteroid, ExplodingAsteroid
+from asteroid import Asteroid, ExplodingAsteroid, IceAsteroid
 from bullet import Bullet
 from powerups import PowerUp, TemporalSlowdownPowerUp
 from pause_menu import PauseMenu
@@ -65,11 +65,14 @@ class GameState:
         for _ in range(count):
             if random.random() < .02:
                 self.asteroids.append(ExplodingAsteroid())
+            # elif random.random() < .5:
+            #     self.asteroids.append(IceAsteroid())
             else:
                 self.asteroids.append(Asteroid())
 
     def update_all(self, keys):
         """Update all game objects, including power-ups and explosions."""
+        self.player.slowed_by_ice = False
 
         # Handle player respawn
         if self.respawn_timer > 0:
@@ -107,6 +110,9 @@ class GameState:
         # Check if player collects a power-up
         self.check_powerup_collisions()
 
+        if not self.player.slowed_by_ice:
+            self.player.velocity_x = max(self.player.velocity_x, self.player.base_velocity_x)
+            self.player.velocity_y = max(self.player.velocity_y, self.player.base_velocity_y)
 
     def handle_powerup_expiration(self, event):
         """Handles expiration events for power-ups."""
