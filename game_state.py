@@ -47,11 +47,11 @@ class GameState:
         """Spawns a power-up with a probability, allowing multiple to exist at once."""
         if len(self.powerups) < 3 and random.random() < .1:
             powerup_classes = [
-                # TrishotPowerUp,
-                # QuadShotPowerUp,
+                TrishotPowerUp,
+                QuadShotPowerUp,
                 RicochetShotPowerUp,
-                # InvincibilityPowerUp,
-                # TemporalSlowdownPowerUp
+                InvincibilityPowerUp,
+                TemporalSlowdownPowerUp
             ]
             print(powerup_classes)
             if not self.player.shield_active:
