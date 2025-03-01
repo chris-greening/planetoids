@@ -48,7 +48,7 @@ def _apply_glow(screen):
 def _apply_vhs_glitch(screen):
     """Adds a VHS-style glitch effect with random tearing and color shifting."""
     width, height = screen.get_size()
-    
+
     # Create a surface copy for distortions
     glitch_surface = screen.copy()
 
