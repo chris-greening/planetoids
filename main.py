@@ -27,18 +27,7 @@ def main():
         screen.fill(config.BLACK)
         clock.tick(config.FPS)
 
-        # Handle events (always process inputs)
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_p:
-                    game_state.toggle_pause()
-                elif event.key == pygame.K_SPACE and not game_state.paused:
-                    game_state.bullets.extend(game_state.player.shoot())  # Handle trishot
-
-            elif event.type == pygame.USEREVENT + 1:  # Trishot expiration event
-                game_state.player.trishot_active = False  # Disable trishot
-
-            game_state.handle_powerup_expiration(event)
+        _event_handler(game_state)
 
         # If paused, show pause screen but allow event processing
         if game_state.paused:
@@ -58,6 +47,19 @@ def main():
         pygame.display.flip()
 
     pygame.quit()
+
+def _event_handler(game_state):
+    for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_p:
+                game_state.toggle_pause()
+            elif event.key == pygame.K_SPACE and not game_state.paused:
+                game_state.bullets.extend(game_state.player.shoot())  # Handle trishot
+
+        elif event.type == pygame.USEREVENT + 1:  # Trishot expiration event
+            game_state.player.trishot_active = False  # Disable trishot
+
+        game_state.handle_powerup_expiration(event)
 
 if __name__ == "__main__":
     main()

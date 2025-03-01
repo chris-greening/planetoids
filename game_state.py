@@ -134,6 +134,7 @@ class GameState:
             overlay = pygame.Surface((config.WIDTH, config.HEIGHT), pygame.SRCALPHA)
             overlay.fill((0, 150, 255, fade_intensity))  # Softer cyan overlay
             screen.blit(overlay, (0, 0))
+
     def _draw_score(self, screen):
         """Displays the score in the top-right corner."""
         font = pygame.font.Font(None, 36)  # Score font
