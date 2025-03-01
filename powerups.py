@@ -5,6 +5,7 @@ from config import WIDTH, HEIGHT, CYAN
 
 class PowerUp:
     """Base class for all power-ups."""
+    subclasses = []
 
     def __init__(self, x, y, radius=10):
         """Initialize power-up properties."""
@@ -14,6 +15,14 @@ class PowerUp:
         self.speed_x = random.uniform(-1.5, 1.5)
         self.speed_y = random.uniform(-1.5, 1.5)
         self.spawn_time = time.time()  # Store the spawn time
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        PowerUp.subclasses.append(cls)  # Register each subclass
+
+    @classmethod
+    def get_powerups(cls):
+        return cls.subclasses
 
     def update(self):
         """Move the power-up and handle expiration."""

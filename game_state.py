@@ -2,8 +2,7 @@ import pygame
 from player import Player
 from asteroid import Asteroid
 from bullet import Bullet
-from powerups import PowerUp
-from powerups import TrishotPowerUp, ShieldPowerUp, QuadShotPowerUp, RicochetShotPowerUp, InvincibilityPowerUp, TemporalSlowdownPowerUp
+from powerups import PowerUp, TemporalSlowdownPowerUp
 from pause_menu import PauseMenu
 import config
 import random
@@ -21,41 +20,34 @@ class GameState:
         self.respawn_timer = 0
         self.level = 1
         self.paused = False
-        self.pause_menu = PauseMenu(screen, self)  # Pass self to PauseMenu
-        self.score = 0  # Initialize score
-        self.asteroid_slowdown_active = False  # Tracks whether slow-motion is on
+        self.pause_menu = PauseMenu(screen, self)
+        self.score = 0
+        self.asteroid_slowdown_active = False
         self.slowdown_timer = 0
 
     def update_score(self, asteroid):
         """Increase score based on asteroid size."""
-        if asteroid.size >= 40:  # Large asteroid
+        if asteroid.size >= 40:
             self.score += 100
-        elif asteroid.size >= 20:  # Medium asteroid
+        elif asteroid.size >= 20:
             self.score += 200
-        else:  # Small asteroid
+        else:
             self.score += 300
-        print(f"Score: {self.score}")  # Debugging
+        print(f"Score: {self.score}")
 
     def toggle_pause(self):
         """Toggles pause and shows the pause screen."""
         if not self.paused:
             self.paused = True
-            self.pause_menu.show()  # Show pause menu
-            self.paused = False  # Resume after exiting menu
+            self.pause_menu.show()
+            self.paused = False
 
     def spawn_powerup(self, x, y):
         """Spawns a power-up with a probability, allowing multiple to exist at once."""
         if len(self.powerups) < 3 and random.random() < .1:
-            powerup_classes = [
-                TrishotPowerUp,
-                QuadShotPowerUp,
-                RicochetShotPowerUp,
-                InvincibilityPowerUp,
-                TemporalSlowdownPowerUp
-            ]
-            print(powerup_classes)
+            powerup_classes = PowerUp.get_powerups()
             if not self.player.shield_active:
-                powerup_classes.append(ShieldPowerUp)
+                powerup_classes = [p for p in powerup_classes if p.__name__ != "ShieldPowerUp"]
             chosen_powerup = random.choice(powerup_classes)
             self.powerups.append(chosen_powerup(x, y))
 
