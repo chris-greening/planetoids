@@ -34,9 +34,11 @@ def main():
                     game_state.toggle_pause()
                 elif event.key == pygame.K_SPACE and not game_state.paused:
                     game_state.bullets.extend(game_state.player.shoot())  # Handle trishot
-                
+
             elif event.type == pygame.USEREVENT + 1:  # Trishot expiration event
                 game_state.player.trishot_active = False  # Disable trishot
+
+            game_state.handle_powerup_expiration(event)
 
         # If paused, show pause screen but allow event processing
         if game_state.paused:

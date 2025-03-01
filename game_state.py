@@ -3,7 +3,7 @@ from player import Player
 from asteroid import Asteroid
 from bullet import Bullet
 from powerups import PowerUp
-from powerups import TrishotPowerUp, ShieldPowerUp, QuadShotPowerUp, RicochetShotPowerUp, InvincibilityPowerUp
+from powerups import TrishotPowerUp, ShieldPowerUp, QuadShotPowerUp, RicochetShotPowerUp, InvincibilityPowerUp, TemporalSlowdownPowerUp
 from pause_menu import PauseMenu
 import config
 import random
@@ -23,6 +23,7 @@ class GameState:
         self.pause_menu = PauseMenu(screen, self)  # Pass self to PauseMenu
         self.crt_enabled = True  # Default CRT effect setting
         self.score = 0  # Initialize score
+        self.asteroid_slowdown_active = False  # Tracks whether slow-motion is on
 
     def update_score(self, asteroid):
         """Increase score based on asteroid size."""
@@ -48,7 +49,8 @@ class GameState:
                 TrishotPowerUp,
                 QuadShotPowerUp,
                 RicochetShotPowerUp,
-                InvincibilityPowerUp
+                InvincibilityPowerUp,
+                TemporalSlowdownPowerUp
             ]
             print(powerup_classes)
             if not self.player.shield_active:
@@ -70,6 +72,7 @@ class GameState:
 
     def update_all(self, keys):
         """Update all game objects, including powerups."""
+        slowdown_factor = 0.3 if self.asteroid_slowdown_active else 1  # Slowdown effect
         if self.respawn_timer > 0:
             self.respawn_timer -= 1
             print(f"Respawning in {self.respawn_timer} frames")  # Debug
@@ -81,10 +84,10 @@ class GameState:
 
         for bullet in self.bullets:
             bullet.update()
-        self.bullets = [b for b in self.bullets if b.lifetime > 0] 
+        self.bullets = [b for b in self.bullets if b.lifetime > 0]
 
         for asteroid in self.asteroids:
-            asteroid.update()
+            asteroid.update(self)
 
         # Update powerups
         for powerup in self.powerups:
@@ -93,6 +96,11 @@ class GameState:
 
         # Check if player collects a power-up
         self.check_powerup_collisions()
+
+    def handle_powerup_expiration(self, event):
+        """Handles expiration events for power-ups."""
+        if event.type == pygame.USEREVENT + 5:  # Slowdown expiration
+            self.asteroid_slowdown_active = False  # Restore normal speed
 
     def draw_all(self, screen):
         """Draw all game objects, including power-ups."""
@@ -128,7 +136,11 @@ class GameState:
 
     def apply_powerup(self, powerup):
         """Applies the collected power-up effect."""
-        powerup.apply(self.player)  # Call the power-up's apply() method
+        if isinstance(powerup, TemporalSlowdownPowerUp):
+            self.asteroid_slowdown_active = True
+            pygame.time.set_timer(pygame.USEREVENT + 5, 5000)
+        else:
+            powerup.apply(self.player)  # Call the power-up's apply() method
 
     def _draw_level(self, screen):
         """Display current level number."""

@@ -12,7 +12,8 @@ class Asteroid:
         self.stage = stage  # 3 = large, 2 = medium, 1 = small, 0 = disappears
         self.sides = random.randint(7, 12)  # Number of points
         self.angle = random.uniform(0, 360)  # Movement direction
-        self.speed = random.uniform(1, 3)  # Movement speed
+        self.base_speed = random.uniform(1, 3)  # Normal speed
+        self.speed = self.base_speed  # Current speed (adjusted by slowdown)
 
         # Generate shape *once* and store relative offsets
         self.shape_offsets = self._generate_jagged_shape()
@@ -35,11 +36,13 @@ class Asteroid:
         """Update shape based on current position while keeping offsets constant."""
         self.shape = [(self.x + ox, self.y + oy) for ox, oy in self.shape_offsets]
 
-    def update(self):
-        """Moves the asteroid across the screen and ensures wraparound."""
+    def update(self, game_state):
+        """Moves the asteroid across the screen, applying slowdown if active."""
+        slowdown_factor = 0.3 if game_state.asteroid_slowdown_active else 1  # Slowdown multiplier
+
         angle_rad = math.radians(self.angle)
-        dx = math.cos(angle_rad) * self.speed
-        dy = math.sin(angle_rad) * self.speed
+        dx = math.cos(angle_rad) * self.base_speed * slowdown_factor
+        dy = math.sin(angle_rad) * self.base_speed * slowdown_factor
 
         # Update position
         self.x += dx
@@ -69,10 +72,32 @@ class Asteroid:
             new_size = self.size // 2
             new_stage = self.stage - 1
 
-            # Offset spawn positions slightly
-            return [
-                Asteroid(self.x + new_size // 2, self.y, new_size, new_stage),
-                Asteroid(self.x - new_size // 2, self.y, new_size, new_stage)
-            ]
-        return []  # Instead of None, return an empty list
+            # Give new asteroids a small random speed boost
+            new_speed = min(self.base_speed * 1.2, 5)  # Slightly faster but capped
 
+            # Offset their angles so they don’t overlap
+            angle_variation = random.uniform(-20, 20)
+
+            # Create two new asteroids moving in different directions
+            asteroid1 = Asteroid(
+                x=self.x + random.randint(-5, 5),
+                y=self.y + random.randint(-5, 5),
+                size=new_size,
+                stage=new_stage
+            )
+            asteroid2 = Asteroid(
+                x=self.x + random.randint(-5, 5),
+                y=self.y + random.randint(-5, 5),
+                size=new_size,
+                stage=new_stage
+            )
+
+            # Adjust their movement speeds and directions
+            asteroid1.base_speed = new_speed
+            asteroid2.base_speed = new_speed
+            asteroid1.angle = (self.angle + angle_variation) % 360
+            asteroid2.angle = (self.angle - angle_variation) % 360
+
+            return [asteroid1, asteroid2]
+
+        return []  # If the asteroid is at the smallest stage, it disappears

@@ -111,3 +111,14 @@ class InvincibilityPowerUp(PowerUp):
 
     def get_symbol(self):
         return "I"  # Displays "I" inside the power-up
+
+class TemporalSlowdownPowerUp(PowerUp):
+    """Slows all asteroids dramatically for a few seconds."""
+
+    def apply(self, game_state):
+        """Activates slow-motion effect on all asteroids."""
+        game_state.asteroid_slowdown_active = True
+        pygame.time.set_timer(pygame.USEREVENT + 5, 5000)  # Slowdown lasts 5 seconds
+
+    def get_symbol(self):
+        return "Δ"  # Displays "S" inside the power-up
