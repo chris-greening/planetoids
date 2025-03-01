@@ -9,6 +9,7 @@ ORANGE = (255, 140, 0)
 RED = (255, 0, 0)
 CYAN = (0, 255, 255)
 ORANGE = (255, 165, 0)
+DARK_ORANGE = (255, 100, 0)
 
 # Random Planet Position & Size
 PLANET_X = random.randint(200, WIDTH - 200)

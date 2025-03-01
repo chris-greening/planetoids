@@ -1,7 +1,8 @@
 import pygame
 import random
 import math
-from config import WIDTH, HEIGHT, WHITE, ORANGE
+from config import WIDTH, HEIGHT, WHITE, ORANGE, DARK_ORANGE
+from particle import Particle
 
 class Asteroid:
     def __init__(self, x=None, y=None, size=80, stage=3):
@@ -103,24 +104,99 @@ class Asteroid:
         return []  # If the asteroid is at the smallest stage, it disappears
 
 class ExplodingAsteroid(Asteroid):
-    """Asteroid that explodes and destroys nearby asteroids upon impact."""
-    def __init__(self, x=None, y=None, size=80, stage=3, explosion_radius=300):
+    """Asteroid that explodes, destroying nearby asteroids and playing an explosion animation."""
+
+    def __init__(self, x=None, y=None, size=80, stage=3, explosion_radius=200):  # Bigger explosion
         super().__init__(x, y, size, stage)
         self.explosion_radius = explosion_radius
-
-    def draw(self, screen):
-        """Draw the asteroid with an orange color fill and outline."""
-        pygame.draw.polygon(screen, ORANGE, self.shape)  # Filled polygon
-        pygame.draw.polygon(screen, (255, 100, 0), self.shape, 2)  # Slightly darker outline
+        self.exploding = False
+        self.explosion_particles = []
+        self.fragments = []
+        self.explosion_timer = 40  # Longer explosion duration
 
     def explode(self, asteroids):
-        """Destroys all asteroids within a certain radius."""
-        destroyed_asteroids = []
+        """Triggers explosion effect and destroys nearby asteroids."""
+        if not self.exploding:
+            self.exploding = True
+            self._generate_explosion()
 
-        for asteroid in asteroids:
-            if asteroid is not self:
-                distance = math.sqrt((asteroid.x - self.x) ** 2 + (asteroid.y - self.y) ** 2)
-                if distance <= self.explosion_radius:
-                    destroyed_asteroids.append(asteroid)
+        destroyed_asteroids = [a for a in asteroids if self._is_within_explosion_radius(a)]
+        return destroyed_asteroids
 
-        return destroyed_asteroids  # Return list of asteroids to remove
+    def _generate_explosion(self):
+        """Generates explosion fragments and particles."""
+        angle_rad = math.radians(self.angle)
+
+        # Generate asteroid fragments (now bigger and faster)
+        front = (self.x + math.cos(angle_rad) * self.size, self.y - math.sin(angle_rad) * self.size)
+        left = (self.x + math.cos(angle_rad + 2.5) * self.size * 0.6, self.y - math.sin(angle_rad + 2.5) * self.size * 0.6)
+        right = (self.x + math.cos(angle_rad - 2.5) * self.size * 0.6, self.y - math.sin(angle_rad - 2.5) * self.size * 0.6)
+
+        self.fragments = [
+            {"pos": front, "vel": (random.uniform(-4, 4), random.uniform(-4, 4))},  # Faster movement
+            {"pos": left, "vel": (random.uniform(-4, 4), random.uniform(-4, 4))},
+            {"pos": right, "vel": (random.uniform(-4, 4), random.uniform(-4, 4))}
+        ]
+
+        # Generate explosion particles (increased amount)
+        self.explosion_particles = [
+            Particle(self.x, self.y, random.uniform(0, 360), random.uniform(2, 5))  # Bigger explosion
+            for _ in range(40)
+        ]
+
+    def _is_within_explosion_radius(self, asteroid):
+        """Checks if another asteroid is within explosion range."""
+        distance = math.sqrt((asteroid.x - self.x) ** 2 + (asteroid.y - self.y) ** 2)
+        return distance <= self.explosion_radius
+
+    def update_explosion(self):
+        """Updates explosion animation each frame."""
+        if self.exploding:
+            for fragment in self.fragments:
+                fragment["pos"] = (fragment["pos"][0] + fragment["vel"][0], fragment["pos"][1] + fragment["vel"][1])
+
+            for particle in self.explosion_particles:
+                particle.update()
+
+            self.explosion_timer -= 1  # Countdown
+
+            if self.explosion_timer <= 0:
+                self.exploding = False  # Mark explosion as done
+
+    def draw(self, screen):
+        """Draw the asteroid as an orange polygon, or explosion if exploding."""
+        ORANGE = (255, 165, 0)
+        DARK_ORANGE = (255, 100, 0)
+
+        if not self.exploding:
+            pygame.draw.polygon(screen, ORANGE, self.shape)  # Filled polygon
+            pygame.draw.polygon(screen, DARK_ORANGE, self.shape, 2)  # Outline
+        else:
+            self.draw_explosion(screen)  # Draw explosion animation
+
+    def draw_explosion(self, screen):
+        """Draws explosion fragments, particles, and a properly sized shockwave."""
+
+        # Colors for the explosion
+        ORANGE = (255, 165, 0)
+        RED_ORANGE = (255, 69, 0)
+
+        # **Draw Fragments Only Within Explosion Radius**
+        for fragment in self.fragments:
+            fx, fy = fragment["pos"]
+            if math.sqrt((fx - self.x) ** 2 + (fy - self.y) ** 2) <= self.explosion_radius:
+                pygame.draw.circle(screen, ORANGE, (int(fx), int(fy)), 4)
+
+        # **Only Draw Particles Inside Explosion Radius**
+        for particle in self.explosion_particles:
+            px, py = particle.x, particle.y
+            if math.sqrt((px - self.x) ** 2 + (py - self.y) ** 2) <= self.explosion_radius:
+                particle.draw(screen)
+
+        # **Controlled Shockwave Expansion**
+        max_radius = self.explosion_radius * 0.6  # Max shockwave size = 60% of explosion radius
+        growth_per_frame = max_radius / 40  # Grows evenly over explosion duration
+        shockwave_radius = min((40 - self.explosion_timer) * growth_per_frame, max_radius)
+
+        if shockwave_radius > 0:
+            pygame.draw.circle(screen, RED_ORANGE, (int(self.x), int(self.y)), int(shockwave_radius), 2)
