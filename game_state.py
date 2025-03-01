@@ -9,9 +9,10 @@ import config
 import random
 
 class GameState:
-    def __init__(self, screen):
+    def __init__(self, screen, crt_enabled):
         """GameState manages all game objects, including the player and asteroids."""
         self.screen = screen
+        self.crt_enabled = crt_enabled
         self.player = Player()
         self.bullets = []
         self.asteroids = []
@@ -21,7 +22,6 @@ class GameState:
         self.level = 1
         self.paused = False
         self.pause_menu = PauseMenu(screen, self)  # Pass self to PauseMenu
-        self.crt_enabled = True  # Default CRT effect setting
         self.score = 0  # Initialize score
         self.asteroid_slowdown_active = False  # Tracks whether slow-motion is on
         self.slowdown_timer = 0
