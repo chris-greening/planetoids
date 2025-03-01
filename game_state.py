@@ -24,6 +24,7 @@ class GameState:
         self.crt_enabled = True  # Default CRT effect setting
         self.score = 0  # Initialize score
         self.asteroid_slowdown_active = False  # Tracks whether slow-motion is on
+        self.slowdown_timer = 0
 
     def update_score(self, asteroid):
         """Increase score based on asteroid size."""
@@ -46,10 +47,10 @@ class GameState:
         """Spawns a power-up with a probability, allowing multiple to exist at once."""
         if len(self.powerups) < 3 and random.random() < .1:
             powerup_classes = [
-                TrishotPowerUp,
-                QuadShotPowerUp,
-                RicochetShotPowerUp,
-                InvincibilityPowerUp,
+                # TrishotPowerUp,
+                # QuadShotPowerUp,
+                # RicochetShotPowerUp,
+                # InvincibilityPowerUp,
                 TemporalSlowdownPowerUp
             ]
             print(powerup_classes)
@@ -120,6 +121,19 @@ class GameState:
         self._draw_powerup_timer(screen)
         self._draw_score(screen)  # Draw score
 
+        # Draw slowdown visual effect
+        if self.asteroid_slowdown_active:
+            # Calculate elapsed time since slowdown started
+            total_duration = 5000  # 5 seconds in milliseconds
+            time_elapsed = total_duration - max(0, self.slowdown_timer - pygame.time.get_ticks())
+
+            # Calculate opacity: Starts at 70 and smoothly decreases to 0
+            fade_intensity = max(0, int(70 * (1 - (time_elapsed / total_duration))))
+
+            # Create semi-transparent blue overlay
+            overlay = pygame.Surface((config.WIDTH, config.HEIGHT), pygame.SRCALPHA)
+            overlay.fill((0, 150, 255, fade_intensity))  # Softer cyan overlay
+            screen.blit(overlay, (0, 0))
     def _draw_score(self, screen):
         """Displays the score in the top-right corner."""
         font = pygame.font.Font(None, 36)  # Score font
@@ -137,6 +151,7 @@ class GameState:
     def apply_powerup(self, powerup):
         """Applies the collected power-up effect."""
         if isinstance(powerup, TemporalSlowdownPowerUp):
+            self.slowdown_timer = pygame.time.get_ticks() + 5000  # 5 seconds
             self.asteroid_slowdown_active = True
             pygame.time.set_timer(pygame.USEREVENT + 5, 5000)
         else:
