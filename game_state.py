@@ -47,15 +47,17 @@ class GameState:
         if len(self.powerups) < 3 and random.random() < .1:
             powerup_classes = PowerUp.get_powerups()
             if not self.player.shield_active:
-                powerup_classes = [p for p in powerup_classes if p.__name__ != "ShieldPowerUp"]
+                powerup_classes = [
+                    p for p in powerup_classes if p.__name__ != "ShieldPowerUp"
+                ]
             chosen_powerup = random.choice(powerup_classes)
             self.powerups.append(chosen_powerup(x, y))
 
     def check_for_clear_map(self):
         """Checks if all asteroids are destroyed and resets the map if so."""
-        if not self.asteroids:  # If asteroid list is empty
+        if not self.asteroids:
             self.level += 1
-            self.spawn_asteroids(5 + self.level * 2)  # Reset the map with new asteroids
+            self.spawn_asteroids(5 + self.level * 2)
             self.player.set_invincibility()
 
     def spawn_asteroids(self, count=5):
@@ -65,12 +67,11 @@ class GameState:
 
     def update_all(self, keys):
         """Update all game objects, including powerups."""
-        slowdown_factor = 0.3 if self.asteroid_slowdown_active else 1  # Slowdown effect
         if self.respawn_timer > 0:
             self.respawn_timer -= 1
-            print(f"Respawning in {self.respawn_timer} frames")  # Debug
+            print(f"Respawning in {self.respawn_timer} frames")
             if self.respawn_timer == 0:
-                print("Respawning player now!")  # Debug
+                print("Respawning player now!")
                 self.respawn_player()
         else:
             self.player.update(keys)
@@ -92,8 +93,8 @@ class GameState:
 
     def handle_powerup_expiration(self, event):
         """Handles expiration events for power-ups."""
-        if event.type == pygame.USEREVENT + 5:  # Slowdown expiration
-            self.asteroid_slowdown_active = False  # Restore normal speed
+        if event.type == pygame.USEREVENT + 5:
+            self.asteroid_slowdown_active = False
 
     def draw_all(self, screen):
         """Draw all game objects, including power-ups."""
@@ -104,7 +105,6 @@ class GameState:
             bullet.draw(screen)
         for asteroid in self.asteroids:
             asteroid.draw(screen)
-
         for powerup in self.powerups:
             powerup.draw(screen)
 
