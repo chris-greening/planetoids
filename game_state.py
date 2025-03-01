@@ -63,7 +63,7 @@ class GameState:
     def spawn_asteroids(self, count=5):
         """Spawn initial asteroids."""
         for _ in range(count):
-            if random.random() < .5:
+            if random.random() < .02:
                 self.asteroids.append(ExplodingAsteroid())
             else:
                 self.asteroids.append(Asteroid())

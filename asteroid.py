@@ -80,18 +80,34 @@ class Asteroid:
             angle_variation = random.uniform(-20, 20)
 
             # Create two new asteroids moving in different directions
-            asteroid1 = Asteroid(
-                x=self.x + random.randint(-5, 5),
-                y=self.y + random.randint(-5, 5),
-                size=new_size,
-                stage=new_stage
-            )
-            asteroid2 = Asteroid(
-                x=self.x + random.randint(-5, 5),
-                y=self.y + random.randint(-5, 5),
-                size=new_size,
-                stage=new_stage
-            )
+            if random.random() < 0.02:
+                asteroid1 = ExplodingAsteroid(
+                    x=self.x + random.randint(-5, 5),
+                    y=self.y + random.randint(-5, 5),
+                    size=new_size,
+                    stage=new_stage
+                )
+            else:
+                asteroid1 = Asteroid(
+                    x=self.x + random.randint(-5, 5),
+                    y=self.y + random.randint(-5, 5),
+                    size=new_size,
+                    stage=new_stage
+                )
+            if random.random() < 0.02:
+                asteroid2 = ExplodingAsteroid(
+                    x=self.x + random.randint(-5, 5),
+                    y=self.y + random.randint(-5, 5),
+                    size=new_size,
+                    stage=new_stage
+                )
+            else:
+                asteroid2 = Asteroid(
+                    x=self.x + random.randint(-5, 5),
+                    y=self.y + random.randint(-5, 5),
+                    size=new_size,
+                    stage=new_stage
+                )
 
             # Adjust their movement speeds and directions
             asteroid1.base_speed = new_speed
