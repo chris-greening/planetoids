@@ -159,13 +159,10 @@ class GameState:
         text = font.render(f"Level: {self.level}", True, config.WHITE)
         screen.blit(text, (config.WIDTH - 120, config.HEIGHT - 30))  # Display bottom-right
 
-    def check_for_collisions(self, screen):
-        """Check for bullet-asteroid and player-asteroid collisions."""
+    def _handle_bullet_vs_asteroid_collision(self):
         bullets_to_remove = []
         asteroids_to_remove = []
         new_asteroids = []
-
-        # Bullet vs Asteroid Collision
         for bullet in self.bullets[:]:  # Iterate over a copy
             for asteroid in self.asteroids[:]:  # Iterate over a copy
                 dist = self.calculate_collision_distance(bullet, asteroid)
@@ -182,6 +179,12 @@ class GameState:
                         new_angle = random.randint(0, 360)  # Random ricochet angle
                         ricochet_bullet = Bullet(asteroid.x, asteroid.y, new_angle, ricochet=True)
                         self.bullets.append(ricochet_bullet)  # Add the new bullet to the game
+        return bullets_to_remove, asteroids_to_remove, new_asteroids
+
+    def check_for_collisions(self, screen):
+        """Check for bullet-asteroid and player-asteroid collisions."""
+
+        bullets_to_remove, asteroids_to_remove, new_asteroids = self._handle_bullet_vs_asteroid_collision()
 
         # Player vs Asteroid Collision
         if self.respawn_timer == 0:  # Only check if player is alive
