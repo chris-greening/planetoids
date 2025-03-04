@@ -293,16 +293,32 @@ class GameState:
         self._handle_player_asteroid_collision(screen)
 
     def handle_player_collision(self, screen):
-        """Handles player death with an animation before respawn or game over."""
-        if self.player.invincible:
-            return  # Don't kill if invincible after respawn
-        if self.player.shield_active:
-            self.player.take_damage()
+        """Handles player collision logic, including shield effects, death animation, and respawn/game over."""
+
+        if self._player_is_invincible():
             return
 
-        self.player.death_animation(screen)  # Pass screen to death effect
+        if self._player_has_shield():
+            return
 
+        self._process_player_death(screen)
+
+    def _player_is_invincible(self):
+        """Checks if the player is invincible after respawn."""
+        return self.player.invincible
+
+    def _player_has_shield(self):
+        """Checks if the player has an active shield and applies damage if so."""
+        if self.player.shield_active:
+            self.player.take_damage()
+            return True
+        return False
+
+    def _process_player_death(self, screen):
+        """Handles player death animation, life count, and respawn or game over."""
+        self.player.death_animation(screen)  # Play death effect
         self.lives -= 1
+
         if self.lives > 0:
             self.respawn_player()
         else:
