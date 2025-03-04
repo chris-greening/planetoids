@@ -119,24 +119,32 @@ class GameState:
         if event.type == pygame.USEREVENT + 5:
             self.asteroid_slowdown_active = False
 
+    def _draw_bullets(self, screen):
+        for bullet in self.bullets:
+            bullet.draw(screen)
+
+    def _draw_asteroids(self, screen):
+        for asteroid in self.asteroids:
+            asteroid.draw(screen)
+            if isinstance(asteroid, ExplodingAsteroid) and asteroid.exploding:
+                asteroid.draw_explosion(screen)
+
+    def _draw_powerups(self, screen):
+        for powerup in self.powerups:
+            powerup.draw(screen)
+
     def draw_all(self, screen):
         """Draw all game objects, including power-ups."""
         if self.respawn_timer == 0:
             self.player.draw(screen)
 
-        for bullet in self.bullets:
-            bullet.draw(screen)
-        for asteroid in self.asteroids:
-            asteroid.draw(screen)
-            if isinstance(asteroid, ExplodingAsteroid) and asteroid.exploding:
-                asteroid.draw_explosion(screen)
-        for powerup in self.powerups:
-            powerup.draw(screen)
-
+        self._draw_asteroids(screen)
+        self._draw_powerups(screen)
+        self._draw_bullets(screen)
         self._draw_lives(screen)
         self._draw_level(screen)
         self._draw_powerup_timer(screen)
-        self._draw_score(screen)  # Draw score
+        self._draw_score(screen)
 
         self._asteroid_slowdown_active(screen)
 
