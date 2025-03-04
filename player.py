@@ -183,8 +183,6 @@ class Player:
         for particle in self.particles:
             particle.update()
 
-
-
     def _handle_shield_regeneration(self):
         """Regenerates shield every 30 seconds if broken."""
         if not self.shield_active:
