@@ -223,21 +223,35 @@ class GameState:
 
     def _process_bullet_hit(self, bullet, asteroid, bullets_to_remove, asteroids_to_remove, new_asteroids):
         """Handles the effects of a bullet hitting an asteroid."""
+        
+        self._apply_bullet_effects(bullet, asteroid)
+        self._handle_asteroid_destruction(asteroid, asteroids_to_remove, new_asteroids)
 
+        if not bullet.piercing:
+            bullets_to_remove.append(bullet)
+
+        self._handle_powerup_spawn(asteroid)
+        self._handle_ricochet_bullet(bullet, asteroid)
+
+    def _apply_bullet_effects(self, bullet, asteroid):
+        """Applies effects when a bullet hits an asteroid."""
         bullet.on_hit_asteroid(asteroid)
         self.update_score(asteroid)
 
+    def _handle_asteroid_destruction(self, asteroid, asteroids_to_remove, new_asteroids):
+        """Determines how an asteroid is destroyed or split."""
         if isinstance(asteroid, ExplodingAsteroid):
             self._handle_exploding_asteroid(asteroid, asteroids_to_remove, new_asteroids)
         else:
             asteroids_to_remove.append(asteroid)  # Remove normal asteroids
             new_asteroids.extend(asteroid.split())  # Add split asteroids
 
-        if not bullet.piercing:
-            bullets_to_remove.append(bullet)
-
+    def _handle_powerup_spawn(self, asteroid):
+        """Spawns a power-up at the asteroid’s location if conditions are met."""
         self.spawn_powerup(asteroid.x, asteroid.y)
 
+    def _handle_ricochet_bullet(self, bullet, asteroid):
+        """Creates a ricochet bullet if the player has ricochet active."""
         if self.player.ricochet_active and not bullet.ricochet:
             self._spawn_ricochet_bullet(asteroid.x, asteroid.y)
 
