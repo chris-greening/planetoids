@@ -202,51 +202,69 @@ class GameState:
         screen.blit(text, (config.WIDTH - 120, config.HEIGHT - 30))  # Display bottom-right
 
     def _handle_bullet_asteroid_collision(self):
+        """Handles collisions between bullets and asteroids."""
+
         bullets_to_remove = []
         asteroids_to_remove = []
         new_asteroids = []
 
         for bullet in self.bullets[:]:  # Iterate over a copy
             for asteroid in self.asteroids[:]:  # Iterate over a copy
-                dist = self.calculate_collision_distance(bullet, asteroid)
-                if dist < asteroid.size:
-                    bullet.on_hit_asteroid(asteroid)
-                    self.update_score(asteroid)
+                if self._is_bullet_asteroid_collision(bullet, asteroid):
+                    self._process_bullet_hit(bullet, asteroid, bullets_to_remove, asteroids_to_remove, new_asteroids)
 
-                    if isinstance(asteroid, ExplodingAsteroid):
-                        if not asteroid.exploding:  # Start explosion if not already started
-                            asteroid.explode(self.asteroids)
+        self._remove_destroyed_asteroids(asteroids_to_remove)
+        self.asteroids.extend(new_asteroids)  # Add newly split asteroids
+        self.bullets = [b for b in self.bullets if b not in bullets_to_remove]  # Remove used bullets
 
-                        # The explosion should not remove the asteroid immediately
-                        exploded_asteroids = asteroid.explode(self.asteroids)
-                        for exploded_asteroid in exploded_asteroids:
-                            self.update_score(exploded_asteroid)  # Score for each destroyed asteroid
-                            asteroids_to_remove.append(exploded_asteroid)  # Remove after explosion
-                            new_asteroids.extend(exploded_asteroid.split())
+    def _is_bullet_asteroid_collision(self, bullet, asteroid):
+        """Returns True if a bullet collides with an asteroid."""
+        return self.calculate_collision_distance(bullet, asteroid) < asteroid.size
 
-                    else:
-                        asteroids_to_remove.append(asteroid)  # Non-exploding asteroids get removed normally
-                        new_asteroids.extend(asteroid.split())  # Add split asteroids
+    def _process_bullet_hit(self, bullet, asteroid, bullets_to_remove, asteroids_to_remove, new_asteroids):
+        """Handles the effects of a bullet hitting an asteroid."""
 
-                    if not bullet.piercing:
-                        bullets_to_remove.append(bullet)
+        bullet.on_hit_asteroid(asteroid)
+        self.update_score(asteroid)
 
-                    self.spawn_powerup(asteroid.x, asteroid.y)
+        if isinstance(asteroid, ExplodingAsteroid):
+            self._handle_exploding_asteroid(asteroid, asteroids_to_remove, new_asteroids)
+        else:
+            asteroids_to_remove.append(asteroid)  # Remove normal asteroids
+            new_asteroids.extend(asteroid.split())  # Add split asteroids
 
-                    if self.player.ricochet_active and not bullet.ricochet:
-                        new_angle = random.randint(0, 360)  # Random ricochet angle
-                        ricochet_bullet = Bullet(asteroid.x, asteroid.y, new_angle, ricochet=True)
-                        self.bullets.append(ricochet_bullet)
+        if not bullet.piercing:
+            bullets_to_remove.append(bullet)
 
-        # Remove only **non-exploding** asteroids immediately
-        self.asteroids = [a for a in self.asteroids if a not in asteroids_to_remove or (isinstance(a, ExplodingAsteroid) and a.exploding)]
+        self.spawn_powerup(asteroid.x, asteroid.y)
 
-        # Add new split asteroids
-        self.asteroids.extend(new_asteroids)
+        if self.player.ricochet_active and not bullet.ricochet:
+            self._spawn_ricochet_bullet(asteroid.x, asteroid.y)
 
-        # Remove bullets
-        self.bullets = [b for b in self.bullets if b not in bullets_to_remove]
+    def _handle_exploding_asteroid(self, asteroid, asteroids_to_remove, new_asteroids):
+        """Triggers an asteroid explosion and manages affected asteroids."""
 
+        if not asteroid.exploding:  # Start explosion if not already started
+            asteroid.explode(self.asteroids)
+
+        exploded_asteroids = asteroid.explode(self.asteroids)
+        for exploded_asteroid in exploded_asteroids:
+            self.update_score(exploded_asteroid)
+            asteroids_to_remove.append(exploded_asteroid)
+            new_asteroids.extend(exploded_asteroid.split())
+
+    def _spawn_ricochet_bullet(self, x, y):
+        """Creates and adds a ricochet bullet."""
+        new_angle = random.randint(0, 360)  # Random ricochet angle
+        ricochet_bullet = Bullet(x, y, new_angle, ricochet=True)
+        self.bullets.append(ricochet_bullet)
+
+    def _remove_destroyed_asteroids(self, asteroids_to_remove):
+        """Removes non-exploding asteroids that were destroyed."""
+        self.asteroids = [
+            a for a in self.asteroids
+            if a not in asteroids_to_remove or (isinstance(a, ExplodingAsteroid) and a.exploding)
+        ]
 
     def _handle_player_asteroid_collision(self, screen):
         if self.respawn_timer == 0:  # Only check if player is alive
