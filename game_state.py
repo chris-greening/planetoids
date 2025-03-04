@@ -71,10 +71,23 @@ class GameState:
                 self.asteroids.append(Asteroid())
 
     def update_all(self, keys):
-        """Update all game objects, including power-ups and explosions."""
-        self.player.slowed_by_ice = False
+        """Update all game objects, including power-ups, bullets, asteroids, and explosions."""
 
-        # Handle player respawn
+        self.player.slowed_by_ice = False  # Reset ice slowdown before checking
+
+        self._update_respawn(keys)
+        self._update_bullets()
+        self._update_asteroids()
+        self._update_powerups()
+        self.check_powerup_collisions()
+
+        # Restore player speed if not affected by ice
+        if not self.player.slowed_by_ice:
+            self.player.velocity_x = max(self.player.velocity_x, self.player.base_velocity_x)
+            self.player.velocity_y = max(self.player.velocity_y, self.player.base_velocity_y)
+
+    def _update_respawn(self, keys):
+        """Handles player respawn countdown and resets the player when ready."""
         if self.respawn_timer > 0:
             self.respawn_timer -= 1
             print(f"Respawning in {self.respawn_timer} frames")
@@ -84,12 +97,14 @@ class GameState:
         else:
             self.player.update(keys)
 
-        # Update bullets
+    def _update_bullets(self):
+        """Updates bullets and removes expired ones."""
         for bullet in self.bullets:
             bullet.update()
         self.bullets = [b for b in self.bullets if b.lifetime > 0]
 
-        # Update asteroids and handle explosion removals
+    def _update_asteroids(self):
+        """Updates asteroids, handles explosion animations, and removes destroyed asteroids."""
         asteroids_to_remove = []
         for asteroid in self.asteroids:
             if isinstance(asteroid, ExplodingAsteroid) and asteroid.exploding:
@@ -102,17 +117,11 @@ class GameState:
         # Remove exploding asteroids after animation finishes
         self.asteroids = [a for a in self.asteroids if a not in asteroids_to_remove]
 
-        # Update power-ups
+    def _update_powerups(self):
+        """Updates power-ups and removes expired ones."""
         for powerup in self.powerups:
             powerup.update()
         self.powerups = [p for p in self.powerups if not p.is_expired()]
-
-        # Check if player collects a power-up
-        self.check_powerup_collisions()
-
-        if not self.player.slowed_by_ice:
-            self.player.velocity_x = max(self.player.velocity_x, self.player.base_velocity_x)
-            self.player.velocity_y = max(self.player.velocity_y, self.player.base_velocity_y)
 
     def handle_powerup_expiration(self, event):
         """Handles expiration events for power-ups."""
