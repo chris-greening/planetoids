@@ -1,6 +1,5 @@
 import pygame
 from start_menu import StartMenu
-from bullet import Bullet
 from game_state import GameState
 import crt_effect
 import config
@@ -18,31 +17,19 @@ def main():
     crt_enabled = start_menu.show()  # Returns True or False
 
     # Create GameState instance
-    game_state = GameState(screen)
-    game_state.crt_enabled = crt_enabled  # Apply initial CRT setting from start menu
-    game_state.spawn_asteroids(5)  # Initial asteroids
+    game_state = GameState(screen, crt_enabled)
+    print(crt_enabled)
+    game_state.spawn_asteroids(5)
 
     running = True
     while running:
         screen.fill(config.BLACK)
         clock.tick(config.FPS)
 
-        # Handle events (always process inputs)
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_p:
-                    game_state.toggle_pause()
-                elif event.key == pygame.K_SPACE and not game_state.paused:
-                    game_state.bullets.extend(game_state.player.shoot())  # Handle trishot
+        _event_handler(game_state)
 
-            elif event.type == pygame.USEREVENT + 1:  # Trishot expiration event
-                game_state.player.trishot_active = False  # Disable trishot
-
-            game_state.handle_powerup_expiration(event)
-
-        # If paused, show pause screen but allow event processing
         if game_state.paused:
-            continue  # Skip game updates but allow event processing
+            continue
 
         # Update game state
         keys = pygame.key.get_pressed()
@@ -58,6 +45,15 @@ def main():
         pygame.display.flip()
 
     pygame.quit()
+
+def _event_handler(game_state):
+    for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_p:
+                game_state.toggle_pause()
+            elif event.key == pygame.K_SPACE and not game_state.paused:
+                game_state.bullets.extend(game_state.player.shoot())
+        game_state.handle_powerup_expiration(event)
 
 if __name__ == "__main__":
     main()

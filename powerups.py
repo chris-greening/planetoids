@@ -5,6 +5,7 @@ from config import WIDTH, HEIGHT, CYAN
 
 class PowerUp:
     """Base class for all power-ups."""
+    subclasses = []
 
     def __init__(self, x, y, radius=10):
         """Initialize power-up properties."""
@@ -14,6 +15,14 @@ class PowerUp:
         self.speed_x = random.uniform(-1.5, 1.5)
         self.speed_y = random.uniform(-1.5, 1.5)
         self.spawn_time = time.time()  # Store the spawn time
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        PowerUp.subclasses.append(cls)  # Register each subclass
+
+    @classmethod
+    def get_powerups(cls):
+        return cls.subclasses
 
     def update(self):
         """Move the power-up and handle expiration."""
@@ -25,26 +34,38 @@ class PowerUp:
         self.y %= HEIGHT
 
     def draw(self, screen):
-        """Draw the power-up, with a blinking effect before expiration."""
+        """Draw the power-up with a blinking effect before expiration."""
+
+        if self._should_skip_drawing():
+            return  # Do not draw expired or blinking power-ups
+
+        self._draw_glow(screen)
+        self._draw_main_powerup(screen)
+        self._draw_powerup_symbol(screen)
+
+    def _should_skip_drawing(self):
+        """Determines if the power-up should be skipped for blinking or expiration."""
         if self.is_expired():
-            return  # Do not draw expired power-ups
+            return True
 
-        # Blinking effect (start blinking after 6 seconds, every 0.2s)
         elapsed_time = time.time() - self.spawn_time
-        if elapsed_time > 10 and int(elapsed_time * 5) % 2 == 0:
-            return  # Skip drawing to create blinking effect
+        return elapsed_time > 10 and int(elapsed_time * 5) % 2 == 0  # Blinks after 10s
 
-        # Outer glow effect
+    def _draw_glow(self, screen):
+        """Draws the outer glow effect around the power-up."""
         pygame.draw.circle(screen, (0, 100, 255), (int(self.x), int(self.y)), self.radius + 4, 1)
         pygame.draw.circle(screen, (0, 150, 255), (int(self.x), int(self.y)), self.radius + 2, 1)
 
-        # Main powerup shape
+    def _draw_main_powerup(self, screen):
+        """Draws the main body of the power-up."""
         pygame.draw.circle(screen, CYAN, (int(self.x), int(self.y)), self.radius)
 
-        # Draw powerup type (letter)
+    def _draw_powerup_symbol(self, screen):
+        """Draws the symbol or letter representing the power-up."""
         font = pygame.font.Font(None, 20)
         text = font.render(self.get_symbol(), True, (0, 0, 0))
         screen.blit(text, (self.x - 5, self.y - 5))
+
 
     def is_expired(self):
         """Check if the power-up should disappear."""
