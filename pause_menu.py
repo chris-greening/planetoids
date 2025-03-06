@@ -1,5 +1,6 @@
 import pygame
 import config
+from crt_effect import apply_crt_effect  # Import CRT effect function
 
 class PauseMenu:
     def __init__(self, screen, game_state):
@@ -19,13 +20,17 @@ class PauseMenu:
         while self.running:
             self.screen.fill(config.BLACK)
 
+            # Update menu based on mode
             if self.options_mode:
                 self._draw_options_menu()
             else:
                 self._draw_pause_menu()
 
-            pygame.display.flip()
+            # Apply CRT effect if enabled
+            if self.game_state.crt_enabled:
+                apply_crt_effect(self.screen)
 
+            pygame.display.flip()
             self._handle_events()
 
     def _draw_pause_menu(self):
@@ -38,7 +43,7 @@ class PauseMenu:
 
     def _draw_options_menu(self):
         """Draws the options menu."""
-        self._draw_text("Options", config.WIDTH // 2 - 100, config.HEIGHT // 3)
+        self._draw_text("OPTIONS", config.WIDTH // 2 - 100, config.HEIGHT // 3)
 
         # Update CRT effect label dynamically
         self.options_items[0] = f"CRT Effect: {'On' if self.game_state.crt_enabled else 'Off'}"
