@@ -185,7 +185,7 @@ class GameState:
     def _draw_score(self, screen):
         """Displays the score in the top-right corner."""
         score_text = self.font.render(f"Score: {self.score}", True, config.WHITE)
-        screen.blit(score_text, (config.WIDTH - 150, 20))  # Position in top-right
+        screen.blit(score_text, (config.WIDTH - 200, 20))  # Position in top-right
 
     def check_powerup_collisions(self):
         """Checks if the player collects a power-up."""
