@@ -21,6 +21,9 @@ class Player:
         self.ricochet_active = False
         self.ricochet_piercing = False
         self.powerup_timer = 0
+        self.explosion_particles = []  # Temporary explosion effect
+        self.fragments = []  # Pieces of the ship
+        self.explosion_timer = 30
 
         # Shield system
         self.activate_shield()
@@ -253,40 +256,51 @@ class Player:
         )
         pygame.draw.polygon(screen, ORANGE, [thruster_tip, left, right])
 
-    def death_animation(self, screen):
-        """Plays a shattering effect when the player dies."""
-        explosion_particles = []  # Temporary explosion effect
-        fragments = []  # Pieces of the ship
+    def _generate_explosion(self):
+        """Initializes the explosion effect when the player dies."""
+        self.explosion_particles = []  # Temporary explosion effect
+        self.fragments = []  # Pieces of the ship
+        self.explosion_timer = 30  # Lasts for 30 frames (half a second)
 
         angle_rad = math.radians(self.angle)
 
-        # Define original triangle points
+        # Define original ship triangle points
         front = (self.x + math.cos(angle_rad) * self.size, self.y - math.sin(angle_rad) * self.size)
         left = (self.x + math.cos(angle_rad + 2.5) * self.size * 0.6, self.y - math.sin(angle_rad + 2.5) * self.size * 0.6)
         right = (self.x + math.cos(angle_rad - 2.5) * self.size * 0.6, self.y - math.sin(angle_rad - 2.5) * self.size * 0.6)
 
-        # Split into 3 moving fragments
-        fragments.append({"pos": front, "vel": (random.uniform(-2, 2), random.uniform(-2, 2))})
-        fragments.append({"pos": left, "vel": (random.uniform(-2, 2), random.uniform(-2, 2))})
-        fragments.append({"pos": right, "vel": (random.uniform(-2, 2), random.uniform(-2, 2))})
+        # Create moving fragments
+        self.fragments.append({"pos": front, "vel": (random.uniform(-2, 2), random.uniform(-2, 2))})
+        self.fragments.append({"pos": left, "vel": (random.uniform(-2, 2), random.uniform(-2, 2))})
+        self.fragments.append({"pos": right, "vel": (random.uniform(-2, 2), random.uniform(-2, 2))})
 
         # Generate explosion particles
         for _ in range(15):
-            explosion_particles.append(Particle(self.x, self.y, random.uniform(0, 360), random.uniform(1, 3)))
+            self.explosion_particles.append(Particle(self.x, self.y, random.uniform(0, 360), random.uniform(1, 3)))
 
-        # Animation loop
-        for _ in range(30):  # Roughly half a second of animation
-            screen.fill((0, 0, 0))  # Clear screen
+    def _update_explosion(self):
+        """Updates explosion animation frame by frame."""
+        if self.explosion_timer > 0:
+            self.explosion_timer -= 1
 
-            # Draw ship fragments
-            for fragment in fragments:
+            # Move fragments
+            for fragment in self.fragments:
                 fragment["pos"] = (fragment["pos"][0] + fragment["vel"][0], fragment["pos"][1] + fragment["vel"][1])
+
+            # Update explosion particles
+            for particle in self.explosion_particles:
+                particle.update()
+
+        else:
+            # Animation is done, clear effects
+            self.explosion_particles = []
+            self.fragments = []
+
+    def _draw_explosion(self, screen):
+        """Draws the explosion effect and ship fragments."""
+        if self.explosion_timer > 0:
+            for fragment in self.fragments:
                 pygame.draw.polygon(screen, WHITE, [fragment["pos"], fragment["pos"], fragment["pos"]], 1)
 
-            # Draw explosion particles
-            for particle in explosion_particles:
-                particle.update()
+            for particle in self.explosion_particles:
                 particle.draw(screen)
-
-            pygame.display.flip()
-            pygame.time.delay(15)  # Small delay for smooth animation

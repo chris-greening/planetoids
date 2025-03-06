@@ -81,6 +81,9 @@ class GameState:
         self._update_powerups()
         self.check_powerup_collisions()
 
+        if self.player.explosion_timer > 0:
+            self.player._update_explosion()
+
         # Restore player speed if not affected by ice
         if not self.player.slowed_by_ice:
             self.player.velocity_x = max(self.player.velocity_x, self.player.base_velocity_x)
@@ -142,11 +145,15 @@ class GameState:
         for powerup in self.powerups:
             powerup.draw(screen)
 
-    def draw_all(self, screen):
-        """Draw all game objects, including power-ups."""
-        if self.respawn_timer == 0:
+    def _draw_player(self, screen):
+        if self.player.explosion_timer > 0:
+            self.player._draw_explosion(screen)
+        else:
             self.player.draw(screen)
 
+    def draw_all(self, screen):
+        """Draw all game objects, including power-ups."""
+        self._draw_player(screen)
         self._draw_asteroids(screen)
         self._draw_powerups(screen)
         self._draw_bullets(screen)
@@ -281,11 +288,37 @@ class GameState:
         ]
 
     def _handle_player_asteroid_collision(self, screen):
-        if self.respawn_timer == 0:  # Only check if player is alive
-            for asteroid in self.asteroids:
-                dist = self.calculate_collision_distance(self.player, asteroid)
-                if dist < asteroid.size:  # Collision detected
-                    self.handle_player_collision(screen)  # Pass screen to function
+        """Handles collisions between the player and asteroids, triggering the explosion before respawn."""
+
+        if self.respawn_timer > 0:
+            return  # Player is currently respawning, ignore collisions
+
+        for asteroid in self.asteroids:
+            if self._is_collision(self.player, asteroid):
+                self._trigger_player_explosion(screen)
+                break  # Stop checking after first collision
+
+    def _is_collision(self, entity1, entity2):
+        """Returns True if two entities are colliding based on their distance."""
+        return self.calculate_collision_distance(entity1, entity2) < entity2.size
+
+    def _trigger_player_explosion(self, screen):
+        """Handles the player explosion animation and sets up respawn or game over."""
+
+        if self.player.invincible:
+            return  # Skip if player is currently invincible
+
+        if self.player.shield_active:
+            self.player.take_damage()
+            return  # Shield absorbs the hit
+
+        self.player._generate_explosion()  # Trigger explosion animation
+        self.respawn_timer = 30  # Delay respawn for explosion duration
+
+        self.lives -= 1
+        if self.lives <= 0:
+            self.game_over()  # No lives left, game over
+
 
     def check_for_collisions(self, screen):
         """Check for bullet-asteroid and player-asteroid collisions."""
