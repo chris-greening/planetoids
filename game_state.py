@@ -19,7 +19,7 @@ class GameState:
         self.bullets = []
         self.asteroids = []
         self.powerups = []
-        self.lives = 1
+        self.lives = 3
         self.respawn_timer = 0
         self.level = 1
         self.paused = False
