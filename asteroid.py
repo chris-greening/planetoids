@@ -39,7 +39,8 @@ class Asteroid:
 
     def update(self, game_state):
         """Moves the asteroid across the screen, applying slowdown if active."""
-        slowdown_factor = 0.3 if game_state.asteroid_slowdown_active else 1  # Slowdown multiplier
+        asteroid_slowdown_active = False if game_state is None else game_state.asteroid_slowdown_active
+        slowdown_factor = 0.3 if asteroid_slowdown_active else 1  # Slowdown multiplier
 
         angle_rad = math.radians(self.angle)
         dx = math.cos(angle_rad) * self.base_speed * slowdown_factor

@@ -1,9 +1,11 @@
 import pygame
 import config
+import random
+from asteroid import Asteroid  # Ensure Asteroid class is imported
 
 class StartMenu:
     def __init__(self, screen, clock):
-        """Initialize the start menu."""
+        """Initialize the start menu with a moving asteroid background."""
         self.screen = screen
         self.clock = clock
         self.font = pygame.font.Font(None, 50)  # Default font
@@ -13,11 +15,23 @@ class StartMenu:
         self.menu_items = ["Start Game", "Options", "Quit"]  # Main menu options
         self.options_items = ["CRT Effect: On", "Back"]  # Options menu
         self.crt_enabled = False  # CRT effect starts enabled
+        
+        # Generate background asteroids
+        self.background_asteroids = [Asteroid(random.randint(0, config.WIDTH),
+                                              random.randint(0, config.HEIGHT),
+                                              size=random.randint(30, 60),
+                                              stage=3)
+                                     for _ in range(6)]  # Adjust number of asteroids as needed
 
     def show(self):
-        """Displays the start menu and waits for player input."""
+        """Displays the start menu with moving asteroid background."""
         while self.running:
             self.screen.fill(config.BLACK)
+
+            # Update and draw background asteroids
+            for asteroid in self.background_asteroids:
+                asteroid.update(game_state=None)  # No game state needed for now
+                asteroid.draw(self.screen)
 
             if self.options_mode:
                 self._draw_options_menu()
@@ -29,6 +43,7 @@ class StartMenu:
 
             self._handle_events()
 
+        self._fade_out()  # Smooth transition effect before starting the game
         return self.crt_enabled  # Return CRT setting for use in the game
 
     def _draw_main_menu(self):
@@ -77,7 +92,7 @@ class StartMenu:
     def _handle_main_selection(self):
         """Handles selection in the main menu."""
         if self.selected_index == 0:  # Start Game
-            self.running = False
+            self.running = False  # This exits the menu loop
         elif self.selected_index == 1:  # Options
             self.options_mode = True
             self.selected_index = 0  # Reset selection in options
@@ -93,3 +108,20 @@ class StartMenu:
             self.options_mode = False
             self.selected_index = 0  # Reset main menu selection
 
+    def _fade_out(self):
+        """Applies a fade-out transition before starting the game."""
+        fade_surface = pygame.Surface((config.WIDTH, config.HEIGHT))
+        fade_surface.fill(config.BLACK)
+
+        for alpha in range(0, 255, 10):  # Increase alpha gradually
+            fade_surface.set_alpha(alpha)
+            self.screen.fill(config.BLACK)
+
+            # Keep drawing background asteroids while fading
+            for asteroid in self.background_asteroids:
+                asteroid.update(game_state=None)
+                asteroid.draw(self.screen)
+
+            self.screen.blit(fade_surface, (0, 0))
+            pygame.display.flip()
+            self.clock.tick(30)  # Smooth transition speed
