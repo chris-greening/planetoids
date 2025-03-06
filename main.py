@@ -17,7 +17,7 @@ def main():
     crt_enabled = start_menu.show()  # Returns True or False
 
     # Create GameState instance
-    game_state = GameState(screen, crt_enabled)
+    game_state = GameState(screen, crt_enabled, clock)
     print(crt_enabled)
     game_state.spawn_asteroids(5)
 

@@ -7,17 +7,19 @@ from pause_menu import PauseMenu
 import config
 import random
 import os
+import crt_effect
 
 class GameState:
-    def __init__(self, screen, crt_enabled):
+    def __init__(self, screen, crt_enabled, clock):
         """GameState manages all game objects, including the player and asteroids."""
         self.screen = screen
         self.crt_enabled = crt_enabled
+        self.clock = clock
         self.player = Player()
         self.bullets = []
         self.asteroids = []
         self.powerups = []
-        self.lives = 3
+        self.lives = 1
         self.respawn_timer = 0
         self.level = 1
         self.paused = False
@@ -318,7 +320,7 @@ class GameState:
 
         self.lives -= 1
         if self.lives <= 0:
-            self.game_over()  # No lives left, game over
+            self.game_over(screen)  # No lives left, game over
 
 
     def check_for_collisions(self, screen):
@@ -374,11 +376,46 @@ class GameState:
             bar_width = int((self.player.powerup_timer / 300) * 200)  # Scale to 200px max
             pygame.draw.rect(screen, (0, 255, 255), (config.WIDTH // 2 - 100, config.HEIGHT - 30, bar_width, 10))
 
-    def game_over(self):
+    def game_over(self, screen):
         """Ends the game and shows Game Over screen."""
-        print("Game Over!")  # For now, just print (will be replaced with a menu)
+        self._display_game_over(screen)  # For now, just print (will be replaced with a menu)
         pygame.quit()
         exit()
+
+    def _display_game_over(self, screen):
+        """Displays 'GAME OVER' while the game keeps running, showing moving asteroids in the background."""
+        font_path = os.path.join("assets", "fonts", "VT323.ttf")  # ✅ Match Planetoids font
+        game_over_font = pygame.font.Font(font_path, 64)  # ✅ Big text size
+
+        text = game_over_font.render("GAME OVER", True, config.YELLOW)
+        text_rect = text.get_rect(center=(config.WIDTH // 2, config.HEIGHT // 2))
+
+        game_over = True
+        while game_over:
+            screen.fill(config.BLACK)
+
+            # Keep updating & drawing asteroids so they continue moving
+            for asteroid in self.asteroids:
+                asteroid.update(self)
+                asteroid.draw(screen)
+
+            # Draw the "GAME OVER" text
+            screen.blit(text, text_rect)
+
+            if self.crt_enabled:
+                crt_effect.apply_crt_effect(screen)
+
+            pygame.display.flip()
+            self.clock.tick(config.FPS)
+
+            # Wait for a key press to return to the main menu
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    exit()
+                if event.type == pygame.KEYDOWN:  # Any key press exits the game over screen
+                    game_over = False
+
 
     def _draw_lives(self, screen):
         """Displays remaining player lives as small triangles in the top-right corner, Galaga-style."""
