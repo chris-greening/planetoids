@@ -6,6 +6,7 @@ from powerups import PowerUp, TemporalSlowdownPowerUp
 from pause_menu import PauseMenu
 import config
 import random
+import os
 
 class GameState:
     def __init__(self, screen, crt_enabled):
@@ -24,6 +25,8 @@ class GameState:
         self.score = 0
         self.asteroid_slowdown_active = False
         self.slowdown_timer = 0
+        self.font_path = os.path.join("assets", "fonts", "VT323.ttf")  # ✅ More sci-fi, less cartoony
+        self.font = pygame.font.Font(self.font_path, 36)  # ✅ Larger for title
 
     def update_score(self, asteroid):
         """Increase score based on asteroid size."""
@@ -181,8 +184,7 @@ class GameState:
 
     def _draw_score(self, screen):
         """Displays the score in the top-right corner."""
-        font = pygame.font.Font(None, 36)  # Score font
-        score_text = font.render(f"Score: {self.score}", True, config.WHITE)
+        score_text = self.font.render(f"Score: {self.score}", True, config.WHITE)
         screen.blit(score_text, (config.WIDTH - 150, 20))  # Position in top-right
 
     def check_powerup_collisions(self):
@@ -204,8 +206,7 @@ class GameState:
 
     def _draw_level(self, screen):
         """Display current level number."""
-        font = pygame.font.Font(None, 36)
-        text = font.render(f"Level: {self.level}", True, config.WHITE)
+        text = self.font.render(f"Level: {self.level}", True, config.WHITE)
         screen.blit(text, (config.WIDTH - 120, config.HEIGHT - 30))  # Display bottom-right
 
     def _handle_bullet_asteroid_collision(self):
@@ -381,8 +382,7 @@ class GameState:
 
     def _draw_lives(self, screen):
         """Display player lives on the screen."""
-        font = pygame.font.Font(None, 36)
-        text = font.render(f"Lives: {self.lives}", True, config.WHITE)
+        text = self.font.render(f"Lives: {self.lives}", True, config.WHITE)
         screen.blit(text, (10, 10))
 
     def calculate_collision_distance(self, obj1, obj2):
