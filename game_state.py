@@ -6,12 +6,15 @@ from powerups import PowerUp, TemporalSlowdownPowerUp
 from pause_menu import PauseMenu
 import config
 import random
+import os
+import crt_effect
 
 class GameState:
-    def __init__(self, screen, crt_enabled):
+    def __init__(self, screen, crt_enabled, clock):
         """GameState manages all game objects, including the player and asteroids."""
         self.screen = screen
         self.crt_enabled = crt_enabled
+        self.clock = clock
         self.player = Player()
         self.bullets = []
         self.asteroids = []
@@ -24,6 +27,8 @@ class GameState:
         self.score = 0
         self.asteroid_slowdown_active = False
         self.slowdown_timer = 0
+        self.font_path = os.path.join("assets", "fonts", "VT323.ttf")  # ✅ More sci-fi, less cartoony
+        self.font = pygame.font.Font(self.font_path, 36)  # ✅ Larger for title
 
     def update_score(self, asteroid):
         """Increase score based on asteroid size."""
@@ -181,9 +186,8 @@ class GameState:
 
     def _draw_score(self, screen):
         """Displays the score in the top-right corner."""
-        font = pygame.font.Font(None, 36)  # Score font
-        score_text = font.render(f"Score: {self.score}", True, config.WHITE)
-        screen.blit(score_text, (config.WIDTH - 150, 20))  # Position in top-right
+        score_text = self.font.render(f"Score: {self.score}", True, config.WHITE)
+        screen.blit(score_text, (config.WIDTH - 200, 20))  # Position in top-right
 
     def check_powerup_collisions(self):
         """Checks if the player collects a power-up."""
@@ -204,8 +208,7 @@ class GameState:
 
     def _draw_level(self, screen):
         """Display current level number."""
-        font = pygame.font.Font(None, 36)
-        text = font.render(f"Level: {self.level}", True, config.WHITE)
+        text = self.font.render(f"Level: {self.level}", True, config.WHITE)
         screen.blit(text, (config.WIDTH - 120, config.HEIGHT - 30))  # Display bottom-right
 
     def _handle_bullet_asteroid_collision(self):
@@ -317,7 +320,7 @@ class GameState:
 
         self.lives -= 1
         if self.lives <= 0:
-            self.game_over()  # No lives left, game over
+            self.game_over(screen)  # No lives left, game over
 
 
     def check_for_collisions(self, screen):
@@ -373,17 +376,64 @@ class GameState:
             bar_width = int((self.player.powerup_timer / 300) * 200)  # Scale to 200px max
             pygame.draw.rect(screen, (0, 255, 255), (config.WIDTH // 2 - 100, config.HEIGHT - 30, bar_width, 10))
 
-    def game_over(self):
+    def game_over(self, screen):
         """Ends the game and shows Game Over screen."""
-        print("Game Over!")  # For now, just print (will be replaced with a menu)
+        self._display_game_over(screen)  # For now, just print (will be replaced with a menu)
         pygame.quit()
         exit()
 
+    def _display_game_over(self, screen):
+        """Displays 'GAME OVER' while the game keeps running, showing moving asteroids in the background."""
+        font_path = os.path.join("assets", "fonts", "VT323.ttf")  # ✅ Match Planetoids font
+        game_over_font = pygame.font.Font(font_path, 64)  # ✅ Big text size
+
+        text = game_over_font.render("GAME OVER", True, config.YELLOW)
+        text_rect = text.get_rect(center=(config.WIDTH // 2, config.HEIGHT // 2))
+
+        game_over = True
+        while game_over:
+            screen.fill(config.BLACK)
+
+            # Keep updating & drawing asteroids so they continue moving
+            for asteroid in self.asteroids:
+                asteroid.update(self)
+                asteroid.draw(screen)
+
+            # Draw the "GAME OVER" text
+            screen.blit(text, text_rect)
+
+            if self.crt_enabled:
+                crt_effect.apply_crt_effect(screen)
+
+            pygame.display.flip()
+            self.clock.tick(config.FPS)
+
+            # Wait for a key press to return to the main menu
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    exit()
+                if event.type == pygame.KEYDOWN:  # Any key press exits the game over screen
+                    game_over = False
+
+
     def _draw_lives(self, screen):
-        """Display player lives on the screen."""
-        font = pygame.font.Font(None, 36)
-        text = font.render(f"Lives: {self.lives}", True, config.WHITE)
-        screen.blit(text, (10, 10))
+        """Displays remaining player lives as small triangles in the top-right corner, Galaga-style."""
+        ship_size = 15  # Adjust size of the life icons
+        spacing = 10     # Spacing between ships
+        start_x = 10
+        start_y = 18     # Position at the top-right corner
+
+        for i in range(self.lives - 1):
+            x_offset = start_x + i * (ship_size + spacing)
+
+            # Triangle points for the small ship
+            front = (x_offset, start_y - ship_size)
+            left = (x_offset - ship_size * 0.6, start_y + ship_size * 0.6)
+            right = (x_offset + ship_size * 0.6, start_y + ship_size * 0.6)
+
+            # Draw the mini ship
+            pygame.draw.polygon(screen, config.WHITE, [front, left, right], 1)
 
     def calculate_collision_distance(self, obj1, obj2):
         """Calculates distance between two game objects."""
