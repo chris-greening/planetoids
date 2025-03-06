@@ -2,6 +2,7 @@ import pygame
 import config
 import random
 from asteroid import Asteroid  # Ensure Asteroid class is imported
+from crt_effect import apply_crt_effect  # Import the CRT effect function
 
 class StartMenu:
     def __init__(self, screen, clock):
@@ -10,12 +11,12 @@ class StartMenu:
         self.clock = clock
         self.font = pygame.font.Font(None, 50)  # Default font
         self.running = True
-        self.options_mode = False  # Toggle between main menu & options menu
-        self.selected_index = 0  # Menu selection index
-        self.menu_items = ["Start Game", "Options", "Quit"]  # Main menu options
-        self.options_items = ["CRT Effect: On", "Back"]  # Options menu
-        self.crt_enabled = False  # CRT effect starts enabled
-        
+        self.options_mode = False
+        self.selected_index = 0
+        self.menu_items = ["Start Game", "Options", "Quit"]
+        self.options_items = ["CRT Effect: On", "Back"]  # Default to On
+        self.crt_enabled = False  # CRT effect starts disabled
+
         # Generate background asteroids
         self.background_asteroids = [Asteroid(random.randint(0, config.WIDTH),
                                               random.randint(0, config.HEIGHT),
@@ -37,6 +38,10 @@ class StartMenu:
                 self._draw_options_menu()
             else:
                 self._draw_main_menu()
+
+            # Apply CRT effect if enabled
+            if self.crt_enabled:
+                apply_crt_effect(self.screen)
 
             pygame.display.flip()
             self.clock.tick(config.FPS)
@@ -92,7 +97,7 @@ class StartMenu:
     def _handle_main_selection(self):
         """Handles selection in the main menu."""
         if self.selected_index == 0:  # Start Game
-            self.running = False  # This exits the menu loop
+            self.running = False  # Exit menu loop
         elif self.selected_index == 1:  # Options
             self.options_mode = True
             self.selected_index = 0  # Reset selection in options
@@ -103,7 +108,7 @@ class StartMenu:
     def _handle_options_selection(self):
         """Handles selection in the options menu."""
         if self.selected_index == 0:  # Toggle CRT Effect
-            self.crt_enabled = not self.crt_enabled
+            self.crt_enabled = not self.crt_enabled  # Toggle CRT effect on/off
         elif self.selected_index == 1:  # Back
             self.options_mode = False
             self.selected_index = 0  # Reset main menu selection
@@ -121,6 +126,10 @@ class StartMenu:
             for asteroid in self.background_asteroids:
                 asteroid.update(game_state=None)
                 asteroid.draw(self.screen)
+
+            # Apply CRT effect if enabled during fade-out
+            if self.crt_enabled:
+                apply_crt_effect(self.screen)
 
             self.screen.blit(fade_surface, (0, 0))
             pygame.display.flip()
