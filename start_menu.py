@@ -1,21 +1,27 @@
 import pygame
 import config
 import random
-from asteroid import Asteroid  # Ensure Asteroid class is imported
-from crt_effect import apply_crt_effect  # Import the CRT effect function
+import os
+from asteroid import Asteroid
+from crt_effect import apply_crt_effect  # Import CRT effect function
 
 class StartMenu:
     def __init__(self, screen, clock):
-        """Initialize the start menu with a moving asteroid background."""
+        """Initialize the start menu with a moving asteroid background and refined retro font."""
         self.screen = screen
         self.clock = clock
-        self.font = pygame.font.Font(None, 50)  # Default font
         self.running = True
         self.options_mode = False
         self.selected_index = 0
         self.menu_items = ["Start Game", "Options", "Quit"]
-        self.options_items = ["CRT Effect: On", "Back"]  # Default to On
-        self.crt_enabled = False  # CRT effect starts disabled
+        self.options_items = ["CRT Effect: On", "Back"]
+        self.crt_enabled = True  # CRT effect starts ENABLED by default
+
+        # Load a refined vintage arcade font (Sleek but retro)
+        font_path = os.path.join("assets", "fonts", "VT323.ttf")  # ✅ More sci-fi, less cartoony
+        self.font = pygame.font.Font(font_path, 48)  # ✅ Larger for title
+        self.menu_font = pygame.font.Font(font_path, 32)  # ✅ Medium for menu
+        self.small_font = pygame.font.Font(font_path, 22)  # ✅ Small for instructions
 
         # Generate background asteroids
         self.background_asteroids = [Asteroid(random.randint(0, config.WIDTH),
@@ -31,7 +37,7 @@ class StartMenu:
 
             # Update and draw background asteroids
             for asteroid in self.background_asteroids:
-                asteroid.update(game_state=None)  # No game state needed for now
+                asteroid.update(game_state=None)
                 asteroid.draw(self.screen)
 
             if self.options_mode:
@@ -52,27 +58,35 @@ class StartMenu:
         return self.crt_enabled  # Return CRT setting for use in the game
 
     def _draw_main_menu(self):
-        """Draws the main start menu."""
-        self._draw_text("Planetoids!", config.WIDTH // 2 - 150, config.HEIGHT // 3)
+        """Draws the main start menu with a refined arcade look."""
+        self._draw_text("PLANETOIDS", config.WIDTH // 2 - 160, config.HEIGHT // 4, color=config.YELLOW, font=self.font)
 
         for i, item in enumerate(self.menu_items):
             color = config.WHITE if i != self.selected_index else config.ORANGE  # Highlight selected option
-            self._draw_text(item, config.WIDTH // 2 - 100, config.HEIGHT // 2 + i * 40, color)
+            self._draw_text(item, config.WIDTH // 2 - 120, config.HEIGHT // 2 + i * 50, color, self.menu_font)
+
+        self._draw_text("Press ENTER to select", config.WIDTH // 2 - 140, config.HEIGHT - 40, config.DIM_GRAY, self.small_font)
 
     def _draw_options_menu(self):
         """Draws the options menu."""
-        self._draw_text("Options", config.WIDTH // 2 - 100, config.HEIGHT // 3)
+        self._draw_text("OPTIONS", config.WIDTH // 2 - 120, config.HEIGHT // 4, config.YELLOW, self.font)
 
         # Update CRT effect label dynamically
         self.options_items[0] = f"CRT Effect: {'On' if self.crt_enabled else 'Off'}"
 
         for i, item in enumerate(self.options_items):
             color = config.WHITE if i != self.selected_index else config.ORANGE
-            self._draw_text(item, config.WIDTH // 2 - 100, config.HEIGHT // 2 + i * 40, color)
+            self._draw_text(item, config.WIDTH // 2 - 120, config.HEIGHT // 2 + i * 50, color, self.menu_font)
 
-    def _draw_text(self, text, x, y, color=config.WHITE):
-        """Helper function to render text on the screen."""
-        rendered_text = self.font.render(text, True, color)
+    def _draw_text(self, text, x, y, color=config.WHITE, font=None):
+        """Helper function to render sharp, readable text."""
+        if font is None:
+            font = self.font  # Default to main font
+
+        # Create text surface (No more double blitting for glow)
+        rendered_text = font.render(text, True, color)
+
+        # Blit actual text
         self.screen.blit(rendered_text, (x, y))
 
     def _handle_events(self):
