@@ -381,9 +381,22 @@ class GameState:
         exit()
 
     def _draw_lives(self, screen):
-        """Display player lives on the screen."""
-        text = self.font.render(f"Lives: {self.lives}", True, config.WHITE)
-        screen.blit(text, (10, 10))
+        """Displays remaining player lives as small triangles in the top-right corner, Galaga-style."""
+        ship_size = 15  # Adjust size of the life icons
+        spacing = 10     # Spacing between ships
+        start_x = 10
+        start_y = 18     # Position at the top-right corner
+
+        for i in range(self.lives - 1):
+            x_offset = start_x + i * (ship_size + spacing)
+
+            # Triangle points for the small ship
+            front = (x_offset, start_y - ship_size)
+            left = (x_offset - ship_size * 0.6, start_y + ship_size * 0.6)
+            right = (x_offset + ship_size * 0.6, start_y + ship_size * 0.6)
+
+            # Draw the mini ship
+            pygame.draw.polygon(screen, config.WHITE, [front, left, right], 1)
 
     def calculate_collision_distance(self, obj1, obj2):
         """Calculates distance between two game objects."""
