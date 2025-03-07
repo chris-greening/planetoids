@@ -1,9 +1,9 @@
 import pygame
-import config
+from planetoids.core import config
 import random
 import os
-from asteroid import Asteroid
-from crt_effect import apply_crt_effect  # Import CRT effect function
+from planetoids.entities.asteroid import Asteroid
+from planetoids.effects.crt_effect import apply_crt_effect  # Import CRT effect function
 
 class StartMenu:
     def __init__(self, screen, clock):

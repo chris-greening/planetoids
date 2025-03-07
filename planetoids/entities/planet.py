@@ -1,11 +1,6 @@
 import pygame
 import random
-from config import WIDTH, HEIGHT
-
-import pygame
-import random
-import math
-from config import WIDTH, HEIGHT
+from planetoids.core.config import WIDTH, HEIGHT
 
 class Planet:
     def __init__(self):

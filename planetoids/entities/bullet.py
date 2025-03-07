@@ -1,6 +1,6 @@
 import math
 import pygame
-from config import RED, WIDTH, HEIGHT
+from planetoids.core.config import RED, WIDTH, HEIGHT
 import random
 
 class Bullet:

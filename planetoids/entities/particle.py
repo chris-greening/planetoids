@@ -1,12 +1,7 @@
 import pygame
 import random
 import math
-from config import ORANGE
-
-import pygame
-import random
-import math
-from config import ORANGE
+from planetoids.core.config import ORANGE
 
 class Particle:
     def __init__(self, x, y, angle, speed):

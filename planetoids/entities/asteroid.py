@@ -1,8 +1,8 @@
 import pygame
 import random
 import math
-from config import WIDTH, HEIGHT, WHITE, ORANGE, DARK_ORANGE
-from particle import Particle
+from planetoids.core.config import WIDTH, HEIGHT, WHITE, ORANGE, DARK_ORANGE
+from planetoids.entities.particle import Particle
 
 class Asteroid:
     def __init__(self, x=None, y=None, size=120, stage=3):

@@ -1,6 +1,5 @@
 import pygame
 import random
-import math
 
 def apply_crt_effect(screen):
     """Apply CRT effect to the screen."""

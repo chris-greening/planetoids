@@ -1,13 +1,13 @@
 import pygame
-from player import Player
-from asteroid import Asteroid, ExplodingAsteroid, IceAsteroid
-from bullet import Bullet
-from powerups import PowerUp, TemporalSlowdownPowerUp
-from pause_menu import PauseMenu
-import config
+from planetoids.entities.player import Player
+from planetoids.entities.asteroid import Asteroid, ExplodingAsteroid, IceAsteroid
+from planetoids.entities.bullet import Bullet
+from planetoids.entities.powerups import PowerUp, TemporalSlowdownPowerUp
+from planetoids.ui.pause_menu import PauseMenu
+from planetoids.core import config
 import random
 import os
-import crt_effect
+from planetoids.effects import crt_effect
 
 class GameState:
     def __init__(self, screen, crt_enabled, clock):

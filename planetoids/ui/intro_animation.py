@@ -1,8 +1,8 @@
 import pygame
 import random
 import time
-import config
-from crt_effect import apply_crt_effect
+from planetoids.core import config
+from planetoids.effects.crt_effect import apply_crt_effect
 
 class IntroAnimation:
     """Handles the Greening Games intro animation with glitch, terminal typing, and CRT effects."""

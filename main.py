@@ -1,9 +1,9 @@
 import pygame
-from start_menu import StartMenu
-from game_state import GameState
-import crt_effect
-import config
-from intro_animation import IntroAnimation
+from planetoids.ui.start_menu import StartMenu
+from planetoids.core.game_state import GameState
+from planetoids.effects import crt_effect
+from planetoids.core import config
+from planetoids.ui.intro_animation import IntroAnimation
 
 def main():
     pygame.init()

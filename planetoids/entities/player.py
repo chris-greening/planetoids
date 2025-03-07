@@ -1,9 +1,9 @@
 import pygame
 import math
 import random
-from config import WIDTH, HEIGHT, WHITE, ORANGE, CYAN
-from particle import Particle  # Import the new particle class
-from bullet import Bullet
+from planetoids.core.config import WIDTH, HEIGHT, WHITE, ORANGE
+from planetoids.entities.particle import Particle  # Import the new particle class
+from planetoids.entities.bullet import Bullet
 import time
 
 class Player:

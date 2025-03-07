@@ -1,7 +1,7 @@
 import pygame
 import random
 import time
-from config import WIDTH, HEIGHT, CYAN
+from planetoids.core.config import WIDTH, HEIGHT, CYAN
 
 class PowerUp:
     """Base class for all power-ups."""
