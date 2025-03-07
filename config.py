@@ -12,6 +12,7 @@ ORANGE = (255, 165, 0)
 DARK_ORANGE = (255, 100, 0)
 YELLOW = (255, 215, 0)
 DIM_GRAY = (105, 105, 105)  # Dark gray, slightly faded
+GREEN = (34, 139, 34)  # Darker, "hacker" style green
 
 # Random Planet Position & Size
 PLANET_X = random.randint(200, WIDTH - 200)
