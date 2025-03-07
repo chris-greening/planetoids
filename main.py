@@ -1,4 +1,5 @@
 import pygame
+
 from planetoids.ui.start_menu import StartMenu
 from planetoids.core.game_state import GameState
 from planetoids.effects import crt_effect

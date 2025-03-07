@@ -1,7 +1,9 @@
 import math
-import pygame
-from planetoids.core.config import RED, WIDTH, HEIGHT
 import random
+
+import pygame
+
+from planetoids.core.config import RED, WIDTH, HEIGHT
 
 class Bullet:
     def __init__(self, x, y, angle, ricochet=False):

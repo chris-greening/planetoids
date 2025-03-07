@@ -1,6 +1,8 @@
-import pygame
-from planetoids.core import config
 import os
+
+import pygame
+
+from planetoids.core import config
 from planetoids.effects.crt_effect import apply_crt_effect  # Import CRT effect function
 
 class PauseMenu:

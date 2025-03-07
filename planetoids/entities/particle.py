@@ -1,6 +1,8 @@
-import pygame
 import random
 import math
+
+import pygame
+
 from planetoids.core.config import ORANGE
 
 class Particle:

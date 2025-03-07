@@ -1,6 +1,8 @@
-import pygame
 import random
 import math
+
+import pygame
+
 from planetoids.core.config import WIDTH, HEIGHT, WHITE, ORANGE, DARK_ORANGE
 from planetoids.entities.particle import Particle
 

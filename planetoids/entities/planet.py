@@ -1,5 +1,7 @@
-import pygame
 import random
+
+import pygame
+
 from planetoids.core.config import WIDTH, HEIGHT
 
 class Planet:

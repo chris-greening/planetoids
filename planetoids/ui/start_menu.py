@@ -1,7 +1,9 @@
-import pygame
-from planetoids.core import config
 import random
 import os
+
+import pygame
+
+from planetoids.core import config
 from planetoids.entities.asteroid import Asteroid
 from planetoids.effects.crt_effect import apply_crt_effect  # Import CRT effect function
 
