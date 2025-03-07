@@ -7,7 +7,7 @@ class PowerUp:
     """Base class for all power-ups."""
     subclasses = []
 
-    def __init__(self, x, y, radius=10):
+    def __init__(self, x, y, radius=15):
         """Initialize power-up properties."""
         self.x = x
         self.y = y
@@ -62,10 +62,9 @@ class PowerUp:
 
     def _draw_powerup_symbol(self, screen):
         """Draws the symbol or letter representing the power-up."""
-        font = pygame.font.Font(None, 20)
+        font = pygame.font.Font(None, 32)
         text = font.render(self.get_symbol(), True, (0, 0, 0))
         screen.blit(text, (self.x - 5, self.y - 5))
-
 
     def is_expired(self):
         """Check if the power-up should disappear."""

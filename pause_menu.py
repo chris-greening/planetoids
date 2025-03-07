@@ -16,8 +16,8 @@ class PauseMenu:
 
         # Load the same retro pixel font as the Start Menu
         font_path = os.path.join("assets", "fonts", "VT323.ttf")  # Change if needed
-        self.font = pygame.font.Font(font_path, 48)  # Main menu font
-        self.small_font = pygame.font.Font(font_path, 24)  # Smaller for instructions
+        self.font = pygame.font.Font(font_path, 64)  # Main menu font
+        self.small_font = pygame.font.Font(font_path, 36)  # Smaller for instructions
 
     def show(self):
         """Displays the pause menu and waits for player input."""

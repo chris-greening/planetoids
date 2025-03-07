@@ -3,14 +3,19 @@ from start_menu import StartMenu
 from game_state import GameState
 import crt_effect
 import config
+from intro_animation import IntroAnimation
 
 def main():
     pygame.init()
 
     # Initialize window
+    pygame.mouse.set_visible(False)
     screen = pygame.display.set_mode((config.WIDTH, config.HEIGHT), pygame.FULLSCREEN)
-    pygame.display.set_caption("Planetoids!")
+    pygame.display.set_caption("Planetoids")
     clock = pygame.time.Clock()
+
+    intro = IntroAnimation(screen, clock)
+    intro.play()
 
     # Show the start menu
     start_menu = StartMenu(screen, clock)

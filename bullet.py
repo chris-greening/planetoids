@@ -34,4 +34,4 @@ class Bullet:
 
     def draw(self, screen):
         """Draw the bullet"""
-        pygame.draw.circle(screen, RED, (int(self.x), int(self.y)), 3)
+        pygame.draw.circle(screen, RED, (int(self.x), int(self.y)), 5)

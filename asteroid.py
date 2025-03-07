@@ -5,7 +5,7 @@ from config import WIDTH, HEIGHT, WHITE, ORANGE, DARK_ORANGE
 from particle import Particle
 
 class Asteroid:
-    def __init__(self, x=None, y=None, size=80, stage=3):
+    def __init__(self, x=None, y=None, size=120, stage=3):
         """Initialize an asteroid with position, size, and split stage."""
         self.x = x if x is not None else random.randint(0, WIDTH)
         self.y = y if y is not None else random.randint(0, HEIGHT)
@@ -13,7 +13,7 @@ class Asteroid:
         self.stage = stage  # 3 = large, 2 = medium, 1 = small, 0 = disappears
         self.sides = random.randint(7, 12)  # Number of points
         self.angle = random.uniform(0, 360)  # Movement direction
-        self.base_speed = random.uniform(1, 3)  # Normal speed
+        self.base_speed = random.uniform(2, 4)  # Normal speed
         self.speed = self.base_speed  # Current speed (adjusted by slowdown)
 
         # Generate shape *once* and store relative offsets

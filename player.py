@@ -12,7 +12,7 @@ class Player:
         self.reset_position()
         self.acceleration = 0.1
         self.max_speed = 5
-        self.size = 20  # Ship size
+        self.size = 30  # Ship size
         self.thrusting = False
         self.particles = []  # Stores exhaust particles
         self.set_invincibility()

@@ -19,9 +19,9 @@ class StartMenu:
 
         # Load a refined vintage arcade font (Sleek but retro)
         font_path = os.path.join("assets", "fonts", "VT323.ttf")  # ✅ More sci-fi, less cartoony
-        self.font = pygame.font.Font(font_path, 48)  # ✅ Larger for title
-        self.menu_font = pygame.font.Font(font_path, 32)  # ✅ Medium for menu
-        self.small_font = pygame.font.Font(font_path, 22)  # ✅ Small for instructions
+        self.font = pygame.font.Font(font_path, 120)  # ✅ Larger for title
+        self.menu_font = pygame.font.Font(font_path, 64)  # ✅ Medium for menu
+        self.small_font = pygame.font.Font(font_path, 36)  # ✅ Small for instructions
 
         # Generate background asteroids
         self.background_asteroids = [Asteroid(random.randint(0, config.WIDTH),
@@ -66,6 +66,8 @@ class StartMenu:
             self._draw_text(item, config.WIDTH // 2 - 120, config.HEIGHT // 2 + i * 50, color, self.menu_font)
 
         self._draw_text("Press ENTER to select", config.WIDTH // 2 - 140, config.HEIGHT - 40, config.DIM_GRAY, self.small_font)
+        self._draw_studio_branding()
+        self._draw_version
 
     def _draw_options_menu(self):
         """Draws the options menu."""
@@ -77,6 +79,18 @@ class StartMenu:
         for i, item in enumerate(self.options_items):
             color = config.WHITE if i != self.selected_index else config.ORANGE
             self._draw_text(item, config.WIDTH // 2 - 120, config.HEIGHT // 2 + i * 50, color, self.menu_font)
+
+    def _draw_version(self):
+        """Displays the game version in the bottom right corner."""
+        version_text = self.small_font.render(config.VERSION, True, config.DIM_GRAY)
+        version_rect = version_text.get_rect(bottomright=(config.WIDTH - 10, config.HEIGHT - 10))
+        self.screen.blit(version_text, version_rect)
+
+    def _draw_studio_branding(self):
+        """Displays 'Greening Studio' in the bottom left corner."""
+        studio_text = self.small_font.render("GREENING STUDIO", True, config.GREEN)
+        studio_rect = studio_text.get_rect(bottomleft=(10, config.HEIGHT - 10))
+        self.screen.blit(studio_text, studio_rect)
 
     def _draw_text(self, text, x, y, color=config.WHITE, font=None):
         """Helper function to render sharp, readable text."""
