@@ -1,6 +1,6 @@
 import pygame
 from planetoids.entities.player import Player
-from planetoids.entities.asteroid import Asteroid, ExplodingAsteroid, IceAsteroid
+from planetoids.entities.asteroid import Asteroid, ExplodingAsteroid
 from planetoids.entities.bullet import Bullet
 from planetoids.entities.powerups import PowerUp, TemporalSlowdownPowerUp
 from planetoids.ui.pause_menu import PauseMenu
