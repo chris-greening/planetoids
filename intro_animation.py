@@ -11,7 +11,7 @@ class IntroAnimation:
         self.screen = screen
         self.clock = clock
         self.font = pygame.font.Font("assets/fonts/VT323.ttf", 80)  # Retro pixel-style font
-        self.text = "GREENING GAMES"  # Full text
+        self.text = "GREENING STUDIO"  # Full text
         self.typed_text = ""  # What has been typed so far
         self.cursor_visible = True  # Blinking cursor state
         self.cursor_timer = time.time()  # Timer for cursor blinking
@@ -24,7 +24,7 @@ class IntroAnimation:
         start_time = time.time()
         char_index = 0  
 
-        while char_index < len(self.text) or time.time() - start_time < 2.2:  # Reduced total time
+        while char_index < len(self.text) or time.time() - start_time < 1.8:  # Reduced total time
             self.screen.fill((10, 15, 30))  
 
             # Faster typing effect
@@ -77,17 +77,17 @@ class IntroAnimation:
             surface.blit(color_shift_surf, (x, y), special_flags=pygame.BLEND_ADD)
 
     def _sequential_glitch_out(self):
-        """Sequentially glitches out each letter into garbage characters (now faster)."""
+        """Sequentially glitches out each letter into garbage characters, then keeps glitching for a bit longer."""
         glitched_text = list(self.text)
         char_pool = "!@#$%^&*()_+=<>?/\\|{}[]"
 
         for i in range(len(glitched_text)):
-            for _ in range(3):  # ⏩ Fewer frames per letter
-                self.screen.fill((10, 15, 30))  
+            for _ in range(4):  # Control glitch speed
+                self.screen.fill((10, 15, 30))
 
                 # Randomly corrupt letters up to `i`
                 for j in range(i + 1):
-                    if random.random() < 0.8:  # ⏩ Higher corruption chance
+                    if random.random() < 0.8:
                         glitched_text[j] = random.choice(char_pool)
 
                 display_text = f"> {''.join(glitched_text)}_"
@@ -100,9 +100,28 @@ class IntroAnimation:
                 apply_crt_effect(self.screen)
 
                 pygame.display.flip()
-                self.clock.tick(25)  # Slightly faster transitions
+                self.clock.tick(25)
 
-        self._fade_out()  
+        # **Extra 0.5s of continuous glitching before fade-out**
+        end_time = time.time() + .75
+        while time.time() < end_time:
+            self.screen.fill((10, 15, 30))
+
+            # More aggressive glitching
+            corrupted_text = ''.join(random.choice(char_pool) for _ in glitched_text)
+            text_surface = self.font.render(f"> {corrupted_text}_", True, config.RED)
+
+            # Heavy glitch effect
+            self._glitch_effect(self.screen, text_surface, self.text_x, self.text_y)
+
+            # CRT effect
+            apply_crt_effect(self.screen)
+
+            pygame.display.flip()
+            self.clock.tick(25)  # Keep the chaotic effect running
+
+        self._fade_out()
+
 
     def _fade_out(self):
         """Fades out the intro animation faster than before."""
