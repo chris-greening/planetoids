@@ -17,102 +17,99 @@ class IntroAnimation:
         self.cursor_timer = time.time()  # Timer for cursor blinking
         self.text_x = (config.WIDTH - self.font.size(self.text)[0]) // 2
         self.text_y = (config.HEIGHT - self.font.size(self.text)[1]) // 2
-        self.typing_speed = 0.07  # Speed of typing effect (seconds per character)
+        self.typing_speed = 0.04  # ⏩ Faster typing (reduced delay per character)
 
     def play(self):
         """Runs the intro animation with terminal typing effect, glitch, and CRT effects."""
         start_time = time.time()
-        char_index = 0  # Tracks how much of the text has been typed
+        char_index = 0  
 
-        while char_index < len(self.text) or time.time() - start_time < 3:
-            self.screen.fill((10, 15, 30))  # Deep blue background
+        while char_index < len(self.text) or time.time() - start_time < 2.2:  # Reduced total time
+            self.screen.fill((10, 15, 30))  
 
-            # Type one character at a time
+            # Faster typing effect
             if char_index < len(self.text) and time.time() - start_time > char_index * self.typing_speed:
                 self.typed_text += self.text[char_index]
                 char_index += 1
 
-            # Blinking cursor effect
-            if time.time() - self.cursor_timer > 0.4:  # Blinks every 0.4s
+            # Blinking cursor
+            if time.time() - self.cursor_timer > 0.3:  # Faster blinking
                 self.cursor_visible = not self.cursor_visible
                 self.cursor_timer = time.time()
 
-            # Render the text with a blinking cursor
+            # Render text with cursor
             display_text = f"> {self.typed_text}{'_' if self.cursor_visible else ' '}"
             text_surface = self.font.render(display_text, True, config.GREEN)
 
-            # Apply glitch effect
+            # Glitch effect
             self._glitch_effect(self.screen, text_surface, self.text_x, self.text_y)
 
-            # Apply CRT effect (if enabled)
+            # CRT effect
             apply_crt_effect(self.screen)
 
             pygame.display.flip()
-            self.clock.tick(30)  # Control frame rate
+            self.clock.tick(40)  # Faster frame rate for smoother effect
 
-        self._sequential_glitch_out()  # Letter-by-letter corruption before fade
+        self._sequential_glitch_out()  
 
     def _glitch_effect(self, surface, text_surface, x, y):
         """Applies a glitch effect by shifting color channels and adding distortion."""
         width, height = text_surface.get_size()
         glitch_surf = text_surface.copy()
 
-        for _ in range(8):  # Number of glitch passes
-            shift_x = random.randint(-5, 5)
-            shift_y = random.randint(-3, 3)
+        for _ in range(6):  # Fewer glitch passes for speed
+            shift_x = random.randint(-4, 4)
+            shift_y = random.randint(-2, 2)
 
-            # Ensure slice selection is within valid bounds
-            slice_y = random.randint(0, max(0, height - 1))  # Clamp to valid range
-            max_slice_height = max(2, min(8, height - slice_y))  # Ensure slice height is never less than 2
-            slice_height = random.randint(2, max_slice_height)
+            slice_y = random.randint(0, max(0, height - 1))  
+            slice_height = random.randint(2, max(6, height - slice_y))  
 
-            # Only proceed if slice_height is valid
             if slice_y + slice_height <= height:
                 slice_rect = pygame.Rect(0, slice_y, width, slice_height)
                 slice_surf = glitch_surf.subsurface(slice_rect).copy()
                 surface.blit(slice_surf, (x + shift_x, y + shift_y))
 
         # Color separation effect
-        for offset in [-3, 3, -2, 2]:
+        for offset in [-2, 2]:
             color_shift_surf = text_surface.copy()
             color_shift_surf.fill((0, 0, 0))
             color_shift_surf.blit(text_surface, (offset, offset))
             surface.blit(color_shift_surf, (x, y), special_flags=pygame.BLEND_ADD)
 
     def _sequential_glitch_out(self):
-        """Sequentially glitches out each letter into garbage characters."""
+        """Sequentially glitches out each letter into garbage characters (now faster)."""
         glitched_text = list(self.text)
         char_pool = "!@#$%^&*()_+=<>?/\\|{}[]"
 
         for i in range(len(glitched_text)):
-            for _ in range(5):  # Rapid glitch effect per letter
-                self.screen.fill((10, 15, 30))  # Keep background consistent
+            for _ in range(3):  # ⏩ Fewer frames per letter
+                self.screen.fill((10, 15, 30))  
 
-                # Randomly replace letters up to `i` with glitch chars
+                # Randomly corrupt letters up to `i`
                 for j in range(i + 1):
-                    if random.random() < 0.6:  # 60% chance of corruption
+                    if random.random() < 0.8:  # ⏩ Higher corruption chance
                         glitched_text[j] = random.choice(char_pool)
 
                 display_text = f"> {''.join(glitched_text)}_"
                 text_surface = self.font.render(display_text, True, config.RED)
 
-                # Heavy glitch effects during corruption
+                # Heavy glitch effect
                 self._glitch_effect(self.screen, text_surface, self.text_x, self.text_y)
 
-                # Apply CRT effect
+                # CRT effect
                 apply_crt_effect(self.screen)
 
                 pygame.display.flip()
-                self.clock.tick(15)  # Slower updates for impact
+                self.clock.tick(25)  # Slightly faster transitions
 
-        self._fade_out()  # Smooth transition
+        self._fade_out()  
 
     def _fade_out(self):
-        """Fades out the intro animation after glitching out."""
+        """Fades out the intro animation faster than before."""
         fade_surface = pygame.Surface((config.WIDTH, config.HEIGHT))
         fade_surface.fill(config.BLACK)
-        for alpha in range(0, 255, 10):
+        for alpha in range(0, 255, 20):  # Increased fade step size
             fade_surface.set_alpha(alpha)
             self.screen.blit(fade_surface, (0, 0))
             pygame.display.flip()
-            self.clock.tick(30)
+            self.clock.tick(30)  
