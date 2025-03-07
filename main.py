@@ -9,8 +9,9 @@ def main():
     pygame.init()
 
     # Initialize window
+    pygame.mouse.set_visible(False)
     screen = pygame.display.set_mode((config.WIDTH, config.HEIGHT), pygame.FULLSCREEN)
-    pygame.display.set_caption("Planetoids!")
+    pygame.display.set_caption("Planetoids")
     clock = pygame.time.Clock()
 
     intro = IntroAnimation(screen, clock)
