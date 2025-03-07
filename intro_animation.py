@@ -17,7 +17,7 @@ class IntroAnimation:
         self.cursor_timer = time.time()  # Timer for cursor blinking
         self.text_x = (config.WIDTH - self.font.size(self.text)[0]) // 2
         self.text_y = (config.HEIGHT - self.font.size(self.text)[1]) // 2
-        self.typing_speed = 0.04  # ⏩ Faster typing (reduced delay per character)
+        self.typing_speed = 0.06  # Faster typing (reduced delay per character)
 
     def play(self):
         """Runs the intro animation with terminal typing effect, glitch, and CRT effects."""
