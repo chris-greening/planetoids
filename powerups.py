@@ -7,7 +7,7 @@ class PowerUp:
     """Base class for all power-ups."""
     subclasses = []
 
-    def __init__(self, x, y, radius=10):
+    def __init__(self, x, y, radius=15):
         """Initialize power-up properties."""
         self.x = x
         self.y = y

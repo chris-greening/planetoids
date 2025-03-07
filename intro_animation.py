@@ -10,7 +10,7 @@ class IntroAnimation:
     def __init__(self, screen, clock):
         self.screen = screen
         self.clock = clock
-        self.font = pygame.font.Font("assets/fonts/VT323.ttf", 80)  # Retro pixel-style font
+        self.font = pygame.font.Font("assets/fonts/VT323.ttf", 120)  # Retro pixel-style font
         self.text = "GREENING STUDIO"  # Full text
         self.typed_text = ""  # What has been typed so far
         self.cursor_visible = True  # Blinking cursor state
