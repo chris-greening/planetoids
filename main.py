@@ -60,7 +60,7 @@ def _glitch_effect(surface, text_surface, x, y):
         shift_x = random.randint(-5, 5)
         shift_y = random.randint(-3, 3)
 
-        # ✅ Fix: Ensure slice selection is within valid bounds
+        # Ensure slice selection is within valid bounds
         slice_y = random.randint(0, max(0, height - 1))  # Clamp to valid range
         max_slice_height = max(2, min(8, height - slice_y))  # Ensure slice height is never less than 2
         if max_slice_height > 2:
@@ -68,13 +68,13 @@ def _glitch_effect(surface, text_surface, x, y):
         else:
             slice_height = 2  # Default to 2 if no valid range
 
-        # ✅ Only proceed if slice_height is valid
+        # Only proceed if slice_height is valid
         if slice_height > 0 and slice_y + slice_height <= height:
             slice_rect = pygame.Rect(0, slice_y, width, slice_height)
             slice_surf = glitch_surf.subsurface(slice_rect).copy()
             surface.blit(slice_surf, (x + shift_x, y + shift_y))
 
-    # ✅ Color separation effect
+    # Color separation effect
     for i, offset in enumerate([-2, 2, -1, 1]):
         color_shift_surf = text_surface.copy()
         color_shift_surf.fill((0, 0, 0))

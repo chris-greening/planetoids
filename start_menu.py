@@ -19,7 +19,7 @@ class StartMenu:
 
         # Load a refined vintage arcade font (Sleek but retro)
         font_path = os.path.join("assets", "fonts", "VT323.ttf")  # ✅ More sci-fi, less cartoony
-        self.font = pygame.font.Font(font_path, 48)  # ✅ Larger for title
+        self.font = pygame.font.Font(font_path, 96)  # ✅ Larger for title
         self.menu_font = pygame.font.Font(font_path, 32)  # ✅ Medium for menu
         self.small_font = pygame.font.Font(font_path, 22)  # ✅ Small for instructions
 
