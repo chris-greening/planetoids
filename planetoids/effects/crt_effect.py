@@ -52,7 +52,14 @@ def _apply_vhs_glitch(screen):
     # Create a surface copy for distortions
     glitch_surface = screen.copy()
 
-    # Glitch effect: randomly shift horizontal slices
+    _add_glitch_effect(height, width, glitch_surface)
+    _add_color_separation(screen, glitch_surface)
+    _add_rolling_static(screen, height, width)
+
+    # Finally, blit the glitch effect back onto the screen
+    screen.blit(glitch_surface, (0, 0))
+
+def _add_glitch_effect(height, width, glitch_surface):
     for _ in range(4):  # Number of glitch distortions
         if random.random() < 0.1:  # 10% chance of a glitch appearing
             y_start = random.randint(0, height - 20)
@@ -64,7 +71,7 @@ def _apply_vhs_glitch(screen):
             slice_copy = glitch_surface.subsurface(slice_area).copy()
             glitch_surface.blit(slice_copy, (offset, y_start))
 
-    # Color separation glitch (Red, Green, Blue channels slightly misaligned)
+def _add_color_separation(screen, glitch_surface):
     if random.random() < 0.05:  # 5% chance of color glitch
         for i in range(3):  # RGB channels
             x_offset = random.randint(-2, 2)
@@ -74,14 +81,10 @@ def _apply_vhs_glitch(screen):
             color_shift_surface.blit(glitch_surface, (x_offset, y_offset))
             screen.blit(color_shift_surface, (0, 0), special_flags=pygame.BLEND_ADD)
 
-    # Apply rolling static effect
+def _add_rolling_static(screen, height, width):
     static_surface = pygame.Surface((width, height), pygame.SRCALPHA)
     for y in range(0, height, 8):  # Adjust for stronger static lines
         if random.random() < 0.2:  # 20% chance of static per line
             pygame.draw.line(static_surface, (255, 255, 255, random.randint(30, 80)), (0, y), (width, y))
-
     # Blend the static overlay
     screen.blit(static_surface, (0, 0), special_flags=pygame.BLEND_ADD)
-
-    # Finally, blit the glitch effect back onto the screen
-    screen.blit(glitch_surface, (0, 0))
