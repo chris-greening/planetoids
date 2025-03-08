@@ -327,7 +327,6 @@ class GameState:
         if self.lives <= 0:
             self.game_over(screen)  # No lives left, game over
 
-
     def check_for_collisions(self, screen):
         """Check for bullet-asteroid and player-asteroid collisions."""
         self._handle_bullet_asteroid_collision()
@@ -389,8 +388,8 @@ class GameState:
 
     def _display_game_over(self, screen):
         """Displays 'GAME OVER' while the game keeps running, showing moving asteroids in the background."""
-        font_path = os.path.join("assets", "fonts", "VT323.ttf")  # ✅ Match Planetoids font
-        game_over_font = pygame.font.Font(font_path, 64)  # ✅ Big text size
+        font_path = os.path.join("assets", "fonts", "VT323.ttf")
+        game_over_font = pygame.font.Font(font_path, 64)
 
         text = game_over_font.render("GAME OVER", True, config.YELLOW)
         text_rect = text.get_rect(center=(config.WIDTH // 2, config.HEIGHT // 2))
@@ -420,7 +419,6 @@ class GameState:
                     exit()
                 if event.type == pygame.KEYDOWN:  # Any key press exits the game over screen
                     game_over = False
-
 
     def _draw_lives(self, screen):
         """Displays remaining player lives as small triangles in the top-right corner, Galaga-style."""
