@@ -227,7 +227,10 @@ class GameState:
 
         self._remove_destroyed_asteroids(asteroids_to_remove)
         self.asteroids.extend(new_asteroids)  # Add newly split asteroids
-        self.bullets = [b for b in self.bullets if b not in bullets_to_remove]  # Remove used bullets
+        self.bullets = self._remove_used_bullets(self.bullets, bullets_to_remove)
+
+    def _remove_used_bullets(self, bullets, bullets_to_remove):
+        return [b for b in bullets if b not in bullets_to_remove]
 
     def _is_bullet_asteroid_collision(self, bullet, asteroid):
         """Returns True if a bullet collides with an asteroid."""
@@ -235,7 +238,7 @@ class GameState:
 
     def _process_bullet_hit(self, bullet, asteroid, bullets_to_remove, asteroids_to_remove, new_asteroids):
         """Handles the effects of a bullet hitting an asteroid."""
-        
+
         self._apply_bullet_effects(bullet, asteroid)
         self._handle_asteroid_destruction(asteroid, asteroids_to_remove, new_asteroids)
 
