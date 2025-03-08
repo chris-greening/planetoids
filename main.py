@@ -53,6 +53,7 @@ def main():
     pygame.quit()
 
 def _event_handler(game_state):
+    """Handle key input events"""
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_p:
@@ -63,4 +64,3 @@ def _event_handler(game_state):
 
 if __name__ == "__main__":
     main()
-
