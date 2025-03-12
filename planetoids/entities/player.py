@@ -285,18 +285,22 @@ class Player:
         if self.explosion_timer > 0:
             self.explosion_timer -= 1
 
-            # Move fragments
-            for fragment in self.fragments:
-                fragment["pos"] = (fragment["pos"][0] + fragment["vel"][0], fragment["pos"][1] + fragment["vel"][1])
-
-            # Update explosion particles
-            for particle in self.explosion_particles:
-                particle.update()
-
+            self._update_fragments(self.fragments)
+            self._update_particles(self.explosion_particles)
         else:
             # Animation is done, clear effects
             self.explosion_particles = []
             self.fragments = []
+
+    def _update_particles(self, explosion_particles):
+        """Update the particles"""
+        for particle in explosion_particles:
+                particle.update()
+
+    def _update_fragments(self, fragments):
+        """Update the fragment particles"""
+        for fragment in fragments:
+                fragment["pos"] = (fragment["pos"][0] + fragment["vel"][0], fragment["pos"][1] + fragment["vel"][1])
 
     def _draw_explosion(self, screen):
         """Draws the explosion effect and ship fragments."""
