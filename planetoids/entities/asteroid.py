@@ -43,8 +43,8 @@ class Asteroid:
             new_size = self.size // 2
             new_stage = self.stage - 1
 
-            asteroid_class_1 = self._get_asteroid_type()
-            asteroid_class_2 = self._get_asteroid_type()
+            asteroid_class_1 = self.get_asteroid_type()
+            asteroid_class_2 = self.get_asteroid_type()
 
             asteroid1 = asteroid_class_1(self.x + random.randint(-5, 5), self.y + random.randint(-5, 5), size=new_size, stage=new_stage)
             asteroid2 = asteroid_class_2(self.x + random.randint(-5, 5), self.y + random.randint(-5, 5), size=new_size, stage=new_stage)
@@ -54,7 +54,7 @@ class Asteroid:
         return []
 
     @classmethod
-    def _get_asteroid_type(cls):
+    def get_asteroid_type(cls):
         """Selects an asteroid type based on weighted probabilities"""
         asteroid_classes = cls.asteroid_types
         weights = [subclass.spawn_chance for subclass in asteroid_classes]

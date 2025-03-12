@@ -68,14 +68,10 @@ class GameState:
             self.player.set_invincibility()
 
     def spawn_asteroids(self, count=5):
-        """Spawn initial asteroids."""
+        """Spawn initial asteroids using weighted selection from asteroid types."""
         for _ in range(count):
-            if random.random() < .02:
-                self.asteroids.append(ExplodingAsteroid())
-            # elif random.random() < .5:
-            #     self.asteroids.append(IceAsteroid())
-            else:
-                self.asteroids.append(Asteroid())
+            asteroid_type = Asteroid.get_asteroid_type()
+            self.asteroids.append(asteroid_type())
 
     def update_all(self, keys):
         """Update all game objects, including power-ups, bullets, asteroids, and explosions."""
