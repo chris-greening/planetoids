@@ -288,19 +288,23 @@ class Player:
             self._update_fragments(self.fragments)
             self._update_particles(self.explosion_particles)
         else:
-            # Animation is done, clear effects
-            self.explosion_particles = []
-            self.fragments = []
+            self._clear_explosion()
+
+    def _clear_explosion(self):
+        """Clear explosion effects"""
+        # Animation is done, clear effects
+        self.explosion_particles = []
+        self.fragments = []
 
     def _update_particles(self, explosion_particles):
         """Update the particles"""
         for particle in explosion_particles:
-                particle.update()
+            particle.update()
 
     def _update_fragments(self, fragments):
         """Update the fragment particles"""
         for fragment in fragments:
-                fragment["pos"] = (fragment["pos"][0] + fragment["vel"][0], fragment["pos"][1] + fragment["vel"][1])
+            fragment["pos"] = (fragment["pos"][0] + fragment["vel"][0], fragment["pos"][1] + fragment["vel"][1])
 
     def _draw_explosion(self, screen):
         """Draws the explosion effect and ship fragments."""
