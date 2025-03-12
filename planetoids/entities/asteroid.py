@@ -110,7 +110,7 @@ class Asteroid:
 
 class FastAsteroid(Asteroid):
     spawn_chance = 0.05  # 5% chance to spawn
-    speed_multiplier = 3
+    speed_multiplier = 2.3
     color = (0, 255, 0)  # Bright green
 
     def __init__(self, x, y, size, stage):
@@ -137,7 +137,7 @@ class FastAsteroid(Asteroid):
 
 class ExplodingAsteroid(Asteroid):
     """Asteroid that explodes, destroying nearby asteroids and playing an explosion animation."""
-    spawn_chance = 0.05
+    spawn_chance = 0.08
 
     def __init__(self, x=None, y=None, size=80, stage=3, explosion_radius=200):  # Bigger explosion
         super().__init__(x, y, size, stage)
@@ -234,7 +234,7 @@ class ExplodingAsteroid(Asteroid):
 class ShieldAsteroid(Asteroid):
     """An asteroid with a shield that must be broken before it can be destroyed."""
 
-    spawn_chance = 10  # 8% chance of spawning
+    spawn_chance = .05
     shield_strength = 2  # Shield takes 2 hits before breaking
 
     def __init__(self, x, y, size, stage):
@@ -247,14 +247,15 @@ class ShieldAsteroid(Asteroid):
         if self.current_shield > 0:
             shield_radius = self.size + 12  # Slightly larger than the asteroid
             alpha = 200 if self.shield_strength == 2 else 50
-
-            # Create a semi-transparent shield effect
             shield_surface = pygame.Surface((shield_radius * 2, shield_radius * 2), pygame.SRCALPHA)
-            pygame.draw.circle(shield_surface, (CYAN[0], CYAN[1], CYAN[2], alpha),
-                               (shield_radius, shield_radius), shield_radius, 3)
+            pygame.draw.circle(
+                shield_surface,
+                (CYAN[0], CYAN[1], CYAN[2], alpha),
+                (shield_radius, shield_radius),
+                shield_radius,
+                3
+            )
             screen.blit(shield_surface, (self.x - shield_radius, self.y - shield_radius))
-
-        # Draw the asteroid itself
         super().draw(screen)
 
     def on_hit(self, bullet):
