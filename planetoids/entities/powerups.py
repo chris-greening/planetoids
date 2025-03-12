@@ -77,7 +77,7 @@ class TrishotPowerUp(PowerUp):
 
     def __init__(self, x, y):
         """Initialize the trishot power-up."""
-        super().__init__(x, y)  # Use parent class constructor
+        super().__init__(x, y)
 
     def apply(self, player):
         """Grants the player trishot mode."""
@@ -92,7 +92,7 @@ class ShieldPowerUp(PowerUp):
 
     def __init__(self, x, y):
         """Initialize the shield power-up."""
-        super().__init__(x, y)  # Use parent class constructor
+        super().__init__(x, y)
 
     def apply(self, player):
         """Grants the player shield."""
@@ -110,7 +110,7 @@ class QuadShotPowerUp(PowerUp):
         player.enable_quadshot()
 
     def get_symbol(self):
-        return "Q"  # Displays "Q" inside the power-up
+        return "Q"
 
 class RicochetShotPowerUp(PowerUp):
     """Ricochet Shot power-up that makes bullets bounce off asteroids once."""
@@ -120,7 +120,7 @@ class RicochetShotPowerUp(PowerUp):
         player.enable_ricochet()
 
     def get_symbol(self):
-        return "R"  # Displays "R" inside the power-up
+        return "R"
 
 class InvincibilityPowerUp(PowerUp):
     """Invincibility powerup"""
@@ -130,7 +130,7 @@ class InvincibilityPowerUp(PowerUp):
         player.enable_invincibility()
 
     def get_symbol(self):
-        return "I"  # Displays "I" inside the power-up
+        return "I"
 
 class TemporalSlowdownPowerUp(PowerUp):
     """Slows all asteroids dramatically for a few seconds."""
@@ -141,4 +141,4 @@ class TemporalSlowdownPowerUp(PowerUp):
         pygame.time.set_timer(pygame.USEREVENT + 5, 5000)  # Slowdown lasts 5 seconds
 
     def get_symbol(self):
-        return "Δ"  # Displays "S" inside the power-up
+        return "Δ"
