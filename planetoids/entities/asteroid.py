@@ -108,6 +108,33 @@ class Asteroid:
         """Draw the asteroid with an outline (wireframe)."""
         pygame.draw.polygon(screen, WHITE, self.shape, 1)
 
+class FastAsteroid(Asteroid):
+    spawn_chance = 0.5  # 5% chance to spawn
+    speed_multiplier = 3
+    color = (0, 255, 0)  # Bright green
+
+    def __init__(self, x, y, size, stage):
+        super().__init__(x, y, size, stage)
+        self.base_speed *= self.speed_multiplier  # Increase speed
+        self.trail = []  # Stores previous positions for motion blur
+
+    def update(self, game_state):
+        """Update position and add motion blur effect."""
+        self.trail.append((self.x, self.y))  # Store previous position
+        if len(self.trail) > 5:  # Limit the trail length
+            self.trail.pop(0)
+
+        super().update(game_state)
+
+    def draw(self, screen):
+        """Draws the asteroid with a motion blur effect."""
+        pygame.draw.polygon(screen, FastAsteroid.color, self.shape, 1)
+
+    def __init_subclass__(cls, **kwargs):
+        """Ensures all children of FastAsteroid inherit speed boost."""
+        super().__init_subclass__(**kwargs)
+        cls.speed_multiplier = FastAsteroid.speed_multiplier  # Inherit 1.5x speed
+
 class ExplodingAsteroid(Asteroid):
     """Asteroid that explodes, destroying nearby asteroids and playing an explosion animation."""
     spawn_chance = 0.05
@@ -172,8 +199,8 @@ class ExplodingAsteroid(Asteroid):
     def draw(self, screen):
         """Draw the asteroid as an orange polygon, or explosion if exploding."""
         if not self.exploding:
-            pygame.draw.polygon(screen, ORANGE, self.shape)  # Filled polygon
-            pygame.draw.polygon(screen, DARK_ORANGE, self.shape, 2)  # Outline
+            # pygame.draw.polygon(screen, ORANGE, self.shape)  # Filled polygon
+            pygame.draw.polygon(screen, ORANGE, self.shape, 2)  # Outline
         else:
             self.draw_explosion(screen)  # Draw explosion animation
 
