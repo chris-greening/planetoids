@@ -234,7 +234,7 @@ class ExplodingAsteroid(Asteroid):
 class ShieldAsteroid(Asteroid):
     """An asteroid with a shield that must be broken before it can be destroyed."""
 
-    spawn_chance = .08  # 8% chance of spawning
+    spawn_chance = 10  # 8% chance of spawning
     shield_strength = 2  # Shield takes 2 hits before breaking
 
     def __init__(self, x, y, size, stage):
@@ -245,8 +245,8 @@ class ShieldAsteroid(Asteroid):
     def draw(self, screen):
         """Draw the asteroid with a shield effect if it's still active."""
         if self.current_shield > 0:
-            shield_radius = self.size + 8  # Slightly larger than the asteroid
-            alpha = 100 + self.current_shield * 50  # Shield fades as it weakens
+            shield_radius = self.size + 12  # Slightly larger than the asteroid
+            alpha = 200 if self.shield_strength == 2 else 50
 
             # Create a semi-transparent shield effect
             shield_surface = pygame.Surface((shield_radius * 2, shield_radius * 2), pygame.SRCALPHA)
