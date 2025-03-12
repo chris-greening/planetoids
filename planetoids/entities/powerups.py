@@ -23,6 +23,13 @@ class PowerUp:
         PowerUp.subclasses.append(cls)  # Register each subclass
 
     @classmethod
+    def get_powerup_type(cls):
+        """Selects an asteroid type based on weighted probabilities"""
+        powerup_classes = cls.subclasses
+        weights = [subclass.spawn_chance for subclass in powerup_classes]
+        return random.choices(powerup_classes, weights=weights, k=1)[0]
+
+    @classmethod
     def get_powerups(cls):
         return cls.subclasses
 
