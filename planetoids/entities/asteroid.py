@@ -109,7 +109,7 @@ class Asteroid:
         pygame.draw.polygon(screen, WHITE, self.shape, 1)
 
 class FastAsteroid(Asteroid):
-    spawn_chance = 0.5  # 5% chance to spawn
+    spawn_chance = 0.05  # 5% chance to spawn
     speed_multiplier = 3
     color = (0, 255, 0)  # Bright green
 
