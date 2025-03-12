@@ -74,6 +74,7 @@ class PowerUp:
 
 class TrishotPowerUp(PowerUp):
     """Trishot power-up that enables triple bullets for a limited time."""
+    spawn_chance = 1.0
 
     def __init__(self, x, y):
         """Initialize the trishot power-up."""
@@ -89,6 +90,7 @@ class TrishotPowerUp(PowerUp):
 
 class ShieldPowerUp(PowerUp):
     """Shield power-up that reenables player's shield"""
+    spawn_chance = 1.0
 
     def __init__(self, x, y):
         """Initialize the shield power-up."""
@@ -104,6 +106,7 @@ class ShieldPowerUp(PowerUp):
 
 class QuadShotPowerUp(PowerUp):
     """QuadShot power-up that enables four-directional bullets for a limited time."""
+    spawn_chance = 1.0
 
     def apply(self, player):
         """Grants the player QuadShot mode."""
@@ -114,6 +117,7 @@ class QuadShotPowerUp(PowerUp):
 
 class RicochetShotPowerUp(PowerUp):
     """Ricochet Shot power-up that makes bullets bounce off asteroids once."""
+    spawn_chance = 1.0
 
     def apply(self, player):
         """Grants the player Ricochet mode."""
@@ -124,6 +128,7 @@ class RicochetShotPowerUp(PowerUp):
 
 class InvincibilityPowerUp(PowerUp):
     """Invincibility powerup"""
+    spawn_chance = 1.0
 
     def apply(self, player):
         """Grants the player Invincibility mode."""
@@ -134,6 +139,7 @@ class InvincibilityPowerUp(PowerUp):
 
 class TemporalSlowdownPowerUp(PowerUp):
     """Slows all asteroids dramatically for a few seconds."""
+    spawn_chance = 1.0
 
     def apply(self, game_state):
         """Activates slow-motion effect on all asteroids."""
