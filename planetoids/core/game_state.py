@@ -4,7 +4,7 @@ import os
 import pygame
 
 from planetoids.entities.player import Player
-from planetoids.entities.asteroid import Asteroid, ExplodingAsteroid
+from planetoids.entities.asteroid import Asteroid, ExplodingAsteroid, ShieldAsteroid
 from planetoids.entities.bullet import Bullet
 from planetoids.entities.powerups import PowerUp, TemporalSlowdownPowerUp
 from planetoids.ui.pause_menu import PauseMenu
@@ -235,8 +235,12 @@ class GameState:
 
     def _process_bullet_hit(self, bullet, asteroid, bullets_to_remove, asteroids_to_remove, new_asteroids):
         """Handles the effects of a bullet hitting an asteroid."""
-        
+
         self._apply_bullet_effects(bullet, asteroid)
+        if isinstance(asteroid, ShieldAsteroid) and asteroid.current_shield > 0:
+            asteroid.on_hit(bullet)  # Reduce shield health
+            bullets_to_remove.append(bullet)  # Destroy bullet
+            return  # Skip further processing (don't damage the asteroid)
         self._handle_asteroid_destruction(asteroid, asteroids_to_remove, new_asteroids)
 
         if not bullet.piercing:

@@ -3,7 +3,7 @@ import math
 
 import pygame
 
-from planetoids.core.config import WIDTH, HEIGHT, WHITE, ORANGE, DARK_ORANGE
+from planetoids.core.config import WIDTH, HEIGHT, WHITE, ORANGE, DARK_ORANGE, CYAN
 from planetoids.entities.particle import Particle
 
 class Asteroid:
@@ -230,6 +230,39 @@ class ExplodingAsteroid(Asteroid):
 
         if shockwave_radius > 0:
             pygame.draw.circle(screen, RED_ORANGE, (int(self.x), int(self.y)), int(shockwave_radius), 2)
+
+class ShieldAsteroid(Asteroid):
+    """An asteroid with a shield that must be broken before it can be destroyed."""
+
+    spawn_chance = .08  # 8% chance of spawning
+    shield_strength = 2  # Shield takes 2 hits before breaking
+
+    def __init__(self, x, y, size, stage):
+        """Initialize ShieldAsteroid with a shield."""
+        super().__init__(x, y, size, stage)
+        self.current_shield = self.shield_strength  # Track shield hits
+
+    def draw(self, screen):
+        """Draw the asteroid with a shield effect if it's still active."""
+        if self.current_shield > 0:
+            shield_radius = self.size + 8  # Slightly larger than the asteroid
+            alpha = 100 + self.current_shield * 50  # Shield fades as it weakens
+
+            # Create a semi-transparent shield effect
+            shield_surface = pygame.Surface((shield_radius * 2, shield_radius * 2), pygame.SRCALPHA)
+            pygame.draw.circle(shield_surface, (CYAN[0], CYAN[1], CYAN[2], alpha),
+                               (shield_radius, shield_radius), shield_radius, 3)
+            screen.blit(shield_surface, (self.x - shield_radius, self.y - shield_radius))
+
+        # Draw the asteroid itself
+        super().draw(screen)
+
+    def on_hit(self, bullet):
+        """Handles what happens when the asteroid is hit."""
+        if self.current_shield > 0:
+            self.current_shield -= 1  # Reduce shield strength
+        else:
+            super().on_hit(bullet)  # Call normal asteroid hit behavior
 
 # class IceAsteroid(Asteroid):
 #     """Asteroid that leaves a visible ice trail and slows the player when touched."""
