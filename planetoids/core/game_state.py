@@ -52,13 +52,8 @@ class GameState:
     def spawn_powerup(self, x, y):
         """Spawns a power-up with a probability, allowing multiple to exist at once."""
         if len(self.powerups) < 3 and random.random() < .1:
-            powerup_classes = PowerUp.get_powerups()
-            if not self.player.shield_active:
-                powerup_classes = [
-                    p for p in powerup_classes if p.__name__ != "ShieldPowerUp"
-                ]
-            chosen_powerup = random.choice(powerup_classes)
-            self.powerups.append(chosen_powerup(x, y))
+            powerup_class = PowerUp.get_powerup_type()
+            self.powerups.append(powerup_class(x, y))
 
     def check_for_clear_map(self):
         """Checks if all asteroids are destroyed and resets the map if so."""
@@ -71,6 +66,7 @@ class GameState:
         """Spawn initial asteroids using weighted selection from asteroid types."""
         for _ in range(count):
             asteroid_type = Asteroid.get_asteroid_type()
+            print(asteroid_type)
             self.asteroids.append(asteroid_type())
 
     def update_all(self, keys):
