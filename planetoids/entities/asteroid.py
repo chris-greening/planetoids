@@ -184,9 +184,6 @@ class ExplodingAsteroid(Asteroid):
 
     def draw(self, screen):
         """Draw the asteroid as an orange polygon, or explosion if exploding."""
-        ORANGE = (255, 165, 0)
-        DARK_ORANGE = (255, 100, 0)
-
         if not self.exploding:
             pygame.draw.polygon(screen, ORANGE, self.shape)  # Filled polygon
             pygame.draw.polygon(screen, DARK_ORANGE, self.shape, 2)  # Outline
