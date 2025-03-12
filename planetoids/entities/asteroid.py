@@ -110,7 +110,7 @@ class Asteroid:
 
 class ExplodingAsteroid(Asteroid):
     """Asteroid that explodes, destroying nearby asteroids and playing an explosion animation."""
-    spawn_chance = 0.5
+    spawn_chance = 0.05
 
     def __init__(self, x=None, y=None, size=80, stage=3, explosion_radius=200):  # Bigger explosion
         super().__init__(x, y, size, stage)
