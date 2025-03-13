@@ -4,9 +4,11 @@ from planetoids.ui.start_menu import StartMenu
 from planetoids.core.game_state import GameState
 from planetoids.effects import crt_effect
 from planetoids.core import config
+from planetoids.core.logger import logger
 from planetoids.ui.intro_animation import IntroAnimation
 
 def main():
+    logger.info("Game start")
     pygame.init()
 
     # Initialize window
