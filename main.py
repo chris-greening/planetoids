@@ -9,6 +9,7 @@ from planetoids.ui.intro_animation import IntroAnimation
 
 def main():
     logger.info("Game start")
+    logger.debug("Debug mode activated")
     pygame.init()
 
     # Initialize window
