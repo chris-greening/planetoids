@@ -32,6 +32,7 @@ class Asteroid:
         """Ensures the base class registers itself on first reference"""
         if cls is Asteroid and Asteroid not in Asteroid.asteroid_types:
             Asteroid.asteroid_types.append(Asteroid)
+            logger.info("Base class Asteroid registered in asteroid_types")
         return super().__new__(cls)
 
     def __init_subclass__(cls, **kwargs):
@@ -39,6 +40,7 @@ class Asteroid:
         super().__init_subclass__(**kwargs)
         if cls not in Asteroid.asteroid_types:
             Asteroid.asteroid_types.append(cls)
+        logger.info(f"{cls.__name__} registered to subclass")
 
     def split(self):
         """Splits into two smaller asteroids with weighted chance"""
@@ -51,9 +53,9 @@ class Asteroid:
 
             asteroid1 = asteroid_class_1(self.x + random.randint(-5, 5), self.y + random.randint(-5, 5), size=new_size, stage=new_stage)
             asteroid2 = asteroid_class_2(self.x + random.randint(-5, 5), self.y + random.randint(-5, 5), size=new_size, stage=new_stage)
-
+            logger.info(f"Asteroid {self} split into {asteroid1} and {asteroid2}")
             return [asteroid1, asteroid2]
-
+        logger.info(f"{self} destroyed")
         return []
 
     @classmethod
