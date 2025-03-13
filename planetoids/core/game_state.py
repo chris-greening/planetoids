@@ -13,10 +13,10 @@ from planetoids.effects import crt_effect
 from planetoids.core.logger import logger
 
 class GameState:
-    def __init__(self, screen, crt_enabled, clock):
+    def __init__(self, screen, settings, clock):
         """GameState manages all game objects, including the player and asteroids."""
         self.screen = screen
-        self.crt_enabled = crt_enabled
+        self.settings = settings
         self.clock = clock
         self.player = Player()
         self.bullets = []
@@ -403,7 +403,7 @@ class GameState:
             # Draw the "GAME OVER" text
             screen.blit(text, text_rect)
 
-            if self.crt_enabled:
+            if self.settings["crt_enabled"]:
                 crt_effect.apply_crt_effect(screen)
 
             pygame.display.flip()

@@ -9,7 +9,7 @@ from planetoids.effects.crt_effect import apply_crt_effect  # Import CRT effect 
 from planetoids.core.logger import logger
 
 class StartMenu:
-    def __init__(self, screen, clock):
+    def __init__(self, screen, clock, settings):
         """Initialize the start menu with a moving asteroid background and refined retro font."""
         self.screen = screen
         self.clock = clock
@@ -18,7 +18,8 @@ class StartMenu:
         self.selected_index = 0
         self.menu_items = ["Start Game", "Options", "Quit"]
         self.options_items = ["CRT Effect: On", "Back"]
-        self.crt_enabled = True
+        self.settings = settings
+        self.unsaved_changes = False
 
         # Load a refined vintage arcade font (Sleek but retro)
         font_path = os.path.join("assets", "fonts", "VT323.ttf")
@@ -54,7 +55,7 @@ class StartMenu:
                 self._draw_main_menu()
 
             # Apply CRT effect if enabled
-            if self.crt_enabled:
+            if self.settings["crt_enabled"]:
                 apply_crt_effect(self.screen)
 
             pygame.display.flip()
@@ -63,7 +64,7 @@ class StartMenu:
             self._handle_events()
 
         self._fade_out()  # Smooth transition effect before starting the game
-        return self.crt_enabled  # Return CRT setting for use in the game
+        return self.settings  # Return CRT setting for use in the game
 
     def _draw_main_menu(self):
         """Draws the main start menu with a refined arcade look."""
@@ -78,11 +79,14 @@ class StartMenu:
         self._draw_version
 
     def _draw_options_menu(self):
-        """Draws the options menu."""
+        """Draws the options menu, now including a Save Settings button."""
         self._draw_text("OPTIONS", config.WIDTH // 2 - 120, config.HEIGHT // 4, config.YELLOW, self.font)
 
         # Update CRT effect label dynamically
-        self.options_items[0] = f"CRT Effect: {'On' if self.crt_enabled else 'Off'}"
+        self.options_items[0] = f"CRT Effect: {'On' if self.settings['crt_enabled'] else 'Off'}"
+
+        # Add a "Save Settings" button before "Back"
+        self.options_items = [self.options_items[0], "Save Settings", "Back"]
 
         for i, item in enumerate(self.options_items):
             color = config.WHITE if i != self.selected_index else config.ORANGE
@@ -142,12 +146,76 @@ class StartMenu:
             exit()
 
     def _handle_options_selection(self):
-        """Handles selection in the options menu."""
+        """Handles selection in the options menu, now ensuring unsaved changes are discarded if the user exits."""
+        
+        # Store original settings before making changes
+        original_settings = self.settings.copy()  
+
         if self.selected_index == 0:  # Toggle CRT Effect
-            self.crt_enabled = not self.crt_enabled  # Toggle CRT effect on/off
-        elif self.selected_index == 1:  # Back
-            self.options_mode = False
-            self.selected_index = 0  # Reset main menu selection
+            self.settings["crt_enabled"] = not self.settings["crt_enabled"]
+            self.unsaved_changes = True  # Mark that there are unsaved changes
+
+        elif self.selected_index == 1:  # Save Settings
+            from planetoids.core.settings import save_settings
+            save_settings(self.settings)  # Persist the changes
+            self.unsaved_changes = False  # Clear unsaved changes flag
+
+        elif self.selected_index == 2:  # Back
+            # if self.unsaved_changes:
+            #     if self._confirm_unsaved_changes():  
+            #         # User selected "Yes" (to exit without saving) → Revert settings
+            #         self.settings = original_settings.copy()
+            #         self.unsaved_changes = False  # Reset unsaved changes flag
+            #         self.options_mode = False  # Exit options menu
+            #     # If user selected "No", stay in the menu
+            # else:
+            self.options_mode = False  # No unsaved changes, exit normally
+
+
+    def _confirm_unsaved_changes(self):
+        """Displays a confirmation popup if the user has unsaved changes."""
+        confirmation = self._show_confirmation_popup(
+            "Unsaved changes will be lost. Continue?", ["Yes", "No"]
+        )
+        return confirmation  # Returns True if "Yes" is selected, False otherwise
+
+    def _show_confirmation_popup(self, message, options):
+        """Displays a confirmation popup with selectable options while preserving transparency."""
+
+        # Create a semi-transparent overlay
+        overlay = pygame.Surface((config.WIDTH, config.HEIGHT), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 180))  # Dark semi-transparent background
+
+        # Render the message text
+        text_surface = self.small_font.render(message, True, config.WHITE)
+        text_rect = text_surface.get_rect(center=(config.WIDTH // 2, config.HEIGHT // 3))
+
+        selected_index = 0  # Start with the first option selected
+
+        running = True
+        while running:
+            self.screen.blit(overlay, (0, 0))  # Keep overlay persistent
+            self.screen.blit(text_surface, text_rect)  # Draw message
+
+            # Render options dynamically
+            for i, option in enumerate(options):
+                color = config.ORANGE if i == selected_index else config.WHITE
+                option_surface = self.small_font.render(option, True, color)
+                option_rect = option_surface.get_rect(center=(config.WIDTH // 2, config.HEIGHT // 2 + i * 40))
+                self.screen.blit(option_surface, option_rect)
+
+            pygame.display.flip()
+
+            # Handle input for selection
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_UP:
+                        selected_index = (selected_index - 1) % len(options)  # Cycle up
+                    elif event.key == pygame.K_DOWN:
+                        selected_index = (selected_index + 1) % len(options)  # Cycle down
+                    elif event.key == pygame.K_RETURN:
+                        return selected_index == 0  # Returns True if "Yes" is selected, False if "No"
+
 
     def _fade_out(self):
         """Applies a fade-out transition before starting the game."""
@@ -164,7 +232,7 @@ class StartMenu:
                 asteroid.draw(self.screen)
 
             # Apply CRT effect if enabled during fade-out
-            if self.crt_enabled:
+            if self.settings["crt_enabled"]:
                 apply_crt_effect(self.screen)
 
             self.screen.blit(fade_surface, (0, 0))

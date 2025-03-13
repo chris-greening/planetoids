@@ -1,16 +1,23 @@
+import os
+
 import pygame
+import dotenv
 
 from planetoids.ui.start_menu import StartMenu
 from planetoids.core.game_state import GameState
 from planetoids.effects import crt_effect
-from planetoids.core import config
+from planetoids.core import config, settings
 from planetoids.core.logger import logger
 from planetoids.ui.intro_animation import IntroAnimation
+
+dotenv.load_dotenv()
 
 def main():
     logger.info("Game start")
     logger.debug("Debug mode activated")
     pygame.init()
+
+    game_settings = settings.load_settings()
 
     # Initialize window
     pygame.mouse.set_visible(False)
@@ -18,16 +25,16 @@ def main():
     pygame.display.set_caption("Planetoids")
     clock = pygame.time.Clock()
 
-    intro = IntroAnimation(screen, clock)
-    intro.play()
+    if os.environ.get("DEBUG") != "True":
+        intro = IntroAnimation(screen, clock)
+        intro.play()
 
     # Show the start menu
-    start_menu = StartMenu(screen, clock)
-    crt_enabled = start_menu.show()  # Returns True or False
+    start_menu = StartMenu(screen, clock, game_settings)
+    game_settings = start_menu.show()  # Returns True or False
 
     # Create GameState instance
-    game_state = GameState(screen, crt_enabled, clock)
-    print(crt_enabled)
+    game_state = GameState(screen, game_settings, clock)
     game_state.spawn_asteroids(5)
 
     running = True
@@ -49,7 +56,7 @@ def main():
         # Draw everything
         game_state.draw_all(screen)
 
-        if game_state.crt_enabled:
+        if game_state.settings["crt_enabled"]:
             crt_effect.apply_crt_effect(screen)
         pygame.display.flip()
 
