@@ -172,37 +172,42 @@ class StartMenu:
         return confirmation  # Returns True if "Yes" is selected, False otherwise
 
     def _show_confirmation_popup(self, message, options):
-        """Generic function to show a confirmation popup."""
-        overlay = pygame.Surface((config.WIDTH, config.HEIGHT), pygame.SRCALPHA)
-        overlay.fill((0, 0, 0, 180))  # Semi-transparent dark background
-        self.screen.blit(overlay, (0, 0))
+        """Displays a confirmation popup with selectable options while preserving transparency."""
 
-        # Render the message
+        # Create a semi-transparent overlay
+        overlay = pygame.Surface((config.WIDTH, config.HEIGHT), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 180))  # Dark semi-transparent background
+
+        # Render the message text
         text_surface = self.small_font.render(message, True, config.WHITE)
         text_rect = text_surface.get_rect(center=(config.WIDTH // 2, config.HEIGHT // 3))
-        self.screen.blit(text_surface, text_rect)
 
-        # Render options
-        option_surfaces = [self.small_font.render(opt, True, config.YELLOW) for opt in options]
-        rendered_options = [self.font.render(opt, True, config.WHITE) for opt in options]
-        option_rects = [opt.get_rect(center=(config.WIDTH // 2, config.HEIGHT // 2 + i * 40)) for i, opt in enumerate(rendered_options)]
+        selected_index = 0  # Start with the first option selected
 
-        for surface, rect in zip(option_surfaces, option_rects):
-            self.screen.blit(surface, rect)
+        running = True
+        while running:
+            self.screen.blit(overlay, (0, 0))  # Keep overlay persistent
+            self.screen.blit(text_surface, text_rect)  # Draw message
 
-        pygame.display.flip()
+            # Render options dynamically
+            for i, option in enumerate(options):
+                color = config.ORANGE if i == selected_index else config.WHITE
+                option_surface = self.small_font.render(option, True, color)
+                option_rect = option_surface.get_rect(center=(config.WIDTH // 2, config.HEIGHT // 2 + i * 40))
+                self.screen.blit(option_surface, option_rect)
 
-        # Wait for input
-        selected = 0
-        while True:
+            pygame.display.flip()
+
+            # Handle input for selection
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_UP:
-                        selected = (selected - 1) % len(options)
+                        selected_index = (selected_index - 1) % len(options)  # Cycle up
                     elif event.key == pygame.K_DOWN:
-                        selected = (selected + 1) % len(options)
+                        selected_index = (selected_index + 1) % len(options)  # Cycle down
                     elif event.key == pygame.K_RETURN:
-                        return selected == 0  # Returns True if "Yes" is selected
+                        return selected_index == 0  # Returns True if "Yes" is selected, False if "No"
+
 
     def _fade_out(self):
         """Applies a fade-out transition before starting the game."""

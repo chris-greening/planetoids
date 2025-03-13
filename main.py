@@ -1,4 +1,7 @@
+import os
+
 import pygame
+import dotenv
 
 from planetoids.ui.start_menu import StartMenu
 from planetoids.core.game_state import GameState
@@ -6,6 +9,8 @@ from planetoids.effects import crt_effect
 from planetoids.core import config, settings
 from planetoids.core.logger import logger
 from planetoids.ui.intro_animation import IntroAnimation
+
+dotenv.load_dotenv()
 
 def main():
     logger.info("Game start")
@@ -20,8 +25,9 @@ def main():
     pygame.display.set_caption("Planetoids")
     clock = pygame.time.Clock()
 
-    intro = IntroAnimation(screen, clock)
-    intro.play()
+    if os.environ.get("DEBUG") != "True":
+        intro = IntroAnimation(screen, clock)
+        intro.play()
 
     # Show the start menu
     start_menu = StartMenu(screen, clock, game_settings)
