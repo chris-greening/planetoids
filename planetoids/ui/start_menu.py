@@ -146,23 +146,31 @@ class StartMenu:
             exit()
 
     def _handle_options_selection(self):
-        """Handles selection in the options menu, now with unsaved changes prompt."""
+        """Handles selection in the options menu, now ensuring unsaved changes are discarded if the user exits."""
+        
+        # Store original settings before making changes
+        original_settings = self.settings.copy()  
+
         if self.selected_index == 0:  # Toggle CRT Effect
-            self.settings["crt_enabled"] = not self.settings["crt_enabled"]  # Toggle CRT effect on/off
-            self.unsaved_changes = True
+            self.settings["crt_enabled"] = not self.settings["crt_enabled"]
+            self.unsaved_changes = True  # Mark that there are unsaved changes
+
         elif self.selected_index == 1:  # Save Settings
             from planetoids.core.settings import save_settings
             save_settings(self.settings)  # Persist the changes
             self.unsaved_changes = False  # Clear unsaved changes flag
 
         elif self.selected_index == 2:  # Back
-            if self.unsaved_changes:
-                if self._confirm_unsaved_changes():
-                    self.options_mode = False
-                    self.selected_index = 0  # Reset selection
-            else:
-                self.options_mode = False
-                self.selected_index = 0  # Reset selection
+            # if self.unsaved_changes:
+            #     if self._confirm_unsaved_changes():  
+            #         # User selected "Yes" (to exit without saving) → Revert settings
+            #         self.settings = original_settings.copy()
+            #         self.unsaved_changes = False  # Reset unsaved changes flag
+            #         self.options_mode = False  # Exit options menu
+            #     # If user selected "No", stay in the menu
+            # else:
+            self.options_mode = False  # No unsaved changes, exit normally
+
 
     def _confirm_unsaved_changes(self):
         """Displays a confirmation popup if the user has unsaved changes."""
