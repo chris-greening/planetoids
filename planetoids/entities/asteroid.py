@@ -112,7 +112,7 @@ class Asteroid:
         pygame.draw.polygon(screen, WHITE, self.shape, 1)
 
     def __repr__(self):
-        return f"{self.__class__.__name__}(x={round(self.x, 3)}, y={round(self.y, 3)}, size={self.size}, stage={self.stage})"
+        return f"{self.__class__.__name__}(x={round(self.x)}, y={round(self.y)}, size={self.size}, stage={self.stage})"
 
 class FastAsteroid(Asteroid):
     spawn_chance = 0.05  # 5% chance to spawn

@@ -4,6 +4,7 @@ import time
 import pygame
 
 from planetoids.core.config import WIDTH, HEIGHT, CYAN
+from planetoids.core.logger import logger
 
 class PowerUp:
     """Base class for all power-ups."""
@@ -17,6 +18,8 @@ class PowerUp:
         self.speed_x = random.uniform(-1.5, 1.5)
         self.speed_y = random.uniform(-1.5, 1.5)
         self.spawn_time = time.time()  # Store the spawn time
+
+        logger.info(f"Spawned {repr(self)}")
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
@@ -78,6 +81,9 @@ class PowerUp:
     def is_expired(self):
         """Check if the power-up should disappear."""
         return time.time() - self.spawn_time > 15  # Disappear after 10 seconds
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(x={round(self.x)}, y={round(self.y)}, radius={self.radius})"
 
 class TrishotPowerUp(PowerUp):
     """Trishot power-up that enables triple bullets for a limited time."""
