@@ -113,7 +113,7 @@ class FastAsteroid(Asteroid):
     speed_multiplier = 2.3
     color = (0, 255, 0)  # Bright green
 
-    def __init__(self, x, y, size, stage):
+    def __init__(self, x=None, y=None, size=80, stage=3):
         super().__init__(x, y, size, stage)
         self.base_speed *= self.speed_multiplier  # Increase speed
         self.trail = []  # Stores previous positions for motion blur
@@ -237,7 +237,7 @@ class ShieldAsteroid(Asteroid):
     spawn_chance = .05
     shield_strength = 2  # Shield takes 2 hits before breaking
 
-    def __init__(self, x, y, size, stage):
+    def __init__(self, x=None, y=None, size=80, stage=3):
         """Initialize ShieldAsteroid with a shield."""
         super().__init__(x, y, size, stage)
         self.current_shield = self.shield_strength  # Track shield hits
