@@ -6,6 +6,7 @@ import pygame
 from planetoids.core import config
 from planetoids.entities.asteroid import Asteroid
 from planetoids.effects.crt_effect import apply_crt_effect  # Import CRT effect function
+from planetoids.core.logger import logger
 
 class StartMenu:
     def __init__(self, screen, clock):
@@ -17,23 +18,28 @@ class StartMenu:
         self.selected_index = 0
         self.menu_items = ["Start Game", "Options", "Quit"]
         self.options_items = ["CRT Effect: On", "Back"]
-        self.crt_enabled = True  # CRT effect starts ENABLED by default
+        self.crt_enabled = True
 
         # Load a refined vintage arcade font (Sleek but retro)
-        font_path = os.path.join("assets", "fonts", "VT323.ttf")  # ✅ More sci-fi, less cartoony
-        self.font = pygame.font.Font(font_path, 120)  # ✅ Larger for title
-        self.menu_font = pygame.font.Font(font_path, 64)  # ✅ Medium for menu
-        self.small_font = pygame.font.Font(font_path, 36)  # ✅ Small for instructions
+        font_path = os.path.join("assets", "fonts", "VT323.ttf")
+        self.font = pygame.font.Font(font_path, 120)
+        self.menu_font = pygame.font.Font(font_path, 64)
+        self.small_font = pygame.font.Font(font_path, 36)
 
         # Generate background asteroids
-        self.background_asteroids = [Asteroid(random.randint(0, config.WIDTH),
-                                              random.randint(0, config.HEIGHT),
-                                              size=random.randint(30, 60),
-                                              stage=3)
-                                     for _ in range(6)]  # Adjust number of asteroids as needed
+        self.background_asteroids = [
+            Asteroid(
+                random.randint(0, config.WIDTH),
+                random.randint(0, config.HEIGHT),
+                size=random.randint(30, 60),
+                stage=3)
+            for _ in range(6)
+        ]
+        logger.info("StartMenu instantiated")
 
     def show(self):
         """Displays the start menu with moving asteroid background."""
+        logger.info("Show start menu")
         while self.running:
             self.screen.fill(config.BLACK)
 
@@ -164,3 +170,4 @@ class StartMenu:
             self.screen.blit(fade_surface, (0, 0))
             pygame.display.flip()
             self.clock.tick(30)  # Smooth transition speed
+        logger.info("Start menu fadeout")

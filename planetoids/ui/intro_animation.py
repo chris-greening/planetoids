@@ -5,6 +5,7 @@ import pygame
 
 from planetoids.core import config
 from planetoids.effects.crt_effect import apply_crt_effect
+from planetoids.core.logger import logger
 
 class IntroAnimation:
     """Handles the Greening Games intro animation with glitch, terminal typing, and CRT effects."""
@@ -20,9 +21,11 @@ class IntroAnimation:
         self.text_x = (config.WIDTH - self.font.size(self.text)[0]) // 2
         self.text_y = (config.HEIGHT - self.font.size(self.text)[1]) // 2
         self.typing_speed = 0.06  # Faster typing (reduced delay per character)
+        logger.info("IntroAnimation instantiated")
 
     def play(self):
         """Runs the intro animation with terminal typing effect, glitch, and CRT effects."""
+        logger.info("Intro animation playing")
         start_time = time.time()
         char_index = 0  
 
@@ -80,6 +83,7 @@ class IntroAnimation:
 
     def _sequential_glitch_out(self):
         """Sequentially glitches out each letter into garbage characters, then keeps glitching for a bit longer."""
+        logger.info("Sequential glitch out triggered")
         glitched_text = list(self.text)
         char_pool = "!@#$%^&*()_+=<>?/\\|{}[]"
 
@@ -127,6 +131,7 @@ class IntroAnimation:
 
     def _fade_out(self):
         """Fades out the intro animation faster than before."""
+        logger.info("Intro animation fadeout")
         fade_surface = pygame.Surface((config.WIDTH, config.HEIGHT))
         fade_surface.fill(config.BLACK)
         for alpha in range(0, 255, 20):  # Increased fade step size

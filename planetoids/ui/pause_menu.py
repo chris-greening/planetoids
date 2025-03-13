@@ -4,6 +4,7 @@ import pygame
 
 from planetoids.core import config
 from planetoids.effects.crt_effect import apply_crt_effect  # Import CRT effect function
+from planetoids.core.logger import logger
 
 class PauseMenu:
     def __init__(self, screen, game_state):
@@ -20,9 +21,11 @@ class PauseMenu:
         font_path = os.path.join("assets", "fonts", "VT323.ttf")  # Change if needed
         self.font = pygame.font.Font(font_path, 64)  # Main menu font
         self.small_font = pygame.font.Font(font_path, 36)  # Smaller for instructions
+        logger.info("PauseMenu instantiated")
 
     def show(self):
         """Displays the pause menu and waits for player input."""
+        logger.info("Pause menu triggered")
         self.running = True
         while self.running:
             self.screen.fill(config.BLACK)

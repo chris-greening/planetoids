@@ -7,6 +7,7 @@ import pygame
 from planetoids.core.config import WIDTH, HEIGHT, WHITE, ORANGE
 from planetoids.entities.particle import Particle  # Import the new particle class
 from planetoids.entities.bullet import Bullet
+from planetoids.core.logger import logger
 
 class Player:
     def __init__(self):
@@ -30,11 +31,14 @@ class Player:
         # Shield system
         self.activate_shield()
 
+        logger.info(f"Spawned player")
+
     def activate_shield(self):
         """Activates the shield for a limited time."""
         self.shield_active = True
         self.shield_cooldown = 0
         self.last_shield_recharge = time.time()  # Track recharge time
+        logger.info(f"Shield activated")
 
     def shoot(self):
         """Shoots bullets. If QuadShot is active, fires in 4 directions."""
@@ -63,6 +67,7 @@ class Player:
         self._disable_previous_shots()
         self.set_invincibility(timer=300)
         self.powerup_timer = 300
+        logger.info(f"Invincibility enabled")
 
     def enable_ricochet(self):
         """Activates quadshot mode for a limited time."""
@@ -70,18 +75,21 @@ class Player:
         self.ricochet_active = True
         self.ricochet_piercing = True
         self.powerup_timer = 300
+        logger.info(f"Ricochet enabled")
 
     def enable_quadshot(self):
         """Activates quadshot mode for a limited time."""
         self._disable_previous_shots()
         self.quadshot_active = True
         self.powerup_timer = 300
+        logger.info(f"Quadshot enabled")
 
     def enable_trishot(self):
         """Activates trishot mode for a limited time."""
         self._disable_previous_shots()
         self.trishot_active = True
         self.powerup_timer = 300
+        logger.info(f"Trishot enabled")
 
     def reset_position(self):
         """Resets player position, stops movement, and enables brief invincibility."""
@@ -97,11 +105,13 @@ class Player:
         self.trishot_active = False
         self.activate_shield()
         self.set_invincibility()
+        logger.info(f"Position reset to ({self.x}, {self.y})")
 
     def set_invincibility(self, timer=120):
         """Set the player as invincible"""
         self.invincible = True
         self.invincibility_timer = timer  # 2 seconds of invincibility
+        logger.info(f"Set invincibility")
 
     def _draw_shield_bar(self, screen):
         """Draws a shield recharge bar in the top-left corner."""
@@ -194,7 +204,7 @@ class Player:
             time_since_break = time.time() - self.last_shield_recharge
             if time_since_break >= 30:  # 30 seconds cooldown
                 self.shield_active = True  # Shield is restored
-                print("Shield recharged!")
+                logger.info(f"Shield recharged")
 
     def take_damage(self):
         """Handles damage logic: shield breaks first, then invincibility, then death."""
@@ -202,7 +212,7 @@ class Player:
             self.shield_active = False  # Break the shield
             self.last_shield_recharge = time.time()  # Start recharge timer
             self.set_invincibility()  # Trigger 2 seconds of invincibility
-            print("⚠️ Shield broken! Player is now invincible for 2 seconds.")
+            logger.info(f"Shield broken")
 
     def draw(self, screen):
         """Draws the player ship and particles."""
@@ -295,6 +305,7 @@ class Player:
         # Animation is done, clear effects
         self.explosion_particles = []
         self.fragments = []
+        logger.info(f"Clear player explosion animation")
 
     def _update_particles(self, explosion_particles):
         """Update the particles"""

@@ -10,6 +10,7 @@ from planetoids.entities.powerups import PowerUp, TemporalSlowdownPowerUp
 from planetoids.ui.pause_menu import PauseMenu
 from planetoids.core import config
 from planetoids.effects import crt_effect
+from planetoids.core.logger import logger
 
 class GameState:
     def __init__(self, screen, crt_enabled, clock):
@@ -29,8 +30,9 @@ class GameState:
         self.score = 0
         self.asteroid_slowdown_active = False
         self.slowdown_timer = 0
-        self.font_path = os.path.join("assets", "fonts", "VT323.ttf")  # ✅ More sci-fi, less cartoony
-        self.font = pygame.font.Font(self.font_path, 36)  # ✅ Larger for title
+        self.font_path = os.path.join("assets", "fonts", "VT323.ttf")
+        self.font = pygame.font.Font(self.font_path, 36)
+        logger.info("GameState instantiated")
 
     def update_score(self, asteroid):
         """Increase score based on asteroid size."""
@@ -68,6 +70,7 @@ class GameState:
             asteroid_type = Asteroid.get_asteroid_type()
             print(asteroid_type)
             self.asteroids.append(asteroid_type())
+        logger.info("{count} asteroids spawned")
 
     def update_all(self, keys):
         """Update all game objects, including power-ups, bullets, asteroids, and explosions."""
