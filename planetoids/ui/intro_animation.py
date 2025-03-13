@@ -21,7 +21,7 @@ class IntroAnimation:
         self.text_x = (config.WIDTH - self.font.size(self.text)[0]) // 2
         self.text_y = (config.HEIGHT - self.font.size(self.text)[1]) // 2
         self.typing_speed = 0.06  # Faster typing (reduced delay per character)
-        logger.info("Intro animation instantiated")
+        logger.info("IntroAnimation instantiated")
 
     def play(self):
         """Runs the intro animation with terminal typing effect, glitch, and CRT effects."""

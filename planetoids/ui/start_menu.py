@@ -18,7 +18,7 @@ class StartMenu:
         self.selected_index = 0
         self.menu_items = ["Start Game", "Options", "Quit"]
         self.options_items = ["CRT Effect: On", "Back"]
-        self.crt_enabled = True  # CRT effect starts ENABLED by default
+        self.crt_enabled = True
 
         # Load a refined vintage arcade font (Sleek but retro)
         font_path = os.path.join("assets", "fonts", "VT323.ttf")
@@ -35,7 +35,7 @@ class StartMenu:
                 stage=3)
             for _ in range(6)
         ]
-        logger.info("Start menu instantiated")
+        logger.info("StartMenu instantiated")
 
     def show(self):
         """Displays the start menu with moving asteroid background."""
