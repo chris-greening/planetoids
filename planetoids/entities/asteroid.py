@@ -5,6 +5,7 @@ import pygame
 
 from planetoids.core.config import WIDTH, HEIGHT, WHITE, ORANGE, DARK_ORANGE, CYAN
 from planetoids.entities.particle import Particle
+from planetoids.core.logger import logger
 
 class Asteroid:
     asteroid_types = []
@@ -24,6 +25,8 @@ class Asteroid:
         # Generate shape *once* and store relative offsets
         self.shape_offsets = self._generate_jagged_shape()
         self.update_shape()
+
+        logger.info(f"Spawned {repr(self)}")
 
     def __new__(cls, *args, **kwargs):
         """Ensures the base class registers itself on first reference"""
@@ -107,6 +110,9 @@ class Asteroid:
     def draw(self, screen):
         """Draw the asteroid with an outline (wireframe)."""
         pygame.draw.polygon(screen, WHITE, self.shape, 1)
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(x={round(self.x, 3)}, y={round(self.y, 3)}, size={self.size}, stage={self.stage})"
 
 class FastAsteroid(Asteroid):
     spawn_chance = 0.05  # 5% chance to spawn
