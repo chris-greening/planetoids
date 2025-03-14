@@ -8,7 +8,7 @@ from planetoids.entities.asteroid import Asteroid, ExplodingAsteroid, ShieldAste
 from planetoids.entities.bullet import Bullet
 from planetoids.entities.powerups import PowerUp, TemporalSlowdownPowerUp
 from planetoids.ui.pause_menu import PauseMenu
-from planetoids.core import config
+from planetoids.core import Score, Level, Life, config
 from planetoids.effects import crt_effect
 from planetoids.core.logger import logger
 
@@ -22,12 +22,12 @@ class GameState:
         self.bullets = []
         self.asteroids = []
         self.powerups = []
-        self.lives = 3
+        self.life = Life(self.settings)
         self.respawn_timer = 0
-        self.level = 1
+        self.level = Level(self.settings)
         self.paused = False
         self.pause_menu = PauseMenu(screen, self)
-        self.score = 0
+        self.score = Score(self.settings)
         self.asteroid_slowdown_active = False
         self.slowdown_timer = 0
         self.font_path = os.path.join("assets", "fonts", "VT323.ttf")
@@ -39,16 +39,6 @@ class GameState:
             self.font_path,
             {"minimum":36, "medium": 48, "maximum": 64}.get(self.settings.get("pixelation"), 36)
         )
-
-    def update_score(self, asteroid):
-        """Increase score based on asteroid size."""
-        if asteroid.size >= 40:
-            self.score += 100
-        elif asteroid.size >= 20:
-            self.score += 200
-        else:
-            self.score += 300
-        print(f"Score: {self.score}")
 
     def toggle_pause(self):
         """Toggles pause and shows the pause screen."""
@@ -66,8 +56,8 @@ class GameState:
     def check_for_clear_map(self):
         """Checks if all asteroids are destroyed and resets the map if so."""
         if not self.asteroids:
-            self.level += 1
-            self.spawn_asteroids(5 + self.level * 2)
+            self.level.increment_level()
+            self.spawn_asteroids(5 + self.level.get_level() * 2)
             self.player.set_invincibility()
 
     def spawn_asteroids(self, count=5):
@@ -165,10 +155,10 @@ class GameState:
         self._draw_asteroids(screen)
         self._draw_powerups(screen)
         self._draw_bullets(screen)
-        self._draw_lives(screen)
-        self._draw_level(screen)
+        self.life.draw(screen)
         self._draw_powerup_timer(screen)
-        self._draw_score(screen)
+        self.level.draw(screen)
+        self.score.draw(screen)
 
         self._asteroid_slowdown_active(screen)
 
@@ -187,12 +177,6 @@ class GameState:
             overlay.fill((0, 150, 255, fade_intensity))  # Softer cyan overlay
             screen.blit(overlay, (0, 0))
 
-    def _draw_score(self, screen):
-        """Displays the score in the top-right corner."""
-        offset = {"minimum": 200, "medium": 300, "maximum": 400}.get(self.settings.get("pixelation"), 200)
-        score_text = self.font.render(f"Score: {self.score}", True, config.WHITE)
-        screen.blit(score_text, (config.WIDTH - offset, 20))  # Position in top-right
-
     def check_powerup_collisions(self):
         """Checks if the player collects a power-up."""
         for powerup in self.powerups[:]:
@@ -209,13 +193,6 @@ class GameState:
             pygame.time.set_timer(pygame.USEREVENT + 5, 5000)
         else:
             powerup.apply(self.player)  # Call the power-up's apply() method
-
-    def _draw_level(self, screen):
-        """Display current level number."""
-        x_offset = {"minimum": 120, "medium": 170, "maximum": 320}.get(self.settings.get("pixelation"), 200)
-        y_offset = {"minimum": 30, "medium": 40, "maximum": 55}.get(self.settings.get("pixelation"), 200)
-        text = self.font.render(f"Level: {self.level}", True, config.WHITE)
-        screen.blit(text, (config.WIDTH - x_offset, config.HEIGHT - y_offset))  # Display bottom-right
 
     def _handle_bullet_asteroid_collision(self):
         """Handles collisions between bullets and asteroids."""
@@ -256,7 +233,7 @@ class GameState:
     def _apply_bullet_effects(self, bullet, asteroid):
         """Applies effects when a bullet hits an asteroid."""
         bullet.on_hit_asteroid(asteroid)
-        self.update_score(asteroid)
+        self.score.update_score(asteroid)
 
     def _handle_asteroid_destruction(self, asteroid, asteroids_to_remove, new_asteroids):
         """Determines how an asteroid is destroyed or split."""
@@ -283,7 +260,7 @@ class GameState:
 
         exploded_asteroids = asteroid.explode(self.asteroids)
         for exploded_asteroid in exploded_asteroids:
-            self.update_score(exploded_asteroid)
+            self.score.update_score(exploded_asteroid)
             asteroids_to_remove.append(exploded_asteroid)
             new_asteroids.extend(exploded_asteroid.split())
 
@@ -363,9 +340,9 @@ class GameState:
     def _process_player_death(self, screen):
         """Handles player death animation, life count, and respawn or game over."""
         self.player.death_animation(screen)  # Play death effect
-        self.lives -= 1
+        self.life.decrement()
 
-        if self.lives > 0:
+        if self.life.get_lives() > 0:
             self.respawn_player()
         else:
             self.game_over()
@@ -425,25 +402,6 @@ class GameState:
                     exit()
                 if event.type == pygame.KEYDOWN:  # Any key press exits the game over screen
                     game_over = False
-
-
-    def _draw_lives(self, screen):
-        """Displays remaining player lives as small triangles in the top-right corner, Galaga-style."""
-        ship_size = {"minimum": 15, "medium": 30, "maximum": 45}.get(self.settings.get("pixelation"), 15)
-        spacing = {"minimum": 10, "medium": 20, "maximum": 30}.get(self.settings.get("pixelation"), 10)
-        start_x = {"minimum": 10, "medium": 20, "maximum": 30}.get(self.settings.get("pixelation"), 10)
-        start_y = {"minimum": 18, "medium": 36, "maximum": 54}.get(self.settings.get("pixelation"), 18)
-
-        for i in range(self.lives - 1):
-            x_offset = start_x + i * (ship_size + spacing)
-
-            # Triangle points for the small ship
-            front = (x_offset, start_y - ship_size)
-            left = (x_offset - ship_size * 0.6, start_y + ship_size * 0.6)
-            right = (x_offset + ship_size * 0.6, start_y + ship_size * 0.6)
-
-            # Draw the mini ship
-            pygame.draw.polygon(screen, config.WHITE, [front, left, right], 1)
 
     def calculate_collision_distance(self, obj1, obj2):
         """Calculates distance between two game objects."""
