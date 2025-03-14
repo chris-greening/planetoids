@@ -1,5 +1,6 @@
 import random
 import os
+import time
 
 import pygame
 
@@ -7,6 +8,7 @@ from planetoids.core import config
 from planetoids.entities.asteroid import Asteroid
 from planetoids.effects.crt_effect import apply_crt_effect  # Import CRT effect function
 from planetoids.core.logger import logger
+from planetoids.core.settings import save_settings
 
 class StartMenu:
     def __init__(self, screen, clock, settings):
@@ -20,6 +22,7 @@ class StartMenu:
         self.options_items = ["CRT Effect: On", "Back"]
         self.settings = settings
         self.unsaved_changes = False
+        self.save_time = 0
 
         # Load a refined vintage arcade font (Sleek but retro)
         font_path = os.path.join("assets", "fonts", "VT323.ttf")
@@ -92,6 +95,11 @@ class StartMenu:
             color = config.WHITE if i != self.selected_index else config.ORANGE
             self._draw_text(item, config.WIDTH // 2 - 120, config.HEIGHT // 2 + i * 50, color, self.menu_font)
 
+        # Display "Saved!" if recently saved
+        if hasattr(self, "save_time") and time.time() - self.save_time < 3:  # Show for 3 seconds
+            self._draw_text("Saved!", config.WIDTH // 2, config.HEIGHT - 80, config.GREEN, self.small_font)
+
+
     def _draw_version(self):
         """Displays the game version in the bottom right corner."""
         version_text = self.small_font.render(config.VERSION, True, config.DIM_GRAY)
@@ -147,22 +155,22 @@ class StartMenu:
 
     def _handle_options_selection(self):
         """Handles selection in the options menu, now ensuring unsaved changes are discarded if the user exits."""
-        
+
         # Store original settings before making changes
-        original_settings = self.settings.copy()  
+        original_settings = self.settings.copy()
 
         if self.selected_index == 0:  # Toggle CRT Effect
             self.settings["crt_enabled"] = not self.settings["crt_enabled"]
             self.unsaved_changes = True  # Mark that there are unsaved changes
 
         elif self.selected_index == 1:  # Save Settings
-            from planetoids.core.settings import save_settings
             save_settings(self.settings)  # Persist the changes
-            self.unsaved_changes = False  # Clear unsaved changes flag
-
+            self.unsaved_changes = False
+            self.original_settings = self.settings.copy()  # Update original settings after saving
+            self.save_time = time.time()  # Store save time to show "Saved!" message
         elif self.selected_index == 2:  # Back
             # if self.unsaved_changes:
-            #     if self._confirm_unsaved_changes():  
+            #     if self._confirm_unsaved_changes():
             #         # User selected "Yes" (to exit without saving) → Revert settings
             #         self.settings = original_settings.copy()
             #         self.unsaved_changes = False  # Reset unsaved changes flag
