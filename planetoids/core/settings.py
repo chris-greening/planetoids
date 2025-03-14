@@ -11,7 +11,8 @@ class Settings:
     CONFIG_PATH = os.path.join(CONFIG_DIR, "settings.json")
 
     DEFAULT_SETTINGS = {
-        "crt_enabled": True
+        "crt_enabled": True,
+        "glitch_intensity": "medium"
     }
 
     def __init__(self):

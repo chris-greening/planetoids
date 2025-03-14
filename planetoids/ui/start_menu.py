@@ -56,7 +56,7 @@ class StartMenu:
 
             # Apply CRT effect if enabled
             if self.settings.get("crt_enabled"):
-                apply_crt_effect(self.screen)
+                apply_crt_effect(self.screen, self.settings)
 
             pygame.display.flip()
             self.clock.tick(config.FPS)
@@ -136,7 +136,7 @@ class StartMenu:
 
             # Apply CRT effect if enabled during fade-out
             if self.settings.get("crt_enabled"):
-                apply_crt_effect(self.screen)
+                apply_crt_effect(self.screen, self.settings)
 
             self.screen.blit(fade_surface, (0, 0))
             pygame.display.flip()

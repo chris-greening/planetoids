@@ -58,7 +58,7 @@ def main():
         game_state.draw_all(screen)
 
         if settings.get("crt_enabled"):
-            crt_effect.apply_crt_effect(screen)
+            crt_effect.apply_crt_effect(screen, settings)
         pygame.display.flip()
 
     pygame.quit()

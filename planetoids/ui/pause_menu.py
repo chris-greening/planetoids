@@ -44,7 +44,7 @@ class PauseMenu:
 
             # Apply CRT effect if enabled
             if self.game_state.settings.get("crt_enabled"):
-                apply_crt_effect(self.screen)
+                apply_crt_effect(self.screen, self.game_state.settings)
 
             pygame.display.flip()
             self._handle_events()

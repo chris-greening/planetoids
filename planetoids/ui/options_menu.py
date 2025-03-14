@@ -14,7 +14,13 @@ class OptionsMenu:
         self.small_font = small_font
 
         self.selected_index = 0
-        self.options_items = ["CRT Effect: On", "Save Settings", "Back"]
+        self.options_items = [
+            f"CRT Effect: {'On' if self.settings.get('crt_enabled') else 'Off'}",
+            f"Glitch Level: {self.settings.get('glitch_intensity').capitalize()}",
+            "Save Settings",
+            "Back"
+        ]
+
         self.unsaved_changes = False
         self.save_time = 0
 
@@ -26,7 +32,7 @@ class OptionsMenu:
             self._draw_options_menu()
 
             if self.settings.get("crt_enabled"):
-                apply_crt_effect(self.screen)
+                apply_crt_effect(self.screen, self.settings)
 
             pygame.display.flip()
             running = self._handle_events()
@@ -63,24 +69,29 @@ class OptionsMenu:
 
     def _handle_options_selection(self):
         """Handles selection logic in the options menu."""
-        # original_settings = self.settings.copy()
-
         if self.selected_index == 0:  # Toggle CRT Effect
             self.settings.toggle("crt_enabled")
             self.unsaved_changes = True
 
-        elif self.selected_index == 1:  # Save Settings
+        elif self.selected_index == 1:  # Cycle glitch level
+            glitch_levels = ["minimum", "medium", "maximum"]
+            current_index = glitch_levels.index(self.settings.get("glitch_intensity"))
+            new_index = (current_index + 1) % len(glitch_levels)
+            self.settings.set("glitch_intensity", glitch_levels[new_index])
+            self.unsaved_changes = True
+
+        elif self.selected_index == 2:  # Save Settings
             self.settings.save()
             self.unsaved_changes = False
-            self.save_time = time.time()  # Show "Saved!" message
+            self.save_time = time.time()
 
-        # TODO: Add the confirm unsaved changes functionality
-        elif self.selected_index == 2:  # Back
+        elif self.selected_index == 3:  # Back
             # if self.unsaved_changes:
             #     return not self._confirm_unsaved_changes()
             return False  # Exit menu normally
 
         return True  # Stay in menu
+
 
     def _confirm_unsaved_changes(self):
         """Displays a confirmation popup if the user has unsaved changes."""
