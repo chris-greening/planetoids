@@ -429,10 +429,10 @@ class GameState:
 
     def _draw_lives(self, screen):
         """Displays remaining player lives as small triangles in the top-right corner, Galaga-style."""
-        ship_size = 15  # Adjust size of the life icons
-        spacing = 10     # Spacing between ships
-        start_x = 10
-        start_y = 18     # Position at the top-right corner
+        ship_size = {"minimum": 15, "medium": 30, "maximum": 45}.get(self.settings.get("pixelation"), 15)
+        spacing = {"minimum": 10, "medium": 20, "maximum": 30}.get(self.settings.get("pixelation"), 10)
+        start_x = {"minimum": 10, "medium": 20, "maximum": 30}.get(self.settings.get("pixelation"), 10)
+        start_y = {"minimum": 18, "medium": 36, "maximum": 54}.get(self.settings.get("pixelation"), 18)
 
         for i in range(self.lives - 1):
             x_offset = start_x + i * (ship_size + spacing)
