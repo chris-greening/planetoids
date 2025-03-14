@@ -24,7 +24,7 @@ class PauseMenu:
         # Instantiate OptionsMenu with font settings
         self.options_menu = OptionsMenu(
             screen,
-            game_state.settings,
+            self.game_state.settings,
             self.font,
             self.menu_font,
             self.small_font

@@ -31,8 +31,14 @@ class GameState:
         self.asteroid_slowdown_active = False
         self.slowdown_timer = 0
         self.font_path = os.path.join("assets", "fonts", "VT323.ttf")
-        self.font = pygame.font.Font(self.font_path, 36)
         logger.info("GameState instantiated")
+
+    @property
+    def font(self):
+        return pygame.font.Font(
+            self.font_path,
+            {"minimum":36, "medium": 48, "maximum": 64}.get(self.settings.get("pixelation"), 36)
+        )
 
     def update_score(self, asteroid):
         """Increase score based on asteroid size."""
@@ -183,8 +189,9 @@ class GameState:
 
     def _draw_score(self, screen):
         """Displays the score in the top-right corner."""
+        offset = {"minimum": 200, "medium": 300, "maximum": 400}.get(self.settings.get("pixelation"), 200)
         score_text = self.font.render(f"Score: {self.score}", True, config.WHITE)
-        screen.blit(score_text, (config.WIDTH - 200, 20))  # Position in top-right
+        screen.blit(score_text, (config.WIDTH - offset, 20))  # Position in top-right
 
     def check_powerup_collisions(self):
         """Checks if the player collects a power-up."""
@@ -205,8 +212,10 @@ class GameState:
 
     def _draw_level(self, screen):
         """Display current level number."""
+        x_offset = {"minimum": 120, "medium": 170, "maximum": 320}.get(self.settings.get("pixelation"), 200)
+        y_offset = {"minimum": 30, "medium": 40, "maximum": 55}.get(self.settings.get("pixelation"), 200)
         text = self.font.render(f"Level: {self.level}", True, config.WHITE)
-        screen.blit(text, (config.WIDTH - 120, config.HEIGHT - 30))  # Display bottom-right
+        screen.blit(text, (config.WIDTH - x_offset, config.HEIGHT - y_offset))  # Display bottom-right
 
     def _handle_bullet_asteroid_collision(self):
         """Handles collisions between bullets and asteroids."""
