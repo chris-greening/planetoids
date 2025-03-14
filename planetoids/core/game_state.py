@@ -9,6 +9,7 @@ from planetoids.entities.bullet import Bullet
 from planetoids.entities.powerups import PowerUp, TemporalSlowdownPowerUp
 from planetoids.ui.pause_menu import PauseMenu
 from planetoids.core import config
+from planetoids.core.score import Score
 from planetoids.effects import crt_effect
 from planetoids.core.logger import logger
 
@@ -27,7 +28,7 @@ class GameState:
         self.level = 1
         self.paused = False
         self.pause_menu = PauseMenu(screen, self)
-        self.score = 0
+        self.score = Score(self.settings)
         self.asteroid_slowdown_active = False
         self.slowdown_timer = 0
         self.font_path = os.path.join("assets", "fonts", "VT323.ttf")
@@ -39,16 +40,6 @@ class GameState:
             self.font_path,
             {"minimum":36, "medium": 48, "maximum": 64}.get(self.settings.get("pixelation"), 36)
         )
-
-    def update_score(self, asteroid):
-        """Increase score based on asteroid size."""
-        if asteroid.size >= 40:
-            self.score += 100
-        elif asteroid.size >= 20:
-            self.score += 200
-        else:
-            self.score += 300
-        print(f"Score: {self.score}")
 
     def toggle_pause(self):
         """Toggles pause and shows the pause screen."""
@@ -159,6 +150,9 @@ class GameState:
         else:
             self.player.draw(screen)
 
+    def _draw_score(self, screen):
+        self.score.draw(screen)
+
     def draw_all(self, screen):
         """Draw all game objects, including power-ups."""
         self._draw_player(screen)
@@ -186,12 +180,6 @@ class GameState:
             overlay = pygame.Surface((config.WIDTH, config.HEIGHT), pygame.SRCALPHA)
             overlay.fill((0, 150, 255, fade_intensity))  # Softer cyan overlay
             screen.blit(overlay, (0, 0))
-
-    def _draw_score(self, screen):
-        """Displays the score in the top-right corner."""
-        offset = {"minimum": 200, "medium": 300, "maximum": 400}.get(self.settings.get("pixelation"), 200)
-        score_text = self.font.render(f"Score: {self.score}", True, config.WHITE)
-        screen.blit(score_text, (config.WIDTH - offset, 20))  # Position in top-right
 
     def check_powerup_collisions(self):
         """Checks if the player collects a power-up."""
@@ -256,7 +244,7 @@ class GameState:
     def _apply_bullet_effects(self, bullet, asteroid):
         """Applies effects when a bullet hits an asteroid."""
         bullet.on_hit_asteroid(asteroid)
-        self.update_score(asteroid)
+        self.score.update_score(asteroid)
 
     def _handle_asteroid_destruction(self, asteroid, asteroids_to_remove, new_asteroids):
         """Determines how an asteroid is destroyed or split."""
@@ -283,7 +271,7 @@ class GameState:
 
         exploded_asteroids = asteroid.explode(self.asteroids)
         for exploded_asteroid in exploded_asteroids:
-            self.update_score(exploded_asteroid)
+            self.score.update_score(exploded_asteroid)
             asteroids_to_remove.append(exploded_asteroid)
             new_asteroids.extend(exploded_asteroid.split())
 
