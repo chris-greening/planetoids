@@ -10,6 +10,7 @@ from planetoids.entities.powerups import PowerUp, TemporalSlowdownPowerUp
 from planetoids.ui.pause_menu import PauseMenu
 from planetoids.core import config
 from planetoids.core.score import Score
+from planetoids.core.level import Level
 from planetoids.effects import crt_effect
 from planetoids.core.logger import logger
 
@@ -25,7 +26,7 @@ class GameState:
         self.powerups = []
         self.lives = 3
         self.respawn_timer = 0
-        self.level = 1
+        self.level = Level(self.settings)
         self.paused = False
         self.pause_menu = PauseMenu(screen, self)
         self.score = Score(self.settings)
@@ -57,8 +58,8 @@ class GameState:
     def check_for_clear_map(self):
         """Checks if all asteroids are destroyed and resets the map if so."""
         if not self.asteroids:
-            self.level += 1
-            self.spawn_asteroids(5 + self.level * 2)
+            self.level.increment_level()
+            self.spawn_asteroids(5 + self.level.get_level() * 2)
             self.player.set_invincibility()
 
     def spawn_asteroids(self, count=5):
@@ -150,9 +151,6 @@ class GameState:
         else:
             self.player.draw(screen)
 
-    def _draw_score(self, screen):
-        self.score.draw(screen)
-
     def draw_all(self, screen):
         """Draw all game objects, including power-ups."""
         self._draw_player(screen)
@@ -160,9 +158,9 @@ class GameState:
         self._draw_powerups(screen)
         self._draw_bullets(screen)
         self._draw_lives(screen)
-        self._draw_level(screen)
         self._draw_powerup_timer(screen)
-        self._draw_score(screen)
+        self.level.draw(screen)
+        self.score.draw(screen)
 
         self._asteroid_slowdown_active(screen)
 
@@ -197,13 +195,6 @@ class GameState:
             pygame.time.set_timer(pygame.USEREVENT + 5, 5000)
         else:
             powerup.apply(self.player)  # Call the power-up's apply() method
-
-    def _draw_level(self, screen):
-        """Display current level number."""
-        x_offset = {"minimum": 120, "medium": 170, "maximum": 320}.get(self.settings.get("pixelation"), 200)
-        y_offset = {"minimum": 30, "medium": 40, "maximum": 55}.get(self.settings.get("pixelation"), 200)
-        text = self.font.render(f"Level: {self.level}", True, config.WHITE)
-        screen.blit(text, (config.WIDTH - x_offset, config.HEIGHT - y_offset))  # Display bottom-right
 
     def _handle_bullet_asteroid_collision(self):
         """Handles collisions between bullets and asteroids."""
