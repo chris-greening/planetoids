@@ -18,7 +18,7 @@ class GameState:
         self.screen = screen
         self.settings = settings
         self.clock = clock
-        self.player = Player()
+        self.player = Player(self.settings)
         self.bullets = []
         self.asteroids = []
         self.powerups = []
@@ -31,8 +31,14 @@ class GameState:
         self.asteroid_slowdown_active = False
         self.slowdown_timer = 0
         self.font_path = os.path.join("assets", "fonts", "VT323.ttf")
-        self.font = pygame.font.Font(self.font_path, 36)
         logger.info("GameState instantiated")
+
+    @property
+    def font(self):
+        return pygame.font.Font(
+            self.font_path,
+            {"minimum":36, "medium": 48, "maximum": 64}.get(self.settings.get("pixelation"), 36)
+        )
 
     def update_score(self, asteroid):
         """Increase score based on asteroid size."""
@@ -183,8 +189,9 @@ class GameState:
 
     def _draw_score(self, screen):
         """Displays the score in the top-right corner."""
+        offset = {"minimum": 200, "medium": 300, "maximum": 400}.get(self.settings.get("pixelation"), 200)
         score_text = self.font.render(f"Score: {self.score}", True, config.WHITE)
-        screen.blit(score_text, (config.WIDTH - 200, 20))  # Position in top-right
+        screen.blit(score_text, (config.WIDTH - offset, 20))  # Position in top-right
 
     def check_powerup_collisions(self):
         """Checks if the player collects a power-up."""
@@ -205,8 +212,10 @@ class GameState:
 
     def _draw_level(self, screen):
         """Display current level number."""
+        x_offset = {"minimum": 120, "medium": 170, "maximum": 320}.get(self.settings.get("pixelation"), 200)
+        y_offset = {"minimum": 30, "medium": 40, "maximum": 55}.get(self.settings.get("pixelation"), 200)
         text = self.font.render(f"Level: {self.level}", True, config.WHITE)
-        screen.blit(text, (config.WIDTH - 120, config.HEIGHT - 30))  # Display bottom-right
+        screen.blit(text, (config.WIDTH - x_offset, config.HEIGHT - y_offset))  # Display bottom-right
 
     def _handle_bullet_asteroid_collision(self):
         """Handles collisions between bullets and asteroids."""
@@ -403,7 +412,7 @@ class GameState:
             # Draw the "GAME OVER" text
             screen.blit(text, text_rect)
 
-            if self.settings["crt_enabled"]:
+            if self.settings.get("crt_enabled"):
                 crt_effect.apply_crt_effect(screen)
 
             pygame.display.flip()
@@ -420,10 +429,10 @@ class GameState:
 
     def _draw_lives(self, screen):
         """Displays remaining player lives as small triangles in the top-right corner, Galaga-style."""
-        ship_size = 15  # Adjust size of the life icons
-        spacing = 10     # Spacing between ships
-        start_x = 10
-        start_y = 18     # Position at the top-right corner
+        ship_size = {"minimum": 15, "medium": 30, "maximum": 45}.get(self.settings.get("pixelation"), 15)
+        spacing = {"minimum": 10, "medium": 20, "maximum": 30}.get(self.settings.get("pixelation"), 10)
+        start_x = {"minimum": 10, "medium": 20, "maximum": 30}.get(self.settings.get("pixelation"), 10)
+        start_y = {"minimum": 18, "medium": 36, "maximum": 54}.get(self.settings.get("pixelation"), 18)
 
         for i in range(self.lives - 1):
             x_offset = start_x + i * (ship_size + spacing)
