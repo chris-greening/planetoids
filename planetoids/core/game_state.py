@@ -305,8 +305,8 @@ class GameState:
         self.player._generate_explosion()  # Trigger explosion animation
         self.respawn_timer = 30  # Delay respawn for explosion duration
 
-        self.lives -= 1
-        if self.lives <= 0:
+        self.life.decrement()
+        if self.life.lives <= 0:
             self.game_over(screen)  # No lives left, game over
 
 

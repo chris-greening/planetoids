@@ -18,7 +18,7 @@ class Settings:
 
     def __init__(self):
         """Initialize settings by loading from file or using defaults."""
-        self.data = self._load_settings()
+        self._load_settings()
 
     def _load_settings(self):
         """Loads settings from a JSON file, or creates defaults if missing."""
@@ -28,13 +28,14 @@ class Settings:
         if os.path.exists(self.CONFIG_PATH):
             try:
                 with open(self.CONFIG_PATH, "r") as f:
-                    return json.load(f)
+                    self.data = json.load(f)
             except (json.JSONDecodeError, IOError):
                 print("Failed to load settings, using defaults.")
 
-        # If no file exists or load fails, return defaults
-        self.save()  # Save the defaults immediately
-        return self.DEFAULT_SETTINGS.copy()  # Avoid modifying class-level dict
+            # If no file exists or load fails, return defaults
+        # self.save()  # Save the defaults immediately
+        self.data = self.DEFAULT_SETTINGS.copy()
+        self.save()
 
     def save(self):
         """Saves settings to a JSON file."""
