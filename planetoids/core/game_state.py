@@ -18,7 +18,7 @@ class GameState:
         self.screen = screen
         self.settings = settings
         self.clock = clock
-        self.player = Player()
+        self.player = Player(self.settings)
         self.bullets = []
         self.asteroids = []
         self.powerups = []

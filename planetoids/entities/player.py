@@ -10,8 +10,9 @@ from planetoids.entities.bullet import Bullet
 from planetoids.core.logger import logger
 
 class Player:
-    def __init__(self):
+    def __init__(self, settings):
         """Initialize player with movement settings."""
+        self.settings = settings
         self.reset_position()
         self.acceleration = 0.1
         self.max_speed = 5
@@ -117,7 +118,8 @@ class Player:
         """Draws a shield recharge bar in the top-left corner."""
         bar_width = 120
         bar_height = 12
-        bar_x, bar_y = 10, 40  # Position on screen
+        bar_x = 10
+        bar_y = {"minimum": 40, "medium": 60, "maximum": 80}.get(self.settings.get("pixelation"), 40)  # Position on screen
 
         # Calculate recharge progress (0 to 1)
         if self.shield_active:
