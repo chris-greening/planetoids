@@ -5,7 +5,7 @@ import pygame
 def apply_crt_effect(screen, settings):
     """Apply CRT effect to the screen."""
     _apply_scanlines(screen)
-    _apply_pixelation(screen, scale_factor=2)
+    _apply_pixelation(screen, settings.get("pixelation"))
     _apply_flicker(screen)
     _apply_glow(screen)
     _apply_vhs_glitch(screen, settings.get("glitch_intensity"))  # NEW: Add VHS glitch effect
@@ -20,10 +20,11 @@ def _apply_scanlines(screen):
 
     screen.blit(scanline_surface, (0, 0))
 
-def _apply_pixelation(screen, scale_factor=4):
+def _apply_pixelation(screen, pixelation):
     """Reduces resolution slightly to create a pixelated effect."""
+    pixelation = {"minimum": 2, "medium": 4, "maximum": 6}.get(pixelation, 2)
     width, height = screen.get_size()
-    small_surf = pygame.transform.scale(screen, (width // scale_factor, height // scale_factor))
+    small_surf = pygame.transform.scale(screen, (width // pixelation, height // pixelation))
     screen.blit(pygame.transform.scale(small_surf, (width, height)), (0, 0))
 
 def _apply_flicker(screen):
@@ -76,7 +77,7 @@ def _add_color_separation(screen, glitch_surface, intensity):
     color_shift = {"minimum": 2, "medium": 4, "maximum": 8}.get(intensity, 4)
 
     if random.random() < 0.05:
-        for i in range(3):  
+        for i in range(3):
             x_offset = random.randint(-color_shift, color_shift)
             y_offset = random.randint(-color_shift, color_shift)
             color_shift_surface = glitch_surface.copy()

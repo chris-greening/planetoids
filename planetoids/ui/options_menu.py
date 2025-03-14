@@ -17,6 +17,7 @@ class OptionsMenu:
         self.options_items = [
             f"CRT Effect: {'On' if self.settings.get('crt_enabled') else 'Off'}",
             f"Glitch Level: {self.settings.get('glitch_intensity').capitalize()}",
+            f"Pixelation: {self.settings.get('pixelation').capitalize()}",
             "Save Settings",
             "Back"
         ]
@@ -42,6 +43,7 @@ class OptionsMenu:
         self.options_items = [
             f"CRT Effect: {'On' if self.settings.get('crt_enabled') else 'Off'}",
             f"Glitch Level: {self.settings.get('glitch_intensity').capitalize()}",
+            f"Pixelation: {self.settings.get('pixelation').capitalize()}",
             "Save Settings",
             "Back"
         ]
@@ -83,12 +85,18 @@ class OptionsMenu:
             self.settings.set("glitch_intensity", glitch_levels[(current_index + 1) % len(glitch_levels)])
             self.unsaved_changes = True
 
-        elif self.selected_index == 2:  # Save Settings
+        elif self.selected_index == 2:  # Pixelation level
+            glitch_levels = ["minimum", "medium", "maximum"]
+            current_index = glitch_levels.index(self.settings.get("pixelation"))
+            self.settings.set("pixelation", glitch_levels[(current_index + 1) % len(glitch_levels)])
+            self.unsaved_changes = True
+
+        elif self.selected_index == 3:  # Save Settings
             self.settings.save()
             self.unsaved_changes = False
             self.save_time = time.time()
 
-        elif self.selected_index == 3:  # Back
+        elif self.selected_index == 4:  # Back
             # if self.unsaved_changes:
             #     return not self._confirm_unsaved_changes()
             return False  # Exit menu normally

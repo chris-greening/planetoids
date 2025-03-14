@@ -12,7 +12,8 @@ class Settings:
 
     DEFAULT_SETTINGS = {
         "crt_enabled": True,
-        "glitch_intensity": "medium"
+        "glitch_intensity": "medium",
+        "pixelation": "minimum"
     }
 
     def __init__(self):
