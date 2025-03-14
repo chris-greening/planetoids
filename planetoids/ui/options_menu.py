@@ -76,8 +76,8 @@ class OptionsMenu:
             self.save_time = time.time()  # Show "Saved!" message
 
         elif self.selected_index == 2:  # Back
-            if self.unsaved_changes:
-                return not self._confirm_unsaved_changes()
+            # if self.unsaved_changes:
+            #     return not self._confirm_unsaved_changes()
             return False  # Exit menu normally
 
         return True  # Stay in menu
