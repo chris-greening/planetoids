@@ -403,7 +403,7 @@ class GameState:
             # Draw the "GAME OVER" text
             screen.blit(text, text_rect)
 
-            if self.settings["crt_enabled"]:
+            if self.settings.get("crt_enabled"):
                 crt_effect.apply_crt_effect(screen)
 
             pygame.display.flip()

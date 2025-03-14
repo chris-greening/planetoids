@@ -55,7 +55,7 @@ class StartMenu:
             self._draw_main_menu()
 
             # Apply CRT effect if enabled
-            if self.settings["crt_enabled"]:
+            if self.settings.get("crt_enabled"):
                 apply_crt_effect(self.screen)
 
             pygame.display.flip()
@@ -64,7 +64,6 @@ class StartMenu:
             self._handle_events()
 
         self._fade_out()  # Smooth transition effect before starting the game
-        return self.settings  # Return updated settings for the game
 
     def _draw_main_menu(self):
         """Draws the main start menu with a refined arcade look."""
@@ -136,7 +135,7 @@ class StartMenu:
                 asteroid.draw(self.screen)
 
             # Apply CRT effect if enabled during fade-out
-            if self.settings["crt_enabled"]:
+            if self.settings.get("crt_enabled"):
                 apply_crt_effect(self.screen)
 
             self.screen.blit(fade_surface, (0, 0))
