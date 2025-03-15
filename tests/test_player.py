@@ -97,19 +97,19 @@ def test_shield_break_and_recharge(player):
     player._handle_shield_regeneration()
     assert player.shield_active is True  # Shield should be restored
 
-# def test_enable_powerups(player):
-#     """Test enabling different powerups and their effects."""
-#     player.enable_quadshot()
-#     assert player.quadshot_active is True
-#     assert player.trishot_active is False  # Other powerups should be disabled
+def test_enable_powerups(player):
+    """Test enabling different powerups and their effects."""
+    player.enable_quadshot()
+    assert player.quadshot_active is True
+    assert player.trishot_active is False  # Other powerups should be disabled
 
-#     player.enable_trishot()
-#     assert player.trishot_active is True
-#     assert player.quadshot_active is False
+    player.enable_trishot()
+    assert player.trishot_active is True
+    assert player.quadshot_active is False
 
-#     player.enable_ricochet()
-#     assert player.ricochet_active is True
-#     assert player.ricochet_piercing is True
+    player.enable_ricochet()
+    assert player.ricochet_active is True
+    assert player.ricochet_piercing is True
 
 # def test_explosion_effects(player):
 #     """Test explosion effects and cleanup."""
