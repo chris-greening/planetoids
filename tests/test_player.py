@@ -148,28 +148,27 @@ def test_screen_wraparound(player):
     """Test that the player correctly wraps around the screen edges."""
 
     player.x = WIDTH  # Right edge (assuming WIDTH = 800)
-    simulate_key_presses(player, [])  # Simulate key press to move right
+    simulate_key_presses(player, [])
     assert player.x == 0  # Should wrap around to the left side
 
     player.x = -1  # Left edge
-    simulate_key_presses(player, [])  # Simulate key press to move right
+    simulate_key_presses(player, [])
     assert player.x == WIDTH - 1  # Should wrap around to the right side
 
     player.y = HEIGHT  # Bottom edge (assuming HEIGHT = 600)
-    simulate_key_presses(player, [])  # Simulate key press to move right
+    simulate_key_presses(player, [])
     assert player.y == 0  # Should wrap around to the top
 
     player.y = -1  # Top edge
-    simulate_key_presses(player, [])  # Simulate key press to move right
+    simulate_key_presses(player, [])
     assert player.y == HEIGHT - 1  # Should wrap around to the bottom
 
 # def test_thrust_particles_generated(player):
 #     """Test that thrust particles are generated when moving forward."""
 #     player.thrusting = False
-#     keys = {pygame.K_UP: True}
 #     initial_particle_count = len(player.particles)
 
-#     player.update(keys)
+#     simulate_key_presses(player, [pygame.K_UP])
 
 #     assert player.thrusting is True
 #     assert len(player.particles) > initial_particle_count  # New particles should be added
