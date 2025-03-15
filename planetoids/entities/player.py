@@ -144,7 +144,6 @@ class Player:
 
     def update(self, keys):
         """Handles movement, rotation, and particle effects in a momentum-based system."""
-        print(keys)
 
         self._handle_shield_regeneration()
 
