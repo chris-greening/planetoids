@@ -111,18 +111,18 @@ def test_enable_powerups(player):
     assert player.ricochet_active is True
     assert player.ricochet_piercing is True
 
-# def test_explosion_effects(player):
-#     """Test explosion effects and cleanup."""
-#     player._generate_explosion()
-#     assert len(player.fragments) > 0  # Fragments should be generated
-#     assert len(player.explosion_particles) > 0
+def test_explosion_effects(player):
+    """Test explosion effects and cleanup."""
+    player._generate_explosion()
+    assert len(player.fragments) > 0  # Fragments should be generated
+    assert len(player.explosion_particles) > 0
 
-#     # Simulate explosion update over time
-#     for _ in range(30):
-#         player._update_explosion()
+    # Simulate explosion update over time
+    for _ in range(31):
+        player._update_explosion()
 
-#     assert len(player.fragments) == 0
-#     assert len(player.explosion_particles) == 0  # Should be cleaned up
+    assert len(player.fragments) == 0
+    assert len(player.explosion_particles) == 0  # Should be cleaned up
 
 # def test_screen_wraparound(player):
 #     """Test that the player correctly wraps around the screen edges."""
