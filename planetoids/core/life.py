@@ -8,12 +8,11 @@ class Life:
     def __init__(self, settings):
         self.settings = settings
         self.lives = 3
-        self.font_path = os.path.join("assets", "fonts", "VT323.ttf")
 
     @property
     def font(self):
         return pygame.font.Font(
-            self.font_path,
+            self.settings.FONT_PATH,
             {"minimum":36, "medium": 48, "maximum": 64}.get(self.settings.get("pixelation"), 36)
         )
 

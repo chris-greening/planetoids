@@ -29,16 +29,15 @@ class GameState:
         self.paused = False
         self.pause_menu = PauseMenu(screen, self)
         self.score = Score(self.settings)
-        self.game_over = GameOver(self)
+        self.game_over = GameOver(self, self.settings)
         self.asteroid_slowdown_active = False
         self.slowdown_timer = 0
-        self.font_path = os.path.join("assets", "fonts", "VT323.ttf")
         logger.info("GameState instantiated")
 
     @property
     def font(self):
         return pygame.font.Font(
-            self.font_path,
+            self.settings.FONT_PATH,
             {"minimum":36, "medium": 48, "maximum": 64}.get(self.settings.get("pixelation"), 36)
         )
 

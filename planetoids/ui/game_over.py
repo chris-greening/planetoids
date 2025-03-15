@@ -6,8 +6,9 @@ from planetoids.core import config
 from planetoids.effects import crt_effect
 
 class GameOver:
-    def __init__(self, game_state):
+    def __init__(self, game_state, settings):
         self.game_state = game_state
+        self.settings = settings
 
     def game_over(self, screen):
         """Ends the game and shows Game Over screen."""
@@ -17,8 +18,7 @@ class GameOver:
 
     def _display_game_over(self, screen):
         """Displays 'GAME OVER' while the game keeps running, showing moving asteroids in the background."""
-        font_path = os.path.join("assets", "fonts", "VT323.ttf")  # ✅ Match Planetoids font
-        game_over_font = pygame.font.Font(font_path, 64)  # ✅ Big text size
+        game_over_font = pygame.font.Font(self.settings.FONT_PATH, 64)  # ✅ Big text size
 
         text = game_over_font.render("GAME OVER", True, config.YELLOW)
         text_rect = text.get_rect(center=(config.WIDTH // 2, config.HEIGHT // 2))

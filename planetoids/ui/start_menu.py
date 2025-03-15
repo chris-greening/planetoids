@@ -20,10 +20,9 @@ class StartMenu:
         self.settings = settings
 
         # Load a refined vintage arcade font (Sleek but retro)
-        font_path = os.path.join("assets", "fonts", "VT323.ttf")
-        self.font = pygame.font.Font(font_path, 120)
-        self.menu_font = pygame.font.Font(font_path, 64)
-        self.small_font = pygame.font.Font(font_path, 36)
+        self.font = pygame.font.Font(self.settings.FONT_PATH, 120)
+        self.menu_font = pygame.font.Font(self.settings.FONT_PATH, 64)
+        self.small_font = pygame.font.Font(self.settings.FONT_PATH, 36)
 
         # Initialize Options Menu
         self.options_menu = OptionsMenu(

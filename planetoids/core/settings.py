@@ -16,6 +16,8 @@ class Settings:
         "pixelation": "minimum"
     }
 
+    FONT_PATH = os.path.join("assets", "fonts", "VT323.ttf")
+
     def __init__(self):
         """Initialize settings by loading from file or using defaults."""
         self._load_settings()
