@@ -75,19 +75,27 @@ def test_player_invincibility(player):
         assert player.invincibility_timer == 0
         assert player.invincible is False  # Should be disabled
 
-# def test_shield_break_and_recharge(player):
-#     """Test that the shield breaks and recharges after time."""
-#     player.take_damage()
-#     assert player.shield_active is False  # Shield should break
-#     assert player.invincible is True  # Invincibility triggered
+def test_shield_break_and_recharge(player):
+    """Test that the shield breaks and recharges after time."""
 
-#     player._handle_shield_regeneration()
-#     assert player.shield_active is False  # Should not regenerate immediately
+    with patch("pygame.key.get_pressed") as mock_get_pressed:
+        # Simulate no keys pressed
+        mock_get_pressed.return_value = pygame.key.ScancodeWrapper([0] * 512)
 
-#     # Simulate waiting 30 seconds
-#     player.last_shield_recharge -= 30
-#     player._handle_shield_regeneration()
-#     assert player.shield_active is True  # Shield should be restored
+        for _ in range(120):
+            player.update(pygame.key.get_pressed())  # Pass mocked input
+
+    player.take_damage()
+    assert player.shield_active is False  # Shield should break
+    assert player.invincible is True  # Invincibility triggered
+
+    player._handle_shield_regeneration()
+    assert player.shield_active is False  # Should not regenerate immediately
+
+    # Simulate waiting 30 seconds
+    player.last_shield_recharge -= 30
+    player._handle_shield_regeneration()
+    assert player.shield_active is True  # Shield should be restored
 
 # def test_enable_powerups(player):
 #     """Test enabling different powerups and their effects."""
