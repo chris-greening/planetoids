@@ -7,7 +7,7 @@ from planetoids.core import config
 from planetoids.entities.asteroid import Asteroid
 from planetoids.effects.crt_effect import apply_crt_effect  # Import CRT effect function
 from planetoids.core.logger import logger
-from planetoids.ui.options_menu import OptionsMenu  # Import OptionsMenu
+from planetoids.ui.options_menu import OptionsMenu
 
 class StartMenu:
     def __init__(self, screen, clock, settings):

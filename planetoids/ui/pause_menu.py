@@ -4,7 +4,7 @@ import pygame
 from planetoids.core import config
 from planetoids.effects.crt_effect import apply_crt_effect
 from planetoids.core.logger import logger
-from planetoids.ui.options_menu import OptionsMenu  # Import OptionsMenu
+from planetoids.ui import OptionsMenu  # Import OptionsMenu
 
 class PauseMenu:
     def __init__(self, screen, game_state):

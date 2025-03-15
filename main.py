@@ -3,14 +3,11 @@ import os
 import pygame
 import dotenv
 
-from planetoids.ui.start_menu import StartMenu
-from planetoids.core.game_state import GameState
 from planetoids.effects import crt_effect
 from planetoids.core import config
-from planetoids.core.settings import Settings
+from planetoids.core import GameState, Settings
 from planetoids.core.logger import logger
-from planetoids.ui.intro_animation import IntroAnimation
-from planetoids.ui.game_over import GameOver
+from planetoids.ui import IntroAnimation, GameOver, StartMenu
 
 dotenv.load_dotenv()
 
