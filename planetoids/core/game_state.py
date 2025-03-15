@@ -2,12 +2,15 @@ import random
 
 import pygame
 
-from planetoids.entities import (
-    Player, Asteroid, ExplodingAsteroid, ShieldAsteroid, Bullet, PowerUp,
-    TemporalSlowdownPowerUp
-)
+from planetoids.entities.asteroid import Asteroid, ExplodingAsteroid, ShieldAsteroid
+from planetoids.entities.powerups import PowerUp, TemporalSlowdownPowerUp
+from planetoids.entities.bullet import Bullet
+from planetoids.entities.player import Player
 from planetoids.ui.pause_menu import PauseMenu
-from planetoids.core import Score, Level, Life, config
+from planetoids.core.score import Score
+from planetoids.core.level import Level
+from planetoids.core.life import Life
+from planetoids.core import config
 from planetoids.core.logger import logger
 
 class GameState:
