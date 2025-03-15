@@ -70,9 +70,6 @@ def main():
                 if restart_game:
                     running = False  # Exit game loop, return to start menu
 
-    pygame.quit()
-
-
 def _event_handler(game_state):
     """Handle key input events"""
     for event in pygame.event.get():
