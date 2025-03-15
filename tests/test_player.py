@@ -16,6 +16,26 @@ def player():
     settings = Settings()
     return Player(settings)
 
+
+def simulate_key_presses(player, keys, frames=1):
+    """
+    Simulates updating the game for a given number of frames with specific key presses.
+
+    Args:
+        player (Player): The player instance to update.
+        keys (list[int]): A list of Pygame key constants to simulate as being pressed.
+        frames (int): Number of frames (updates) to simulate.
+    """
+    key_states = [0] * 512  # Pygame has 512 possible scancodes
+    for key in keys:
+        key_states[key] = 1  # Mark specified keys as "pressed"
+
+    with patch("pygame.key.get_pressed") as mock_get_pressed:
+        mock_get_pressed.return_value = pygame.key.ScancodeWrapper(key_states)
+
+        for _ in range(frames):
+            player.update(pygame.key.get_pressed())  # Update with mocked key input
+
 def test_player_initialization(player):
     """Test if the player initializes with the correct default values."""
     assert player.x == WIDTH // 2  # Assuming WIDTH // 2 = 400
@@ -124,23 +144,24 @@ def test_explosion_effects(player):
     assert len(player.fragments) == 0
     assert len(player.explosion_particles) == 0  # Should be cleaned up
 
-# def test_screen_wraparound(player):
-#     """Test that the player correctly wraps around the screen edges."""
-#     player.x = 800  # Right edge (assuming WIDTH = 800)
-#     player.update({})
-#     assert player.x == 0  # Should wrap around to the left side
+def test_screen_wraparound(player):
+    """Test that the player correctly wraps around the screen edges."""
 
-#     player.x = -1  # Left edge
-#     player.update({})
-#     assert player.x == 799  # Should wrap around to the right side
+    player.x = WIDTH  # Right edge (assuming WIDTH = 800)
+    simulate_key_presses(player, [])  # Simulate key press to move right
+    assert player.x == 0  # Should wrap around to the left side
 
-#     player.y = 600  # Bottom edge (assuming HEIGHT = 600)
-#     player.update({})
-#     assert player.y == 0  # Should wrap around to the top
+    player.x = -1  # Left edge
+    simulate_key_presses(player, [])  # Simulate key press to move right
+    assert player.x == WIDTH - 1  # Should wrap around to the right side
 
-#     player.y = -1  # Top edge
-#     player.update({})
-#     assert player.y == 599  # Should wrap around to the bottom
+    player.y = HEIGHT  # Bottom edge (assuming HEIGHT = 600)
+    simulate_key_presses(player, [])  # Simulate key press to move right
+    assert player.y == 0  # Should wrap around to the top
+
+    player.y = -1  # Top edge
+    simulate_key_presses(player, [])  # Simulate key press to move right
+    assert player.y == HEIGHT - 1  # Should wrap around to the bottom
 
 # def test_thrust_particles_generated(player):
 #     """Test that thrust particles are generated when moving forward."""
