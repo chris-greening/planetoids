@@ -1,5 +1,3 @@
-import os
-
 import pygame
 
 from planetoids.core import config
