@@ -29,7 +29,6 @@ class GameState:
         self.paused = False
         self.pause_menu = PauseMenu(screen, self)
         self.score = Score(self.settings)
-        self.game_over = GameOver(self, self.settings)
         self.asteroid_slowdown_active = False
         self.slowdown_timer = 0
         logger.info("GameState instantiated")
@@ -307,8 +306,6 @@ class GameState:
         self.respawn_timer = 30  # Delay respawn for explosion duration
 
         self.life.decrement()
-        if self.life.lives <= 0:
-            self.game_over.game_over(screen)  # No lives left, game over
 
     def check_for_collisions(self, screen):
         """Check for bullet-asteroid and player-asteroid collisions."""
@@ -344,8 +341,6 @@ class GameState:
 
         if self.life.get_lives() > 0:
             self.respawn_player()
-        else:
-            self.game_over.game_over()
 
     def respawn_player(self):
         """Respawns the player at the center after the timer expires."""

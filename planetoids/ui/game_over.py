@@ -11,14 +11,13 @@ class GameOver:
         self.settings = settings
 
     def game_over(self, screen):
-        """Ends the game and shows Game Over screen."""
-        self._display_game_over(screen)  # For now, just print (will be replaced with a menu)
-        pygame.quit()
-        exit()
+        """Ends the game and shows the Game Over screen. Returns True to restart or False to quit."""
+        self._display_game_over(screen)
+        return True  # Indicate that we want to restart
 
     def _display_game_over(self, screen):
-        """Displays 'GAME OVER' while the game keeps running, showing moving asteroids in the background."""
-        game_over_font = pygame.font.Font(self.settings.FONT_PATH, 64)  # ✅ Big text size
+        """Displays 'GAME OVER' while keeping asteroids moving in the background."""
+        game_over_font = pygame.font.Font(self.settings.FONT_PATH, 64)
 
         text = game_over_font.render("GAME OVER", True, config.YELLOW)
         text_rect = text.get_rect(center=(config.WIDTH // 2, config.HEIGHT // 2))
@@ -27,12 +26,12 @@ class GameOver:
         while game_over:
             screen.fill(config.BLACK)
 
-            # Keep updating & drawing asteroids so they continue moving
+            # Keep asteroids moving in the background
             for asteroid in self.game_state.asteroids:
                 asteroid.update(self.game_state)
                 asteroid.draw(screen)
 
-            # Draw the "GAME OVER" text
+            # Draw "GAME OVER" text
             screen.blit(text, text_rect)
 
             if self.game_state.settings.get("crt_enabled"):
@@ -46,5 +45,5 @@ class GameOver:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     exit()
-                if event.type == pygame.KEYDOWN:  # Any key press exits the game over screen
-                    game_over = False
+                if event.type == pygame.KEYDOWN:  # Any key press exits the Game Over screen
+                    game_over = False  # Exit loop and return to main menu
