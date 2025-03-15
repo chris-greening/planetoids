@@ -16,6 +16,8 @@ class Settings:
         "pixelation": "minimum"
     }
 
+    FONT_PATH = os.path.join("assets", "fonts", "VT323.ttf")
+
     def __init__(self):
         """Initialize settings by loading from file or using defaults."""
         self._load_settings()
@@ -31,11 +33,8 @@ class Settings:
                     self.data = json.load(f)
             except (json.JSONDecodeError, IOError):
                 print("Failed to load settings, using defaults.")
-
-            # If no file exists or load fails, return defaults
-        # self.save()  # Save the defaults immediately
-        self.data = self.DEFAULT_SETTINGS.copy()
-        self.save()
+                self.data = self.DEFAULT_SETTINGS.copy()
+                self.save()
 
     def save(self):
         """Saves settings to a JSON file."""

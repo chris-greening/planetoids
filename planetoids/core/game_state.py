@@ -8,6 +8,7 @@ from planetoids.entities.asteroid import Asteroid, ExplodingAsteroid, ShieldAste
 from planetoids.entities.bullet import Bullet
 from planetoids.entities.powerups import PowerUp, TemporalSlowdownPowerUp
 from planetoids.ui.pause_menu import PauseMenu
+from planetoids.ui.game_over import GameOver
 from planetoids.core import Score, Level, Life, config
 from planetoids.effects import crt_effect
 from planetoids.core.logger import logger
@@ -28,15 +29,15 @@ class GameState:
         self.paused = False
         self.pause_menu = PauseMenu(screen, self)
         self.score = Score(self.settings)
+        self.game_over = GameOver(self, self.settings)
         self.asteroid_slowdown_active = False
         self.slowdown_timer = 0
-        self.font_path = os.path.join("assets", "fonts", "VT323.ttf")
         logger.info("GameState instantiated")
 
     @property
     def font(self):
         return pygame.font.Font(
-            self.font_path,
+            self.settings.FONT_PATH,
             {"minimum":36, "medium": 48, "maximum": 64}.get(self.settings.get("pixelation"), 36)
         )
 
@@ -307,8 +308,7 @@ class GameState:
 
         self.life.decrement()
         if self.life.lives <= 0:
-            self.game_over(screen)  # No lives left, game over
-
+            self.game_over.game_over(screen)  # No lives left, game over
 
     def check_for_collisions(self, screen):
         """Check for bullet-asteroid and player-asteroid collisions."""
@@ -345,7 +345,7 @@ class GameState:
         if self.life.get_lives() > 0:
             self.respawn_player()
         else:
-            self.game_over()
+            self.game_over.game_over()
 
     def respawn_player(self):
         """Respawns the player at the center after the timer expires."""
@@ -362,46 +362,6 @@ class GameState:
         if self.player.powerup_timer > 0:
             bar_width = int((self.player.powerup_timer / 300) * 200)  # Scale to 200px max
             pygame.draw.rect(screen, (0, 255, 255), (config.WIDTH // 2 - 100, config.HEIGHT - 30, bar_width, 10))
-
-    def game_over(self, screen):
-        """Ends the game and shows Game Over screen."""
-        self._display_game_over(screen)  # For now, just print (will be replaced with a menu)
-        pygame.quit()
-        exit()
-
-    def _display_game_over(self, screen):
-        """Displays 'GAME OVER' while the game keeps running, showing moving asteroids in the background."""
-        font_path = os.path.join("assets", "fonts", "VT323.ttf")  # ✅ Match Planetoids font
-        game_over_font = pygame.font.Font(font_path, 64)  # ✅ Big text size
-
-        text = game_over_font.render("GAME OVER", True, config.YELLOW)
-        text_rect = text.get_rect(center=(config.WIDTH // 2, config.HEIGHT // 2))
-
-        game_over = True
-        while game_over:
-            screen.fill(config.BLACK)
-
-            # Keep updating & drawing asteroids so they continue moving
-            for asteroid in self.asteroids:
-                asteroid.update(self)
-                asteroid.draw(screen)
-
-            # Draw the "GAME OVER" text
-            screen.blit(text, text_rect)
-
-            if self.settings.get("crt_enabled"):
-                crt_effect.apply_crt_effect(screen)
-
-            pygame.display.flip()
-            self.clock.tick(config.FPS)
-
-            # Wait for a key press to return to the main menu
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    exit()
-                if event.type == pygame.KEYDOWN:  # Any key press exits the game over screen
-                    game_over = False
 
     def calculate_collision_distance(self, obj1, obj2):
         """Calculates distance between two game objects."""
