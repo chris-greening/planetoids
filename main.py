@@ -11,6 +11,7 @@ from planetoids.core.logger import logger
 from planetoids.ui import IntroAnimation, GameOver, StartMenu
 
 dotenv.load_dotenv()
+DEBUG_MODE = os.getenv("DEBUG", "False").lower() in ("true", "1")
 
 def main():
     logger.info("Game start")
@@ -25,7 +26,7 @@ def main():
         pygame.display.set_caption("Planetoids")
         clock = pygame.time.Clock()
 
-        if os.environ.get("DEBUG") != "True":
+        if not DEBUG_MODE:
             intro = IntroAnimation(screen, clock)
             intro.play()
 

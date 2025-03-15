@@ -2,8 +2,10 @@ import random
 
 import pygame
 
-def apply_crt_effect(screen, settings):
+def apply_crt_effect(screen, settings=None):
     """Apply CRT effect to the screen."""
+    if settings is None:
+        settings = {"pixelation": "minimum", "glitch_intensity": "medium"}
     _apply_scanlines(screen)
     _apply_pixelation(screen, settings.get("pixelation"))
     _apply_flicker(screen)
