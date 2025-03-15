@@ -8,9 +8,7 @@ from planetoids.entities.asteroid import Asteroid, ExplodingAsteroid, ShieldAste
 from planetoids.entities.bullet import Bullet
 from planetoids.entities.powerups import PowerUp, TemporalSlowdownPowerUp
 from planetoids.ui.pause_menu import PauseMenu
-from planetoids.ui.game_over import GameOver
 from planetoids.core import Score, Level, Life, config
-from planetoids.effects import crt_effect
 from planetoids.core.logger import logger
 
 class GameState:
