@@ -63,6 +63,8 @@ class OptionsMenu:
 
             self._draw_text(item, config.WIDTH // 2 - 120, config.HEIGHT // 2 + i * 50, color, self.menu_font)
 
+        if self.save_time and time.time() - self.save_time < 3:
+            self._draw_text("Saved!", config.WIDTH // 2, config.HEIGHT - 80, config.GREEN, self.small_font)
 
     def _handle_events(self):
         """Handles user input for menu navigation."""
