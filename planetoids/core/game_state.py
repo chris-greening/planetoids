@@ -51,6 +51,7 @@ class GameState:
             self.paused = True
             self.pause_menu.show()
             self.paused = False
+            self.dt = 0
 
     def spawn_powerup(self, x, y):
         """Spawns a power-up with a probability, allowing multiple to exist at once."""
