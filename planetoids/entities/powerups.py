@@ -38,12 +38,12 @@ class PowerUp:
     def get_powerups(cls):
         return cls.subclasses
 
-    def update(self):
-        """Move the power-up and handle expiration."""
-        self.x += self.speed_x
-        self.y += self.speed_y
+    def update(self, dt):
+        """Move the power-up using delta time scaling and handle expiration."""
+        self.x += self.speed_x * dt * 60  # ✅ Scale movement by dt
+        self.y += self.speed_y * dt * 60
 
-        # Screen wraparound
+        # ✅ Screen wraparound
         self.x %= WIDTH
         self.y %= HEIGHT
 

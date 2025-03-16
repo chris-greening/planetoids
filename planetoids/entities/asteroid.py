@@ -82,20 +82,22 @@ class Asteroid:
         """Update shape based on current position while keeping offsets constant."""
         self.shape = [(self.x + ox, self.y + oy) for ox, oy in self.shape_offsets]
 
-    def update(self, game_state):
-        """Moves the asteroid across the screen, applying slowdown if active."""
+    def update(self, game_state, dt):
+        """Moves the asteroid across the screen with delta time scaling, applying slowdown if active."""
         asteroid_slowdown_active = False if game_state is None else game_state.asteroid_slowdown_active
         slowdown_factor = 0.3 if asteroid_slowdown_active else 1  # Slowdown multiplier
 
         angle_rad = math.radians(self.angle)
-        dx = math.cos(angle_rad) * self.base_speed * slowdown_factor
-        dy = math.sin(angle_rad) * self.base_speed * slowdown_factor
+
+        # ✅ Scale movement using dt
+        dx = math.cos(angle_rad) * self.base_speed * slowdown_factor * dt * 60
+        dy = math.sin(angle_rad) * self.base_speed * slowdown_factor * dt * 60
 
         # Update position
         self.x += dx
         self.y += dy
 
-        # Screen wraparound logic
+        # ✅ Screen wraparound logic
         if self.x < -self.size:
             self.x = WIDTH + self.size
         elif self.x > WIDTH + self.size:
@@ -126,13 +128,13 @@ class FastAsteroid(Asteroid):
         self.base_speed *= self.speed_multiplier  # Increase speed
         self.trail = []  # Stores previous positions for motion blur
 
-    def update(self, game_state):
+    def update(self, game_state, dt):
         """Update position and add motion blur effect."""
         self.trail.append((self.x, self.y))  # Store previous position
         if len(self.trail) > 5:  # Limit the trail length
             self.trail.pop(0)
 
-        super().update(game_state)
+        super().update(game_state, dt)
 
     def draw(self, screen):
         """Draws the asteroid with a motion blur effect."""
@@ -190,17 +192,24 @@ class ExplodingAsteroid(Asteroid):
         distance = math.sqrt((asteroid.x - self.x) ** 2 + (asteroid.y - self.y) ** 2)
         return distance <= self.explosion_radius
 
-    def update_explosion(self):
-        """Updates explosion animation each frame."""
+    def update_explosion(self, dt):
+        """Updates explosion animation each frame using delta time."""
         if self.exploding:
+            # ✅ Scale fragment movement by dt
             for fragment in self.fragments:
-                fragment["pos"] = (fragment["pos"][0] + fragment["vel"][0], fragment["pos"][1] + fragment["vel"][1])
+                fragment["pos"] = (
+                    fragment["pos"][0] + fragment["vel"][0] * dt * 60,
+                    fragment["pos"][1] + fragment["vel"][1] * dt * 60
+                )
 
+            # ✅ Ensure explosion particles update with dt
             for particle in self.explosion_particles:
-                particle.update()
+                particle.update(dt)
 
-            self.explosion_timer -= 1  # Countdown
+            # ✅ Scale explosion timer decrement by dt
+            self.explosion_timer -= dt * 60
 
+            # ✅ Ensure explosion finishes properly
             if self.explosion_timer <= 0:
                 self.exploding = False  # Mark explosion as done
 

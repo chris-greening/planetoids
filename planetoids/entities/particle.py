@@ -19,13 +19,14 @@ class Particle:
         self.velocity_x = math.cos(angle_rad) * speed * 0.5
         self.velocity_y = math.sin(angle_rad) * speed * 0.5
 
-    def update(self):
-        """Move the particle and reduce size & opacity over time."""
-        self.x -= self.velocity_x  # Move in opposite thrust direction
-        self.y -= self.velocity_y
-        self.size *= 0.95  # Shrink effect
-        self.alpha -= 10  # Fade effect
-        self.lifetime -= 1
+    def update(self, dt):
+        """Move the particle using delta time scaling and reduce size & opacity over time."""
+        self.x -= self.velocity_x * dt * 60  # ✅ Scale movement with dt
+        self.y -= self.velocity_y * dt * 60
+
+        self.size *= 0.95 ** (dt * 60)  # ✅ Ensure consistent shrink rate across FPS
+        self.alpha -= 10 * dt * 60  # ✅ Scale fade effect
+        self.lifetime -= dt * 60  # ✅ Scale lifetime reduction
 
     def draw(self, screen):
         """Draw particle with fading effect."""

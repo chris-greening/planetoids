@@ -40,28 +40,29 @@ class StartMenu:
         logger.info("StartMenu instantiated")
 
     def show(self):
-        """Displays the start menu with moving asteroid background."""
+        """Displays the start menu with moving asteroid background using delta time."""
         logger.info("Show start menu")
+
         while self.running:
+            dt = self.clock.tick(60) / 1000.0  # ✅ Ensure dt is updated per frame
             self.screen.fill(config.BLACK)
 
-            # Update and draw background asteroids
+            # ✅ Update and draw background asteroids
             for asteroid in self.background_asteroids:
-                asteroid.update(game_state=None)
+                asteroid.update(game_state=None, dt=dt)
                 asteroid.draw(self.screen)
 
             self._draw_main_menu()
 
-            # Apply CRT effect if enabled
+            # ✅ Apply CRT effect if enabled
             if self.settings.get("crt_enabled"):
                 apply_crt_effect(self.screen, self.settings)
 
             pygame.display.flip()
-            self.clock.tick(config.FPS)
 
             self._handle_events()
 
-        self._fade_out()  # Smooth transition effect before starting the game
+        self._fade_out()  # ✅ Smooth transition effect before starting the game
 
     def _draw_main_menu(self):
         """Draws the main start menu with a refined arcade look."""
@@ -119,24 +120,29 @@ class StartMenu:
             exit()
 
     def _fade_out(self):
-        """Applies a fade-out transition before starting the game."""
+        """Applies a fade-out transition before starting the game using delta time."""
         fade_surface = pygame.Surface((config.WIDTH, config.HEIGHT))
         fade_surface.fill(config.BLACK)
 
-        for alpha in range(0, 255, 10):  # Increase alpha gradually
-            fade_surface.set_alpha(alpha)
+        alpha = 0  # Start from fully transparent
+        fade_speed = 150  # Adjust this for faster/slower fade (higher = faster)
+
+        while alpha < 255:
+            dt = self.clock.tick(60) / 1000.0  # ✅ Ensure dt is updated per frame
+
+            alpha += fade_speed * dt  # ✅ Scale fade effect based on frame time
+            fade_surface.set_alpha(min(255, int(alpha)))  # ✅ Ensure max alpha is 255
+
             self.screen.fill(config.BLACK)
 
-            # Keep drawing background asteroids while fading
+            # ✅ Keep drawing background asteroids while fading
             for asteroid in self.background_asteroids:
-                asteroid.update(game_state=None)
+                asteroid.update(game_state=None, dt=dt)
                 asteroid.draw(self.screen)
 
-            # Apply CRT effect if enabled during fade-out
+            # ✅ Apply CRT effect if enabled during fade-out
             if self.settings.get("crt_enabled"):
                 apply_crt_effect(self.screen, self.settings)
 
             self.screen.blit(fade_surface, (0, 0))
             pygame.display.flip()
-            self.clock.tick(30)  # Smooth transition speed
-        logger.info("Start menu fadeout")

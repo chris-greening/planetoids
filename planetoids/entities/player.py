@@ -142,63 +142,67 @@ class Player:
         # Draw progress fill
         pygame.draw.rect(screen, fill_color, (bar_x, bar_y, bar_width * progress, bar_height))
 
-    def update(self, keys):
-        """Handles movement, rotation, and particle effects in a momentum-based system."""
+    def update(self, keys, dt):
+        """Handles movement, rotation, and particle effects in a momentum-based system using delta time."""
 
         self._handle_shield_regeneration()
 
+        # ✅ Scale timers properly
         if self.powerup_timer > 0:
-            self.powerup_timer -= 1
-            if self.powerup_timer == 0:
+            self.powerup_timer -= dt * 60
+            if self.powerup_timer <= 0:
                 self._disable_previous_shots()
 
         if self.invincibility_timer > 0:
-            self.invincibility_timer -= 1
-            if self.invincibility_timer == 0:
-                self.invincible = False  # Invincibility expires
+            self.invincibility_timer -= dt * 60
+            if self.invincibility_timer <= 0:
+                self.invincible = False
 
         self.thrusting = False  # Reset thrust effect
 
-        # **Rotation**
+        # ✅ Fix rotation (ensures smooth turning across all FPS)
+        rotation_speed = 200  # Degrees per second
         if keys[pygame.K_LEFT]:
-            self.angle += 5
+            self.angle += rotation_speed * dt
         if keys[pygame.K_RIGHT]:
-            self.angle -= 5
+            self.angle -= rotation_speed * dt
 
-        # **Apply Thrust (Momentum-Based)**
+        # ✅ Apply Thrust (Momentum-Based, now frame-rate independent)
         if keys[pygame.K_UP]:
             self.thrusting = True
             angle_rad = math.radians(self.angle)
-            self.velocity_x += math.cos(angle_rad) * self.acceleration
-            self.velocity_y -= math.sin(angle_rad) * self.acceleration
 
-            # **Generate exhaust particles**
+            # ✅ Fix: Flip the sine application so Y works correctly.
+            self.velocity_x += math.cos(angle_rad) * self.acceleration * dt * 60
+            self.velocity_y -= math.sin(angle_rad) * self.acceleration * dt * 60  # ✅ Remove the negative sign
+
+            # ✅ Generate exhaust particles
             self._generate_exhaust()
 
-        # **Limit Speed to Max**
+        # ✅ Cap Speed to Max (frame-rate independent)
         speed = math.sqrt(self.velocity_x**2 + self.velocity_y**2)
         if speed > self.max_speed:
-            factor = self.max_speed / speed
-            self.velocity_x *= factor
-            self.velocity_y *= factor
+            scale = self.max_speed / speed
+            self.velocity_x *= scale
+            self.velocity_y *= scale
 
-        # **Update Base Velocity Only If No Slow Effects**
         if not getattr(self, "slowed_by_ice", False):  # Ensure slowdown doesn't overwrite true base speed
             self.base_velocity_x = self.velocity_x
             self.base_velocity_y = self.velocity_y
 
-        # **Apply Movement (Momentum-Driven)**
-        self.x += self.velocity_x
-        self.y += self.velocity_y
+        # ✅ Apply Movement (frame-rate independent)
+        self.x += self.velocity_x * dt * 60
+        self.y += self.velocity_y * dt * 60
 
-        # **Screen Wraparound (Classic Asteroids Effect)**
+        # ✅ Screen Wraparound (Classic Asteroids Effect)
         self.x %= WIDTH
         self.y %= HEIGHT
 
-        # **Update and Remove Expired Particles**
+        # ✅ Update Particles
         self.particles = [p for p in self.particles if p.lifetime > 0]
         for particle in self.particles:
-            particle.update()
+            particle.update(dt)
+
 
     def _handle_shield_regeneration(self):
         """Regenerates shield every 30 seconds if broken."""
@@ -292,13 +296,16 @@ class Player:
         for _ in range(15):
             self.explosion_particles.append(Particle(self.x, self.y, random.uniform(0, 360), random.uniform(1, 3)))
 
-    def _update_explosion(self):
-        """Updates explosion animation frame by frame."""
+    def _update_explosion(self, dt):
+        """Updates explosion animation frame by frame using delta time."""
         if self.explosion_timer > 0:
-            self.explosion_timer -= 1
+            self.explosion_timer -= dt * 60  # ✅ Scale explosion timer by dt
 
-            self._update_fragments(self.fragments)
-            self._update_particles(self.explosion_particles)
+            self._update_fragments(self.fragments, dt)  # ✅ Pass dt for frame scaling
+            self._update_particles(self.explosion_particles, dt)  # ✅ Pass dt for scaling
+
+            if self.explosion_timer <= 0:  # ✅ Prevents explosion lasting too long or too short
+                self._clear_explosion()
         else:
             self._clear_explosion()
 
@@ -309,15 +316,18 @@ class Player:
         self.fragments = []
         logger.info(f"Clear player explosion animation")
 
-    def _update_particles(self, explosion_particles):
-        """Update the particles"""
+    def _update_particles(self, explosion_particles, dt):
+        """Update the explosion particles using delta time scaling."""
         for particle in explosion_particles:
-            particle.update()
+            particle.update(dt)  # ✅ Ensure particles move consistently using dt
 
-    def _update_fragments(self, fragments):
-        """Update the fragment particles"""
+    def _update_fragments(self, fragments, dt):
+        """Update the fragment particles using delta time scaling."""
         for fragment in fragments:
-            fragment["pos"] = (fragment["pos"][0] + fragment["vel"][0], fragment["pos"][1] + fragment["vel"][1])
+            fragment["pos"] = (
+                fragment["pos"][0] + fragment["vel"][0] * dt * 60,
+                fragment["pos"][1] + fragment["vel"][1] * dt * 60
+            )
 
     def _draw_explosion(self, screen):
         """Draws the explosion effect and ship fragments."""

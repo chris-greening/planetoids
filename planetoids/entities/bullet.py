@@ -15,14 +15,18 @@ class Bullet:
         self.ricochet = ricochet
         self.piercing = ricochet
 
-    def update(self):
-        """Moves the bullet forward and handles lifetime."""
+    def update(self, dt):
+        """Moves the bullet forward using delta time scaling and handles lifetime."""
         angle_rad = math.radians(self.angle)
-        self.x += math.cos(angle_rad) * self.speed
-        self.y -= math.sin(angle_rad) * self.speed
-        self.lifetime -= 1
 
-        # Screen wraparound (bullets also loop)
+        # ✅ Scale movement using dt to ensure consistent speed
+        self.x += math.cos(angle_rad) * self.speed * dt * 60
+        self.y -= math.sin(angle_rad) * self.speed * dt * 60
+
+        # ✅ Scale bullet lifetime decrement by dt
+        self.lifetime -= dt * 60
+
+        # ✅ Screen wraparound (bullets also loop)
         self.x %= WIDTH
         self.y %= HEIGHT
 
