@@ -38,7 +38,6 @@ class PauseMenu:
         self.running = True
         while self.running:
             self.screen.fill(config.BLACK)
-
             # Draw the pause menu
             self._draw_pause_menu()
 
@@ -48,6 +47,8 @@ class PauseMenu:
 
             pygame.display.flip()
             self._handle_events()
+        self.game_state.paused = False
+        self.game_state.clock.tick()
 
     def _draw_pause_menu(self):
         """Draws the pause menu."""

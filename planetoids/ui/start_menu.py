@@ -49,7 +49,6 @@ class StartMenu:
             dt = self.clock.tick(60) / 1000.0
 
             self.screen.fill(config.BLACK)
-            print(self.background_asteroids[0].x, self.background_asteroids[0].y)
             for asteroid in self.background_asteroids:
                 asteroid.update(dt)
 
@@ -136,7 +135,7 @@ class StartMenu:
             self.screen.fill(config.BLACK)
 
             for asteroid in self.background_asteroids:
-                asteroid.update()
+                asteroid.update(dt)
                 asteroid.draw(self.screen)
 
             if self.settings.get("crt_enabled"):
