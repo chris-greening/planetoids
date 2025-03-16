@@ -15,7 +15,7 @@ class OptionsMenu:
 
         self.selected_index = 0
         self.options_items = [
-            f"Fullscreen: {'On' if self.settings.get('fullscreen_enabled') else 'Off'}",
+            # f"Fullscreen: {'On' if self.settings.get('fullscreen_enabled') else 'Off'}",
             f"CRT Effect: {'On' if self.settings.get('crt_enabled') else 'Off'}",
             f"Glitch Level: {self.settings.get('glitch_intensity').capitalize()}",
             f"Pixelation: {self.settings.get('pixelation').capitalize()}",
@@ -44,7 +44,7 @@ class OptionsMenu:
         crt_enabled = self.settings.get("crt_enabled")
 
         self.options_items = [
-            f"Fullscreen: {'On' if self.settings.get('fullscreen_enabled') else 'Off'}",
+            # f"Fullscreen: {'On' if self.settings.get('fullscreen_enabled') else 'Off'}",
             f"CRT Effect: {'On' if crt_enabled else 'Off'}",
             f"Glitch Level: {self.settings.get('glitch_intensity').capitalize()}",
             f"Pixelation: {self.settings.get('pixelation').capitalize()}",
@@ -94,27 +94,27 @@ class OptionsMenu:
 
     def _handle_options_selection(self):
         """Handles selection logic in the options menu."""
-        if self.selected_index == 0:  # Toggle Fullscreen ✅
-            fullscreen = self.settings.toggle("fullscreen_enabled")
-            _apply_fullscreen(fullscreen, self.settings)  # ✅ Apply fullscreen change
-            self.unsaved_changes = True
-        elif self.selected_index == 1:  # Toggle CRT Effect
+        # if self.selected_index == 0:  # Toggle Fullscreen ✅
+        #     fullscreen = self.settings.toggle("fullscreen_enabled")
+        #     _apply_fullscreen(fullscreen, self.settings)  # ✅ Apply fullscreen change
+        #     self.unsaved_changes = True
+        if self.selected_index == 1-1:  # Toggle CRT Effect
             self.settings.toggle("crt_enabled")
             self.unsaved_changes = True
 
-        elif self.selected_index == 2:  # Cycle glitch level
+        elif self.selected_index == 2-1:  # Cycle glitch level
             glitch_levels = ["minimum", "medium", "maximum"]
             current_index = glitch_levels.index(self.settings.get("glitch_intensity"))
             self.settings.set("glitch_intensity", glitch_levels[(current_index + 1) % len(glitch_levels)])
             self.unsaved_changes = True
 
-        elif self.selected_index == 3:  # Pixelation level
+        elif self.selected_index == 3-1:  # Pixelation level
             glitch_levels = ["minimum", "medium", "maximum"]
             current_index = glitch_levels.index(self.settings.get("pixelation"))
             self.settings.set("pixelation", glitch_levels[(current_index + 1) % len(glitch_levels)])
             self.unsaved_changes = True
 
-        elif self.selected_index == 4:  # Save Settings
+        elif self.selected_index == 4-1:  # Save Settings
             self.settings.save()
             self.unsaved_changes = False
             self.save_time = time.time()
