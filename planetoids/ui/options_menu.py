@@ -55,17 +55,14 @@ class OptionsMenu:
         self._draw_text("OPTIONS", config.WIDTH // 2 - 120, config.HEIGHT // 4, config.YELLOW, self.font)
 
         for i, item in enumerate(self.options_items):
-            # 🔹 If CRT is OFF, make Glitch Level & Pixelation greyed out
-            if i in [1, 2] and not crt_enabled:
+            # ✅ Correct: Skip only Glitch Level & Pixelation if CRT is disabled
+            if not crt_enabled and i in [2, 3]:
                 color = config.DIM_GRAY  # Greyed out
             else:
-                color = config.WHITE if i != self.selected_index else config.ORANGE  # Highlighted selection
+                color = config.WHITE if i != self.selected_index else config.ORANGE  # Highlight selection
 
             self._draw_text(item, config.WIDTH // 2 - 120, config.HEIGHT // 2 + i * 50, color, self.menu_font)
 
-        # Display "Saved!" if settings were saved recently
-        if self.save_time and time.time() - self.save_time < 3:
-            self._draw_text("Saved!", config.WIDTH // 2, config.HEIGHT - 80, config.GREEN, self.small_font)
 
     def _handle_events(self):
         """Handles user input for menu navigation."""
@@ -84,23 +81,21 @@ class OptionsMenu:
 
     def _navigate(self, direction):
         """Moves selection up or down, skipping disabled items."""
-        crt_enabled = self.settings.get("crt_enabled")
-        
         while True:
             self.selected_index = (self.selected_index + direction) % len(self.options_items)
 
-            # 🔹 Skip glitch level & pixelation when CRT is off
-            if not crt_enabled and self.selected_index in [1, 2]:
+            # 🔹 Correctly skip "Glitch Level" (index 2) & "Pixelation" (index 3) when CRT is OFF
+            if not self.settings.get("crt_enabled") and self.selected_index in [2, 3]:
                 continue
 
             break
 
     def _handle_options_selection(self):
         """Handles selection logic in the options menu."""
-        if self.selected_index == 0:  # ✅ Toggle Fullscreen
-            self.settings.toggle("fullscreen_enabled")
-            pygame.display.toggle_fullscreen()  # ✅ Apply fullscreen toggle
-
+        if self.selected_index == 0:  # Toggle Fullscreen ✅
+            fullscreen = self.settings.toggle("fullscreen_enabled")
+            _apply_fullscreen(fullscreen, self.settings)  # ✅ Apply fullscreen change
+            self.unsaved_changes = True
         elif self.selected_index == 1:  # Toggle CRT Effect
             self.settings.toggle("crt_enabled")
             self.unsaved_changes = True
@@ -123,7 +118,7 @@ class OptionsMenu:
             self.save_time = time.time()
 
         elif self.selected_index == 5:  # Back
-            return False  # Exit menu normally
+            return False  # Exit menu
 
         return True  # Stay in menu
 
@@ -133,3 +128,13 @@ class OptionsMenu:
             font = self.font  # Default to main font
         rendered_text = font.render(text, True, color)
         self.screen.blit(rendered_text, (x, y))
+
+def _apply_fullscreen(fullscreen, settings):
+    """Reinitialize display mode and update config dynamically."""
+    if fullscreen:
+        pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT), pygame.FULLSCREEN)
+    else:
+        fixed_size = (960, 540)  # Fixed window size
+        pygame.display.set_mode(fixed_size, pygame.NOFRAME)
+
+    config._update_dimensions()  # ✅ Update WIDTH and HEIGHT dynamically

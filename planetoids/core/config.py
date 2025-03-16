@@ -8,6 +8,14 @@ def get_screen_size():
     info = pygame.display.Info()
     return info.current_w, info.current_h
 
+def _update_dimensions():
+    """Recalculate WIDTH and HEIGHT based on current screen size."""
+    global SCREEN_WIDTH, SCREEN_HEIGHT, WIDTH, HEIGHT
+    SCREEN_WIDTH, SCREEN_HEIGHT = get_screen_size()
+
+    WIDTH = int(SCREEN_WIDTH * (BASE_WIDTH / SCREEN_WIDTH))
+    HEIGHT = int(SCREEN_HEIGHT * (BASE_HEIGHT / SCREEN_HEIGHT))
+
 BASE_WIDTH = 1360
 BASE_HEIGHT = 768
 

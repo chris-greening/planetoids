@@ -39,7 +39,7 @@ class Settings:
                 for key, default_value in self.DEFAULT_SETTINGS.items():
                     if key not in loaded_data:
                         loaded_data[key] = default_value  # Add missing default
-                        
+
                 self.data = loaded_data  # Use merged settings
 
             except (json.JSONDecodeError, IOError):
@@ -59,15 +59,17 @@ class Settings:
         """Updates a setting value and marks settings as needing saving."""
         if key in self.DEFAULT_SETTINGS:
             self.data[key] = value
-            self.save()
+            # self.save()
 
     def toggle(self, key):
-        """Toggles a boolean setting (e.g., CRT effect)."""
+        """Toggles a boolean setting, saves it, and returns the new state."""
         if key in self.DEFAULT_SETTINGS and isinstance(self.data[key], bool):
             self.data[key] = not self.data[key]
-            self.save()
+            # self.save()
+            return self.data[key]  # ✅ Return new state
+
 
     def reset(self):
         """Resets settings to defaults."""
         self.data = self.DEFAULT_SETTINGS.copy()
-        self.save()
+        # self.save()
