@@ -73,18 +73,15 @@ class GameState:
 
         self.player.slowed_by_ice = False  # Reset ice slowdown before checking
 
-        # ✅ Pass dt where necessary
         self._update_respawn(keys, dt)
         self._update_bullets(dt)
         self._update_asteroids(dt)
         self._update_powerups(dt)
         self.check_powerup_collisions()
 
-        # ✅ Update player explosion animation (scaled by dt)
         if self.player.explosion_timer > 0:
             self.player._update_explosion(dt)
 
-        # ✅ Restore player speed dynamically based on dt
         # if not self.player.slowed_by_ice:
         #     self.player.velocity_x = max(self.player.velocity_x, self.player.base_velocity_x * dt * 60)
         #     self.player.velocity_y = max(self.player.velocity_y, self.player.base_velocity_y * dt * 60)
@@ -93,21 +90,19 @@ class GameState:
         """Handles player respawn countdown and resets the player when ready, using delta time."""
 
         if self.respawn_timer > 0:
-            self.respawn_timer -= dt * 60  # ✅ Scale respawn timer to match frame time
+            self.respawn_timer -= dt * 60
             print(f"Respawning in {max(0, int(self.respawn_timer))} frames")
 
-            if self.respawn_timer <= 0:  # ✅ Prevent overshooting
+            if self.respawn_timer <= 0:
                 print("Respawning player now!")
                 self.respawn_player()
         else:
-            self.player.update(keys, dt)  # ✅ Pass `dt` to player's update
+            self.player.update(keys, dt)
 
     def _update_bullets(self, dt):
         """Updates bullets and removes expired ones using delta time."""
         for bullet in self.bullets:
-            bullet.update(dt)  # ✅ Pass dt to bullet update method
-
-        # ✅ Scale bullet lifetime decrement by dt
+            bullet.update(dt)
         self.bullets = [b for b in self.bullets if b.lifetime > dt * 60]
 
     def _update_asteroids(self, dt):
@@ -116,8 +111,8 @@ class GameState:
 
         for asteroid in self.asteroids:
             if isinstance(asteroid, ExplodingAsteroid) and asteroid.exploding:
-                asteroid.update_explosion(dt)  # ✅ Pass dt to explosion update
-                if asteroid.explosion_timer <= 0:  # Remove after explosion ends
+                asteroid.update_explosion(dt)
+                if asteroid.explosion_timer <= 0:
                     asteroids_to_remove.append(asteroid)
             else:
                 asteroid.update(self, dt)  # ✅ Pass dt to asteroid update
@@ -128,9 +123,7 @@ class GameState:
     def _update_powerups(self, dt):
         """Updates power-ups and removes expired ones using delta time."""
         for powerup in self.powerups:
-            powerup.update(dt)  # ✅ Pass dt to powerup update method
-
-        # ✅ Ensure expiration is time-based and frame-independent
+            powerup.update(dt)
         self.powerups = [p for p in self.powerups if not p.is_expired()]
 
     def handle_powerup_expiration(self, event):
