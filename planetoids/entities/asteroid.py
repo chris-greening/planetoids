@@ -64,6 +64,7 @@ class Asteroid:
         """Selects an asteroid type based on weighted probabilities"""
         asteroid_classes = cls.asteroid_types
         weights = [subclass.spawn_chance for subclass in asteroid_classes]
+        print(asteroid_classes)
         return random.choices(asteroid_classes, weights=weights, k=1)[0]
 
     def _generate_jagged_shape(self):
@@ -420,3 +421,7 @@ class BackgroundAsteroid:
 
     def __repr__(self):
         return f"{self.__class__.__name__}(x={round(self.x)}, y={round(self.y)}, size={self.size}, stage={self.stage})"
+
+if Asteroid not in Asteroid.asteroid_types:
+    Asteroid.asteroid_types.append(Asteroid)
+    logger.info("Base class Asteroid manually registered in asteroid_types")
