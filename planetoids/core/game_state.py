@@ -56,7 +56,7 @@ class GameState:
         """Spawns a power-up with a probability, allowing multiple to exist at once."""
         if len(self.powerups) < 3 and random.random() < .1:
             powerup_class = PowerUp.get_powerup_type()
-            self.powerups.append(powerup_class(x, y))
+            self.powerups.append(powerup_class(self, x, y))
 
     def check_for_clear_map(self):
         """Checks if all asteroids are destroyed and resets the map if so."""
@@ -81,7 +81,7 @@ class GameState:
         self._update_respawn(keys, dt)
         self._update_bullets(dt)
         self._update_asteroids()
-        self._update_powerups(dt)
+        self._update_powerups()
         self.check_powerup_collisions()
 
         if self.player.explosion_timer > 0:
@@ -125,10 +125,10 @@ class GameState:
         # Remove exploding asteroids after animation finishes
         self.asteroids = [a for a in self.asteroids if a not in asteroids_to_remove]
 
-    def _update_powerups(self, dt):
+    def _update_powerups(self):
         """Updates power-ups and removes expired ones using delta time."""
         for powerup in self.powerups:
-            powerup.update(dt)
+            powerup.update()
         self.powerups = [p for p in self.powerups if not p.is_expired()]
 
     def handle_powerup_expiration(self, event):
