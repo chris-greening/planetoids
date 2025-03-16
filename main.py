@@ -42,6 +42,7 @@ def main():
         while running:
             screen.fill(config.BLACK)
             dt = clock.tick(60) / 1000.0
+            game_state.update_dt(dt)
             _event_handler(game_state)
 
             if game_state.paused:

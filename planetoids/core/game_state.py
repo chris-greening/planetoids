@@ -19,7 +19,7 @@ class GameState:
         self.screen = screen
         self.settings = settings
         self.clock = clock
-        self.player = Player(self.settings)
+        self.player = Player(self.settings, self)
         self.bullets = []
         self.asteroids = []
         self.powerups = []
@@ -31,6 +31,7 @@ class GameState:
         self.score = Score(self.settings)
         self.asteroid_slowdown_active = False
         self.slowdown_timer = 0
+        self.dt = 1.0
         logger.info("GameState instantiated")
 
     @property
@@ -39,6 +40,10 @@ class GameState:
             self.settings.FONT_PATH,
             {"minimum":36, "medium": 48, "maximum": 64}.get(self.settings.get("pixelation"), 36)
         )
+
+    def update_dt(self, dt):
+        """Updates dt each frame to maintain FPS independence."""
+        self.dt = dt
 
     def toggle_pause(self):
         """Toggles pause and shows the pause screen."""
@@ -97,7 +102,7 @@ class GameState:
                 print("Respawning player now!")
                 self.respawn_player()
         else:
-            self.player.update(keys, dt)
+            self.player.update(keys)
 
     def _update_bullets(self, dt):
         """Updates bullets and removes expired ones using delta time."""

@@ -10,9 +10,10 @@ from planetoids.entities.bullet import Bullet
 from planetoids.core.logger import logger
 
 class Player:
-    def __init__(self, settings):
+    def __init__(self, settings, game_state):
         """Initialize player with movement settings."""
         self.settings = settings
+        self.game_state = game_state
         self.reset_position()
         self.acceleration = 0.1
         self.max_speed = 5
@@ -142,44 +143,38 @@ class Player:
         # Draw progress fill
         pygame.draw.rect(screen, fill_color, (bar_x, bar_y, bar_width * progress, bar_height))
 
-    def update(self, keys, dt):
+    def update(self, keys):
         """Handles movement, rotation, and particle effects in a momentum-based system using delta time."""
 
         self._handle_shield_regeneration()
 
-        # ✅ Scale timers properly
         if self.powerup_timer > 0:
-            self.powerup_timer -= dt * 60
+            self.powerup_timer -= self.game_state.dt * 60
             if self.powerup_timer <= 0:
                 self._disable_previous_shots()
 
         if self.invincibility_timer > 0:
-            self.invincibility_timer -= dt * 60
+            self.invincibility_timer -= self.game_state.dt * 60
             if self.invincibility_timer <= 0:
                 self.invincible = False
 
         self.thrusting = False  # Reset thrust effect
 
-        # ✅ Fix rotation (ensures smooth turning across all FPS)
         rotation_speed = 200  # Degrees per second
         if keys[pygame.K_LEFT]:
-            self.angle += rotation_speed * dt
+            self.angle += rotation_speed * self.game_state.dt
         if keys[pygame.K_RIGHT]:
-            self.angle -= rotation_speed * dt
+            self.angle -= rotation_speed * self.game_state.dt
 
-        # ✅ Apply Thrust (Momentum-Based, now frame-rate independent)
         if keys[pygame.K_UP]:
             self.thrusting = True
             angle_rad = math.radians(self.angle)
 
-            # ✅ Fix: Flip the sine application so Y works correctly.
-            self.velocity_x += math.cos(angle_rad) * self.acceleration * dt * 60
-            self.velocity_y -= math.sin(angle_rad) * self.acceleration * dt * 60  # ✅ Remove the negative sign
+            self.velocity_x += math.cos(angle_rad) * self.acceleration * self.game_state.dt * 60
+            self.velocity_y -= math.sin(angle_rad) * self.acceleration * self.game_state.dt * 60
 
-            # ✅ Generate exhaust particles
             self._generate_exhaust()
 
-        # ✅ Cap Speed to Max (frame-rate independent)
         speed = math.sqrt(self.velocity_x**2 + self.velocity_y**2)
         if speed > self.max_speed:
             scale = self.max_speed / speed
@@ -190,19 +185,15 @@ class Player:
             self.base_velocity_x = self.velocity_x
             self.base_velocity_y = self.velocity_y
 
-        # ✅ Apply Movement (frame-rate independent)
-        self.x += self.velocity_x * dt * 60
-        self.y += self.velocity_y * dt * 60
+        self.x += self.velocity_x * self.game_state.dt * 60
+        self.y += self.velocity_y * self.game_state.dt * 60
 
-        # ✅ Screen Wraparound (Classic Asteroids Effect)
         self.x %= WIDTH
         self.y %= HEIGHT
 
-        # ✅ Update Particles
         self.particles = [p for p in self.particles if p.lifetime > 0]
         for particle in self.particles:
-            particle.update(dt)
-
+            particle.update(self.game_state.dt)
 
     def _handle_shield_regeneration(self):
         """Regenerates shield every 30 seconds if broken."""
