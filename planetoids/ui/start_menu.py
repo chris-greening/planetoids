@@ -3,7 +3,7 @@ import random
 import pygame
 
 from planetoids.core import config
-from planetoids.entities.asteroid import Asteroid
+from planetoids.entities.asteroid import BackgroundAsteroid
 from planetoids.effects.crt_effect import apply_crt_effect  # Import CRT effect function
 from planetoids.core.logger import logger
 from planetoids.ui.options_menu import OptionsMenu
@@ -30,7 +30,8 @@ class StartMenu:
 
         # Generate background asteroids
         self.background_asteroids = [
-            Asteroid(
+            BackgroundAsteroid(
+                None,
                 random.randint(0, config.WIDTH),
                 random.randint(0, config.HEIGHT),
                 size=random.randint(30, 60),
@@ -44,17 +45,14 @@ class StartMenu:
         logger.info("Show start menu")
 
         while self.running:
-            dt = self.clock.tick(60) / 1000.0  # ✅ Ensure dt is updated per frame
             self.screen.fill(config.BLACK)
 
-            # ✅ Update and draw background asteroids
             for asteroid in self.background_asteroids:
-                asteroid.update(game_state=None, dt=dt)
+                asteroid.update()
                 asteroid.draw(self.screen)
 
             self._draw_main_menu()
 
-            # ✅ Apply CRT effect if enabled
             if self.settings.get("crt_enabled"):
                 apply_crt_effect(self.screen, self.settings)
 
@@ -62,7 +60,7 @@ class StartMenu:
 
             self._handle_events()
 
-        self._fade_out()  # ✅ Smooth transition effect before starting the game
+        self._fade_out()
 
     def _draw_main_menu(self):
         """Draws the main start menu with a refined arcade look."""
@@ -128,19 +126,16 @@ class StartMenu:
         fade_speed = 150  # Adjust this for faster/slower fade (higher = faster)
 
         while alpha < 255:
-            dt = self.clock.tick(60) / 1000.0  # ✅ Ensure dt is updated per frame
+            dt = self.clock.tick(60) / 1000.0
 
-            alpha += fade_speed * dt  # ✅ Scale fade effect based on frame time
-            fade_surface.set_alpha(min(255, int(alpha)))  # ✅ Ensure max alpha is 255
-
+            alpha += fade_speed * dt
+            fade_surface.set_alpha(min(255, int(alpha)))
             self.screen.fill(config.BLACK)
 
-            # ✅ Keep drawing background asteroids while fading
             for asteroid in self.background_asteroids:
-                asteroid.update(game_state=None, dt=dt)
+                asteroid.update()
                 asteroid.draw(self.screen)
 
-            # ✅ Apply CRT effect if enabled during fade-out
             if self.settings.get("crt_enabled"):
                 apply_crt_effect(self.screen, self.settings)
 

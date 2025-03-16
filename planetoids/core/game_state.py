@@ -70,7 +70,7 @@ class GameState:
         for _ in range(count):
             asteroid_type = Asteroid.get_asteroid_type()
             print(asteroid_type)
-            self.asteroids.append(asteroid_type())
+            self.asteroids.append(asteroid_type(self))
         logger.info("{count} asteroids spawned")
 
     def update_all(self, keys, dt):
@@ -80,12 +80,12 @@ class GameState:
 
         self._update_respawn(keys, dt)
         self._update_bullets(dt)
-        self._update_asteroids(dt)
+        self._update_asteroids()
         self._update_powerups(dt)
         self.check_powerup_collisions()
 
         if self.player.explosion_timer > 0:
-            self.player._update_explosion(dt)
+            self.player._update_explosion()
 
         # if not self.player.slowed_by_ice:
         #     self.player.velocity_x = max(self.player.velocity_x, self.player.base_velocity_x * dt * 60)
@@ -110,17 +110,17 @@ class GameState:
             bullet.update(dt)
         self.bullets = [b for b in self.bullets if b.lifetime > dt * 60]
 
-    def _update_asteroids(self, dt):
+    def _update_asteroids(self):
         """Updates asteroids, handles explosion animations, and removes destroyed asteroids using delta time."""
         asteroids_to_remove = []
 
         for asteroid in self.asteroids:
             if isinstance(asteroid, ExplodingAsteroid) and asteroid.exploding:
-                asteroid.update_explosion(dt)
+                asteroid.update_explosion()
                 if asteroid.explosion_timer <= 0:
                     asteroids_to_remove.append(asteroid)
             else:
-                asteroid.update(self, dt)  # ✅ Pass dt to asteroid update
+                asteroid.update()
 
         # Remove exploding asteroids after animation finishes
         self.asteroids = [a for a in self.asteroids if a not in asteroids_to_remove]

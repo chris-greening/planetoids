@@ -193,7 +193,7 @@ class Player:
 
         self.particles = [p for p in self.particles if p.lifetime > 0]
         for particle in self.particles:
-            particle.update(self.game_state.dt)
+            particle.update()
 
     def _handle_shield_regeneration(self):
         """Regenerates shield every 30 seconds if broken."""
@@ -254,7 +254,7 @@ class Player:
         angle_rad = math.radians(self.angle)
         exhaust_x = self.x - math.cos(angle_rad) * self.size * 1.2
         exhaust_y = self.y + math.sin(angle_rad) * self.size * 1.2
-        self.particles.append(Particle(exhaust_x, exhaust_y, self.angle, random.uniform(1, 3)))
+        self.particles.append(Particle(exhaust_x, exhaust_y, self.angle, random.uniform(1, 3), self.game_state))
 
     def _draw_thruster(self, screen, angle_rad, left, right):
         """Draws a flickering thrust effect behind the ship."""
@@ -285,17 +285,17 @@ class Player:
 
         # Generate explosion particles
         for _ in range(15):
-            self.explosion_particles.append(Particle(self.x, self.y, random.uniform(0, 360), random.uniform(1, 3)))
+            self.explosion_particles.append(Particle(self.x, self.y, random.uniform(0, 360), random.uniform(1, 3), self.game_state))
 
-    def _update_explosion(self, dt):
+    def _update_explosion(self):
         """Updates explosion animation frame by frame using delta time."""
         if self.explosion_timer > 0:
-            self.explosion_timer -= dt * 60  # ✅ Scale explosion timer by dt
+            self.explosion_timer -= self.game_state.dt * 60
 
-            self._update_fragments(self.fragments, dt)  # ✅ Pass dt for frame scaling
-            self._update_particles(self.explosion_particles, dt)  # ✅ Pass dt for scaling
+            self._update_fragments(self.fragments)
+            self._update_particles(self.explosion_particles)
 
-            if self.explosion_timer <= 0:  # ✅ Prevents explosion lasting too long or too short
+            if self.explosion_timer <= 0:
                 self._clear_explosion()
         else:
             self._clear_explosion()
@@ -307,17 +307,17 @@ class Player:
         self.fragments = []
         logger.info(f"Clear player explosion animation")
 
-    def _update_particles(self, explosion_particles, dt):
+    def _update_particles(self, explosion_particles):
         """Update the explosion particles using delta time scaling."""
         for particle in explosion_particles:
-            particle.update(dt)  # ✅ Ensure particles move consistently using dt
+            particle.update()
 
-    def _update_fragments(self, fragments, dt):
+    def _update_fragments(self, fragments):
         """Update the fragment particles using delta time scaling."""
         for fragment in fragments:
             fragment["pos"] = (
-                fragment["pos"][0] + fragment["vel"][0] * dt * 60,
-                fragment["pos"][1] + fragment["vel"][1] * dt * 60
+                fragment["pos"][0] + fragment["vel"][0] * self.game_state.dt * 60,
+                fragment["pos"][1] + fragment["vel"][1] * self.game_state.dt * 60
             )
 
     def _draw_explosion(self, screen):
