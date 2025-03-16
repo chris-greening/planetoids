@@ -6,7 +6,8 @@ import pygame
 from planetoids.core.config import RED, WIDTH, HEIGHT
 
 class Bullet:
-    def __init__(self, x, y, angle, ricochet=False):
+    def __init__(self, game_state, x, y, angle, ricochet=False):
+        self.game_state = game_state
         self.x = x
         self.y = y
         self.angle = angle
@@ -15,18 +16,15 @@ class Bullet:
         self.ricochet = ricochet
         self.piercing = ricochet
 
-    def update(self, dt):
+    def update(self):
         """Moves the bullet forward using delta time scaling and handles lifetime."""
         angle_rad = math.radians(self.angle)
 
-        # ✅ Scale movement using dt to ensure consistent speed
-        self.x += math.cos(angle_rad) * self.speed * dt * 60
-        self.y -= math.sin(angle_rad) * self.speed * dt * 60
+        self.x += math.cos(angle_rad) * self.speed * self.game_state.dt * 60
+        self.y -= math.sin(angle_rad) * self.speed * self.game_state.dt * 60
 
-        # ✅ Scale bullet lifetime decrement by dt
-        self.lifetime -= dt * 60
+        self.lifetime -= self.game_state.dt * 60
 
-        # ✅ Screen wraparound (bullets also loop)
         self.x %= WIDTH
         self.y %= HEIGHT
 

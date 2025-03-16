@@ -54,7 +54,7 @@ class Player:
             angles = [self.angle]  # Normal shot
 
         for angle in angles:
-            bullets.append(Bullet(self.x, self.y, angle))
+            bullets.append(Bullet(self.game_state, self.x, self.y, angle))
 
         return bullets
 

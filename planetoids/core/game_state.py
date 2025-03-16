@@ -79,7 +79,7 @@ class GameState:
         self.player.slowed_by_ice = False  # Reset ice slowdown before checking
 
         self._update_respawn(keys)
-        self._update_bullets(dt)
+        self._update_bullets()
         self._update_asteroids()
         self._update_powerups()
         self.check_powerup_collisions()
@@ -104,11 +104,11 @@ class GameState:
         else:
             self.player.update(keys)
 
-    def _update_bullets(self, dt):
+    def _update_bullets(self):
         """Updates bullets and removes expired ones using delta time."""
         for bullet in self.bullets:
-            bullet.update(dt)
-        self.bullets = [b for b in self.bullets if b.lifetime > dt * 60]
+            bullet.update()
+        self.bullets = [b for b in self.bullets if b.lifetime > self.dt * 60]
 
     def _update_asteroids(self):
         """Updates asteroids, handles explosion animations, and removes destroyed asteroids using delta time."""
