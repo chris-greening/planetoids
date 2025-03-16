@@ -15,6 +15,7 @@ class OptionsMenu:
 
         self.selected_index = 0
         self.options_items = [
+            f"Fullscreen: {'On' if self.settings.get('fullscreen_enabled') else 'Off'}",
             f"CRT Effect: {'On' if self.settings.get('crt_enabled') else 'Off'}",
             f"Glitch Level: {self.settings.get('glitch_intensity').capitalize()}",
             f"Pixelation: {self.settings.get('pixelation').capitalize()}",
@@ -43,6 +44,7 @@ class OptionsMenu:
         crt_enabled = self.settings.get("crt_enabled")
 
         self.options_items = [
+            f"Fullscreen: {'On' if self.settings.get('fullscreen_enabled') else 'Off'}",
             f"CRT Effect: {'On' if crt_enabled else 'Off'}",
             f"Glitch Level: {self.settings.get('glitch_intensity').capitalize()}",
             f"Pixelation: {self.settings.get('pixelation').capitalize()}",
@@ -95,31 +97,33 @@ class OptionsMenu:
 
     def _handle_options_selection(self):
         """Handles selection logic in the options menu."""
-        crt_enabled = self.settings.get("crt_enabled")
+        if self.selected_index == 0:  # ✅ Toggle Fullscreen
+            self.settings.toggle("fullscreen_enabled")
+            pygame.display.toggle_fullscreen()  # ✅ Apply fullscreen toggle
 
-        if self.selected_index == 0:  # Toggle CRT Effect
+        elif self.selected_index == 1:  # Toggle CRT Effect
             self.settings.toggle("crt_enabled")
             self.unsaved_changes = True
 
-        elif self.selected_index == 1 and crt_enabled:  # Cycle glitch level
+        elif self.selected_index == 2:  # Cycle glitch level
             glitch_levels = ["minimum", "medium", "maximum"]
             current_index = glitch_levels.index(self.settings.get("glitch_intensity"))
             self.settings.set("glitch_intensity", glitch_levels[(current_index + 1) % len(glitch_levels)])
             self.unsaved_changes = True
 
-        elif self.selected_index == 2 and crt_enabled:  # Pixelation level
+        elif self.selected_index == 3:  # Pixelation level
             glitch_levels = ["minimum", "medium", "maximum"]
             current_index = glitch_levels.index(self.settings.get("pixelation"))
             self.settings.set("pixelation", glitch_levels[(current_index + 1) % len(glitch_levels)])
             self.unsaved_changes = True
 
-        elif self.selected_index == 3:  # Save Settings
+        elif self.selected_index == 4:  # Save Settings
             self.settings.save()
             self.unsaved_changes = False
             self.save_time = time.time()
 
-        elif self.selected_index == 4:  # Back
-            return False  # Exit menu
+        elif self.selected_index == 5:  # Back
+            return False  # Exit menu normally
 
         return True  # Stay in menu
 

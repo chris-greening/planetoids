@@ -11,9 +11,10 @@ class Settings:
     CONFIG_PATH = os.path.join(CONFIG_DIR, "settings.json")
 
     DEFAULT_SETTINGS = {
+        "fullscreen_enabled": True,
         "crt_enabled": False,
         "glitch_intensity": "medium",
-        "pixelation": "minimum"
+        "pixelation": "minimum",
     }
 
     FONT_PATH = os.path.join("assets", "fonts", "VT323.ttf")
@@ -27,14 +28,23 @@ class Settings:
         if not os.path.exists(self.CONFIG_DIR):
             os.makedirs(self.CONFIG_DIR, exist_ok=True)
 
+        self.data = self.DEFAULT_SETTINGS.copy()  # Start with defaults
+
         if os.path.exists(self.CONFIG_PATH):
             try:
                 with open(self.CONFIG_PATH, "r") as f:
-                    self.data = json.load(f)
+                    loaded_data = json.load(f)
+
+                # ✅ Merge loaded settings with defaults
+                for key, default_value in self.DEFAULT_SETTINGS.items():
+                    if key not in loaded_data:
+                        loaded_data[key] = default_value  # Add missing default
+                        
+                self.data = loaded_data  # Use merged settings
+
             except (json.JSONDecodeError, IOError):
-                print("Failed to load settings, using defaults.")
-                self.data = self.DEFAULT_SETTINGS.copy()
-                self.save()
+                print("⚠️ Failed to load settings, using defaults.")
+                self.save()  # Save defaults if load fails
 
     def save(self):
         """Saves settings to a JSON file."""
@@ -49,14 +59,15 @@ class Settings:
         """Updates a setting value and marks settings as needing saving."""
         if key in self.DEFAULT_SETTINGS:
             self.data[key] = value
+            self.save()
 
     def toggle(self, key):
         """Toggles a boolean setting (e.g., CRT effect)."""
         if key in self.DEFAULT_SETTINGS and isinstance(self.data[key], bool):
             self.data[key] = not self.data[key]
+            self.save()
 
     def reset(self):
         """Resets settings to defaults."""
         self.data = self.DEFAULT_SETTINGS.copy()
         self.save()
-

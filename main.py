@@ -15,24 +15,28 @@ DEBUG_MODE = os.getenv("DEBUG", "False").lower() in ("true", "1")
 
 def main():
     logger.info("Game start")
-    logger.debug("Debug mode activated")
     pygame.init()
 
     settings = Settings()
 
     while True:  # Main game loop that allows restarting
         pygame.mouse.set_visible(False)
-        screen = pygame.display.set_mode((config.WIDTH, config.HEIGHT), pygame.FULLSCREEN)
+
+        # ✅ Apply Fullscreen or Windowed Mode
+        screen_mode = pygame.FULLSCREEN if settings.get("fullscreen_enabled") else 0
+        screen = pygame.display.set_mode((config.WIDTH, config.HEIGHT), screen_mode)
+
         pygame.display.set_caption("Planetoids")
         clock = pygame.time.Clock()
 
+        # Intro animation if not debugging
         if not DEBUG_MODE:
             intro = IntroAnimation(screen, clock)
             intro.play()
 
         # Show the start menu
         start_menu = StartMenu(screen, clock, settings)
-        start_menu.show()  # Expect True or False
+        start_menu.show()
 
         # Create GameState instance
         game_state = GameState(screen, settings, clock)
