@@ -1,4 +1,5 @@
 import random
+import math
 
 import pygame
 
@@ -36,7 +37,7 @@ class StartMenu:
                 random.randint(0, config.HEIGHT),
                 size=random.randint(30, 60),
                 stage=3)
-            for _ in range(6)
+            for _ in range(5)
         ]
         logger.info("StartMenu instantiated")
 
@@ -45,10 +46,13 @@ class StartMenu:
         logger.info("Show start menu")
 
         while self.running:
-            self.screen.fill(config.BLACK)
+            dt = self.clock.tick(60) / 1000.0
 
+            self.screen.fill(config.BLACK)
+            print(self.background_asteroids[0].x, self.background_asteroids[0].y)
             for asteroid in self.background_asteroids:
-                asteroid.update()
+                asteroid.update(dt)
+
                 asteroid.draw(self.screen)
 
             self._draw_main_menu()
@@ -57,7 +61,6 @@ class StartMenu:
                 apply_crt_effect(self.screen, self.settings)
 
             pygame.display.flip()
-
             self._handle_events()
 
         self._fade_out()

@@ -121,15 +121,15 @@ class BackgroundAsteroid(Asteroid):
     def __init__(self, game_state, x=None, y=None, size=80, stage=3):
         super().__init__(game_state, x, y, size, stage)
 
-    def update(self):
-        """Moves the asteroid across the screen with delta time scaling, applying slowdown if active."""
+    def update(self, dt):
+        """Moves the asteroid using delta time (dt)."""
         asteroid_slowdown_active = False if self.game_state is None else self.game_state.asteroid_slowdown_active
         slowdown_factor = 0.3 if asteroid_slowdown_active else 1  # Slowdown multiplier
 
         angle_rad = math.radians(self.angle)
 
-        dx = math.cos(angle_rad) * self.base_speed * slowdown_factor
-        dy = math.sin(angle_rad) * self.base_speed * slowdown_factor
+        dx = math.cos(angle_rad) * self.base_speed * slowdown_factor * dt * 60
+        dy = math.sin(angle_rad) * self.base_speed * slowdown_factor * dt * 60
 
         # Update position
         self.x += dx
@@ -147,6 +147,7 @@ class BackgroundAsteroid(Asteroid):
 
         # Update shape based on new position without changing offsets
         self.update_shape()
+
 
 class FastAsteroid(Asteroid):
     spawn_chance = 0.05  # 5% chance to spawn
