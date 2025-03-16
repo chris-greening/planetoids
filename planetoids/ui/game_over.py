@@ -28,7 +28,7 @@ class GameOver:
 
             # Keep asteroids moving in the background
             for asteroid in self.game_state.asteroids:
-                asteroid.update(self.game_state, dt)
+                asteroid.update()
                 asteroid.draw(screen)
 
             # Draw "GAME OVER" text

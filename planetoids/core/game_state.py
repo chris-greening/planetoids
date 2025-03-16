@@ -78,7 +78,7 @@ class GameState:
 
         self.player.slowed_by_ice = False  # Reset ice slowdown before checking
 
-        self._update_respawn(keys, dt)
+        self._update_respawn(keys)
         self._update_bullets(dt)
         self._update_asteroids()
         self._update_powerups()
@@ -91,11 +91,11 @@ class GameState:
         #     self.player.velocity_x = max(self.player.velocity_x, self.player.base_velocity_x * dt * 60)
         #     self.player.velocity_y = max(self.player.velocity_y, self.player.base_velocity_y * dt * 60)
 
-    def _update_respawn(self, keys, dt):
+    def _update_respawn(self, keys):
         """Handles player respawn countdown and resets the player when ready, using delta time."""
 
         if self.respawn_timer > 0:
-            self.respawn_timer -= dt * 60
+            self.respawn_timer -= self.dt * 60
             print(f"Respawning in {max(0, int(self.respawn_timer))} frames")
 
             if self.respawn_timer <= 0:
