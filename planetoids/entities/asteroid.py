@@ -11,8 +11,9 @@ class Asteroid:
     asteroid_types = []
     spawn_chance = 1.0
 
-    def __init__(self, x=None, y=None, size=120, stage=3):
+    def __init__(self, game_state, x=None, y=None, size=120, stage=3):
         """Initialize an asteroid with position, size, and split stage."""
+        self.game_state = game_state
         self.x = x if x is not None else random.randint(0, WIDTH)
         self.y = y if y is not None else random.randint(0, HEIGHT)
         self.size = size  # Size of the asteroid
@@ -51,8 +52,8 @@ class Asteroid:
             asteroid_class_1 = self.get_asteroid_type()
             asteroid_class_2 = self.get_asteroid_type()
 
-            asteroid1 = asteroid_class_1(self.x + random.randint(-5, 5), self.y + random.randint(-5, 5), size=new_size, stage=new_stage)
-            asteroid2 = asteroid_class_2(self.x + random.randint(-5, 5), self.y + random.randint(-5, 5), size=new_size, stage=new_stage)
+            asteroid1 = asteroid_class_1(self.game_state, self.x + random.randint(-5, 5), self.y + random.randint(-5, 5), size=new_size, stage=new_stage)
+            asteroid2 = asteroid_class_2(self.game_state, self.x + random.randint(-5, 5), self.y + random.randint(-5, 5), size=new_size, stage=new_stage)
             logger.info(f"Asteroid {self} split into {asteroid1} and {asteroid2}")
             return [asteroid1, asteroid2]
         logger.info(f"{self} destroyed")
@@ -82,20 +83,20 @@ class Asteroid:
         """Update shape based on current position while keeping offsets constant."""
         self.shape = [(self.x + ox, self.y + oy) for ox, oy in self.shape_offsets]
 
-    def update(self, game_state):
-        """Moves the asteroid across the screen, applying slowdown if active."""
-        asteroid_slowdown_active = False if game_state is None else game_state.asteroid_slowdown_active
+    def update(self):
+        """Moves the asteroid across the screen with delta time scaling, applying slowdown if active."""
+        asteroid_slowdown_active = False if self.game_state is None else self.game_state.asteroid_slowdown_active
         slowdown_factor = 0.3 if asteroid_slowdown_active else 1  # Slowdown multiplier
 
         angle_rad = math.radians(self.angle)
-        dx = math.cos(angle_rad) * self.base_speed * slowdown_factor
-        dy = math.sin(angle_rad) * self.base_speed * slowdown_factor
+
+        dx = math.cos(angle_rad) * self.base_speed * slowdown_factor * self.game_state.dt * 60
+        dy = math.sin(angle_rad) * self.base_speed * slowdown_factor * self.game_state.dt * 60
 
         # Update position
         self.x += dx
         self.y += dy
 
-        # Screen wraparound logic
         if self.x < -self.size:
             self.x = WIDTH + self.size
         elif self.x > WIDTH + self.size:
@@ -116,23 +117,54 @@ class Asteroid:
     def __repr__(self):
         return f"{self.__class__.__name__}(x={round(self.x)}, y={round(self.y)}, size={self.size}, stage={self.stage})"
 
+class BackgroundAsteroid(Asteroid):
+    def __init__(self, game_state, x=None, y=None, size=80, stage=3):
+        super().__init__(game_state, x, y, size, stage)
+
+    def update(self):
+        """Moves the asteroid across the screen with delta time scaling, applying slowdown if active."""
+        asteroid_slowdown_active = False if self.game_state is None else self.game_state.asteroid_slowdown_active
+        slowdown_factor = 0.3 if asteroid_slowdown_active else 1  # Slowdown multiplier
+
+        angle_rad = math.radians(self.angle)
+
+        dx = math.cos(angle_rad) * self.base_speed * slowdown_factor
+        dy = math.sin(angle_rad) * self.base_speed * slowdown_factor
+
+        # Update position
+        self.x += dx
+        self.y += dy
+
+        if self.x < -self.size:
+            self.x = WIDTH + self.size
+        elif self.x > WIDTH + self.size:
+            self.x = -self.size
+
+        if self.y < -self.size:
+            self.y = HEIGHT + self.size
+        elif self.y > HEIGHT + self.size:
+            self.y = -self.size
+
+        # Update shape based on new position without changing offsets
+        self.update_shape()
+
 class FastAsteroid(Asteroid):
     spawn_chance = 0.05  # 5% chance to spawn
     speed_multiplier = 2.3
     color = (0, 255, 0)  # Bright green
 
-    def __init__(self, x=None, y=None, size=80, stage=3):
-        super().__init__(x, y, size, stage)
+    def __init__(self, game_state, x=None, y=None, size=80, stage=3):
+        super().__init__(game_state, x, y, size, stage)
         self.base_speed *= self.speed_multiplier  # Increase speed
         self.trail = []  # Stores previous positions for motion blur
 
-    def update(self, game_state):
+    def update(self):
         """Update position and add motion blur effect."""
         self.trail.append((self.x, self.y))  # Store previous position
         if len(self.trail) > 5:  # Limit the trail length
             self.trail.pop(0)
 
-        super().update(game_state)
+        super().update()
 
     def draw(self, screen):
         """Draws the asteroid with a motion blur effect."""
@@ -147,8 +179,8 @@ class ExplodingAsteroid(Asteroid):
     """Asteroid that explodes, destroying nearby asteroids and playing an explosion animation."""
     spawn_chance = 0.08
 
-    def __init__(self, x=None, y=None, size=80, stage=3, explosion_radius=200):  # Bigger explosion
-        super().__init__(x, y, size, stage)
+    def __init__(self, game_state, x=None, y=None, size=80, stage=3, explosion_radius=200):  # Bigger explosion
+        super().__init__(game_state, x, y, size, stage)
         self.explosion_radius = explosion_radius
         self.exploding = False
         self.explosion_particles = []
@@ -181,7 +213,7 @@ class ExplodingAsteroid(Asteroid):
 
         # Generate explosion particles (increased amount)
         self.explosion_particles = [
-            Particle(self.x, self.y, random.uniform(0, 360), random.uniform(2, 5))  # Bigger explosion
+            Particle(self.x, self.y, random.uniform(0, 360), random.uniform(2, 5), self.game_state)  # Bigger explosion
             for _ in range(40)
         ]
 
@@ -191,15 +223,18 @@ class ExplodingAsteroid(Asteroid):
         return distance <= self.explosion_radius
 
     def update_explosion(self):
-        """Updates explosion animation each frame."""
+        """Updates explosion animation each frame using delta time."""
         if self.exploding:
             for fragment in self.fragments:
-                fragment["pos"] = (fragment["pos"][0] + fragment["vel"][0], fragment["pos"][1] + fragment["vel"][1])
+                fragment["pos"] = (
+                    fragment["pos"][0] + fragment["vel"][0] * self.game_state.dt * 60,
+                    fragment["pos"][1] + fragment["vel"][1] * self.game_state.dt * 60
+                )
 
             for particle in self.explosion_particles:
                 particle.update()
 
-            self.explosion_timer -= 1  # Countdown
+            self.explosion_timer -= self.game_state.dt * 60
 
             if self.explosion_timer <= 0:
                 self.exploding = False  # Mark explosion as done
@@ -245,9 +280,9 @@ class ShieldAsteroid(Asteroid):
     spawn_chance = .05
     shield_strength = 2  # Shield takes 2 hits before breaking
 
-    def __init__(self, x=None, y=None, size=80, stage=3):
+    def __init__(self, game_state, x=None, y=None, size=80, stage=3):
         """Initialize ShieldAsteroid with a shield."""
-        super().__init__(x, y, size, stage)
+        super().__init__(game_state, x, y, size, stage)
         self.current_shield = self.shield_strength  # Track shield hits
 
     def draw(self, screen):

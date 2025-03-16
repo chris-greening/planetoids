@@ -10,9 +10,10 @@ from planetoids.entities.bullet import Bullet
 from planetoids.core.logger import logger
 
 class Player:
-    def __init__(self, settings):
+    def __init__(self, settings, game_state):
         """Initialize player with movement settings."""
         self.settings = settings
+        self.game_state = game_state
         self.reset_position()
         self.acceleration = 0.1
         self.max_speed = 5
@@ -53,7 +54,7 @@ class Player:
             angles = [self.angle]  # Normal shot
 
         for angle in angles:
-            bullets.append(Bullet(self.x, self.y, angle))
+            bullets.append(Bullet(self.game_state, self.x, self.y, angle))
 
         return bullets
 
@@ -143,59 +144,53 @@ class Player:
         pygame.draw.rect(screen, fill_color, (bar_x, bar_y, bar_width * progress, bar_height))
 
     def update(self, keys):
-        """Handles movement, rotation, and particle effects in a momentum-based system."""
+        """Handles movement, rotation, and particle effects in a momentum-based system using delta time."""
 
         self._handle_shield_regeneration()
 
         if self.powerup_timer > 0:
-            self.powerup_timer -= 1
-            if self.powerup_timer == 0:
+            self.powerup_timer -= self.game_state.dt * 60
+            if self.powerup_timer <= 0:
                 self._disable_previous_shots()
 
         if self.invincibility_timer > 0:
-            self.invincibility_timer -= 1
-            if self.invincibility_timer == 0:
-                self.invincible = False  # Invincibility expires
+            self.invincibility_timer -= self.game_state.dt * 60
+            if self.invincibility_timer <= 0:
+                self.invincible = False
 
         self.thrusting = False  # Reset thrust effect
 
-        # **Rotation**
+        rotation_speed = 200  # Degrees per second
         if keys[pygame.K_LEFT]:
-            self.angle += 5
+            self.angle += rotation_speed * self.game_state.dt
         if keys[pygame.K_RIGHT]:
-            self.angle -= 5
+            self.angle -= rotation_speed * self.game_state.dt
 
-        # **Apply Thrust (Momentum-Based)**
         if keys[pygame.K_UP]:
             self.thrusting = True
             angle_rad = math.radians(self.angle)
-            self.velocity_x += math.cos(angle_rad) * self.acceleration
-            self.velocity_y -= math.sin(angle_rad) * self.acceleration
 
-            # **Generate exhaust particles**
+            self.velocity_x += math.cos(angle_rad) * self.acceleration * self.game_state.dt * 60
+            self.velocity_y -= math.sin(angle_rad) * self.acceleration * self.game_state.dt * 60
+
             self._generate_exhaust()
 
-        # **Limit Speed to Max**
         speed = math.sqrt(self.velocity_x**2 + self.velocity_y**2)
         if speed > self.max_speed:
-            factor = self.max_speed / speed
-            self.velocity_x *= factor
-            self.velocity_y *= factor
+            scale = self.max_speed / speed
+            self.velocity_x *= scale
+            self.velocity_y *= scale
 
-        # **Update Base Velocity Only If No Slow Effects**
         if not getattr(self, "slowed_by_ice", False):  # Ensure slowdown doesn't overwrite true base speed
             self.base_velocity_x = self.velocity_x
             self.base_velocity_y = self.velocity_y
 
-        # **Apply Movement (Momentum-Driven)**
-        self.x += self.velocity_x
-        self.y += self.velocity_y
+        self.x += self.velocity_x * self.game_state.dt * 60
+        self.y += self.velocity_y * self.game_state.dt * 60
 
-        # **Screen Wraparound (Classic Asteroids Effect)**
         self.x %= WIDTH
         self.y %= HEIGHT
 
-        # **Update and Remove Expired Particles**
         self.particles = [p for p in self.particles if p.lifetime > 0]
         for particle in self.particles:
             particle.update()
@@ -259,7 +254,7 @@ class Player:
         angle_rad = math.radians(self.angle)
         exhaust_x = self.x - math.cos(angle_rad) * self.size * 1.2
         exhaust_y = self.y + math.sin(angle_rad) * self.size * 1.2
-        self.particles.append(Particle(exhaust_x, exhaust_y, self.angle, random.uniform(1, 3)))
+        self.particles.append(Particle(exhaust_x, exhaust_y, self.angle, random.uniform(1, 3), self.game_state))
 
     def _draw_thruster(self, screen, angle_rad, left, right):
         """Draws a flickering thrust effect behind the ship."""
@@ -290,15 +285,18 @@ class Player:
 
         # Generate explosion particles
         for _ in range(15):
-            self.explosion_particles.append(Particle(self.x, self.y, random.uniform(0, 360), random.uniform(1, 3)))
+            self.explosion_particles.append(Particle(self.x, self.y, random.uniform(0, 360), random.uniform(1, 3), self.game_state))
 
     def _update_explosion(self):
-        """Updates explosion animation frame by frame."""
+        """Updates explosion animation frame by frame using delta time."""
         if self.explosion_timer > 0:
-            self.explosion_timer -= 1
+            self.explosion_timer -= self.game_state.dt * 60
 
             self._update_fragments(self.fragments)
             self._update_particles(self.explosion_particles)
+
+            if self.explosion_timer <= 0:
+                self._clear_explosion()
         else:
             self._clear_explosion()
 
@@ -310,14 +308,17 @@ class Player:
         logger.info(f"Clear player explosion animation")
 
     def _update_particles(self, explosion_particles):
-        """Update the particles"""
+        """Update the explosion particles using delta time scaling."""
         for particle in explosion_particles:
             particle.update()
 
     def _update_fragments(self, fragments):
-        """Update the fragment particles"""
+        """Update the fragment particles using delta time scaling."""
         for fragment in fragments:
-            fragment["pos"] = (fragment["pos"][0] + fragment["vel"][0], fragment["pos"][1] + fragment["vel"][1])
+            fragment["pos"] = (
+                fragment["pos"][0] + fragment["vel"][0] * self.game_state.dt * 60,
+                fragment["pos"][1] + fragment["vel"][1] * self.game_state.dt * 60
+            )
 
     def _draw_explosion(self, screen):
         """Draws the explosion effect and ship fragments."""

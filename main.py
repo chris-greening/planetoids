@@ -41,8 +41,8 @@ def main():
         running = True
         while running:
             screen.fill(config.BLACK)
-            clock.tick(config.FPS)
-
+            dt = clock.tick(60) / 1000.0
+            game_state.update_dt(dt)
             _event_handler(game_state)
 
             if game_state.paused:
@@ -50,7 +50,7 @@ def main():
 
             # Update game state
             keys = pygame.key.get_pressed()
-            game_state.update_all(keys)
+            game_state.update_all(keys, dt)
             game_state.check_for_clear_map()
             game_state.check_for_collisions(screen)
 
@@ -64,7 +64,7 @@ def main():
             # Check for Game Over condition
             if game_state.life.lives <= 0:
                 game_over_screen = GameOver(game_state, settings)
-                restart_game = game_over_screen.game_over(screen)
+                restart_game = game_over_screen.game_over(screen, dt)
 
                 if restart_game:
                     running = False  # Exit game loop, return to start menu

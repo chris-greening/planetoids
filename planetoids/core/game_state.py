@@ -19,7 +19,7 @@ class GameState:
         self.screen = screen
         self.settings = settings
         self.clock = clock
-        self.player = Player(self.settings)
+        self.player = Player(self.settings, self)
         self.bullets = []
         self.asteroids = []
         self.powerups = []
@@ -31,6 +31,7 @@ class GameState:
         self.score = Score(self.settings)
         self.asteroid_slowdown_active = False
         self.slowdown_timer = 0
+        self.dt = 1.0
         logger.info("GameState instantiated")
 
     @property
@@ -39,6 +40,10 @@ class GameState:
             self.settings.FONT_PATH,
             {"minimum":36, "medium": 48, "maximum": 64}.get(self.settings.get("pixelation"), 36)
         )
+
+    def update_dt(self, dt):
+        """Updates dt each frame to maintain FPS independence."""
+        self.dt = dt
 
     def toggle_pause(self):
         """Toggles pause and shows the pause screen."""
@@ -51,7 +56,7 @@ class GameState:
         """Spawns a power-up with a probability, allowing multiple to exist at once."""
         if len(self.powerups) < 3 and random.random() < .1:
             powerup_class = PowerUp.get_powerup_type()
-            self.powerups.append(powerup_class(x, y))
+            self.powerups.append(powerup_class(self, x, y))
 
     def check_for_clear_map(self):
         """Checks if all asteroids are destroyed and resets the map if so."""
@@ -65,11 +70,11 @@ class GameState:
         for _ in range(count):
             asteroid_type = Asteroid.get_asteroid_type()
             print(asteroid_type)
-            self.asteroids.append(asteroid_type())
+            self.asteroids.append(asteroid_type(self))
         logger.info("{count} asteroids spawned")
 
-    def update_all(self, keys):
-        """Update all game objects, including power-ups, bullets, asteroids, and explosions."""
+    def update_all(self, keys, dt):
+        """Update all game objects, including power-ups, bullets, asteroids, and explosions, using delta time (dt)."""
 
         self.player.slowed_by_ice = False  # Reset ice slowdown before checking
 
@@ -82,44 +87,46 @@ class GameState:
         if self.player.explosion_timer > 0:
             self.player._update_explosion()
 
-        # Restore player speed if not affected by ice
-        if not self.player.slowed_by_ice:
-            self.player.velocity_x = max(self.player.velocity_x, self.player.base_velocity_x)
-            self.player.velocity_y = max(self.player.velocity_y, self.player.base_velocity_y)
+        # if not self.player.slowed_by_ice:
+        #     self.player.velocity_x = max(self.player.velocity_x, self.player.base_velocity_x * dt * 60)
+        #     self.player.velocity_y = max(self.player.velocity_y, self.player.base_velocity_y * dt * 60)
 
     def _update_respawn(self, keys):
-        """Handles player respawn countdown and resets the player when ready."""
+        """Handles player respawn countdown and resets the player when ready, using delta time."""
+
         if self.respawn_timer > 0:
-            self.respawn_timer -= 1
-            print(f"Respawning in {self.respawn_timer} frames")
-            if self.respawn_timer == 0:
+            self.respawn_timer -= self.dt * 60
+            print(f"Respawning in {max(0, int(self.respawn_timer))} frames")
+
+            if self.respawn_timer <= 0:
                 print("Respawning player now!")
                 self.respawn_player()
         else:
             self.player.update(keys)
 
     def _update_bullets(self):
-        """Updates bullets and removes expired ones."""
+        """Updates bullets and removes expired ones using delta time."""
         for bullet in self.bullets:
             bullet.update()
-        self.bullets = [b for b in self.bullets if b.lifetime > 0]
+        self.bullets = [b for b in self.bullets if b.lifetime > self.dt * 60]
 
     def _update_asteroids(self):
-        """Updates asteroids, handles explosion animations, and removes destroyed asteroids."""
+        """Updates asteroids, handles explosion animations, and removes destroyed asteroids using delta time."""
         asteroids_to_remove = []
+
         for asteroid in self.asteroids:
             if isinstance(asteroid, ExplodingAsteroid) and asteroid.exploding:
                 asteroid.update_explosion()
-                if asteroid.explosion_timer <= 0:  # Remove after explosion ends
+                if asteroid.explosion_timer <= 0:
                     asteroids_to_remove.append(asteroid)
             else:
-                asteroid.update(self)
+                asteroid.update()
 
         # Remove exploding asteroids after animation finishes
         self.asteroids = [a for a in self.asteroids if a not in asteroids_to_remove]
 
     def _update_powerups(self):
-        """Updates power-ups and removes expired ones."""
+        """Updates power-ups and removes expired ones using delta time."""
         for powerup in self.powerups:
             powerup.update()
         self.powerups = [p for p in self.powerups if not p.is_expired()]
@@ -267,7 +274,7 @@ class GameState:
     def _spawn_ricochet_bullet(self, x, y):
         """Creates and adds a ricochet bullet."""
         new_angle = random.randint(0, 360)  # Random ricochet angle
-        ricochet_bullet = Bullet(x, y, new_angle, ricochet=True)
+        ricochet_bullet = Bullet(self.game_state, x, y, new_angle, ricochet=True)
         self.bullets.append(ricochet_bullet)
 
     def _remove_destroyed_asteroids(self, asteroids_to_remove):

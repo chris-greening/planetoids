@@ -10,8 +10,9 @@ class PowerUp:
     """Base class for all power-ups."""
     subclasses = []
 
-    def __init__(self, x, y, radius=15):
+    def __init__(self, game_state, x, y, radius=15):
         """Initialize power-up properties."""
+        self.game_state = game_state
         self.x = x
         self.y = y
         self.radius = radius
@@ -39,11 +40,10 @@ class PowerUp:
         return cls.subclasses
 
     def update(self):
-        """Move the power-up and handle expiration."""
-        self.x += self.speed_x
-        self.y += self.speed_y
+        """Move the power-up using delta time scaling and handle expiration."""
+        self.x += self.speed_x * self.game_state.dt * 60  # ✅ Scale movement by dt
+        self.y += self.speed_y * self.game_state.dt * 60
 
-        # Screen wraparound
         self.x %= WIDTH
         self.y %= HEIGHT
 
@@ -91,9 +91,9 @@ class TrishotPowerUp(PowerUp):
     """Trishot power-up that enables triple bullets for a limited time."""
     spawn_chance = 1.0
 
-    def __init__(self, x, y):
+    def __init__(self, game_state, x, y):
         """Initialize the trishot power-up."""
-        super().__init__(x, y)
+        super().__init__(game_state, x, y)
 
     def apply(self, player):
         """Grants the player trishot mode."""
@@ -107,9 +107,9 @@ class ShieldPowerUp(PowerUp):
     """Shield power-up that reenables player's shield"""
     spawn_chance = 1.0
 
-    def __init__(self, x, y):
+    def __init__(self, game_state, x, y):
         """Initialize the shield power-up."""
-        super().__init__(x, y)
+        super().__init__(game_state, x, y)
 
     def apply(self, player):
         """Grants the player shield."""
