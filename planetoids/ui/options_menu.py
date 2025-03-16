@@ -40,8 +40,10 @@ class OptionsMenu:
 
     def _draw_options_menu(self):
         """Draws the options menu, ensuring updated values are displayed."""
+        crt_enabled = self.settings.get("crt_enabled")
+
         self.options_items = [
-            f"CRT Effect: {'On' if self.settings.get('crt_enabled') else 'Off'}",
+            f"CRT Effect: {'On' if crt_enabled else 'Off'}",
             f"Glitch Level: {self.settings.get('glitch_intensity').capitalize()}",
             f"Pixelation: {self.settings.get('pixelation').capitalize()}",
             "Save Settings",
@@ -51,7 +53,12 @@ class OptionsMenu:
         self._draw_text("OPTIONS", config.WIDTH // 2 - 120, config.HEIGHT // 4, config.YELLOW, self.font)
 
         for i, item in enumerate(self.options_items):
-            color = config.WHITE if i != self.selected_index else config.ORANGE
+            # 🔹 If CRT is OFF, make Glitch Level & Pixelation greyed out
+            if i in [1, 2] and not crt_enabled:
+                color = config.DIM_GRAY  # Greyed out
+            else:
+                color = config.WHITE if i != self.selected_index else config.ORANGE  # Highlighted selection
+
             self._draw_text(item, config.WIDTH // 2 - 120, config.HEIGHT // 2 + i * 50, color, self.menu_font)
 
         # Display "Saved!" if settings were saved recently
@@ -66,26 +73,41 @@ class OptionsMenu:
                 exit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_DOWN:
-                    self.selected_index = (self.selected_index + 1) % len(self.options_items)
+                    self._navigate(1)
                 elif event.key == pygame.K_UP:
-                    self.selected_index = (self.selected_index - 1) % len(self.options_items)
+                    self._navigate(-1)
                 elif event.key == pygame.K_RETURN:
                     return self._handle_options_selection()
         return True
 
+    def _navigate(self, direction):
+        """Moves selection up or down, skipping disabled items."""
+        crt_enabled = self.settings.get("crt_enabled")
+        
+        while True:
+            self.selected_index = (self.selected_index + direction) % len(self.options_items)
+
+            # 🔹 Skip glitch level & pixelation when CRT is off
+            if not crt_enabled and self.selected_index in [1, 2]:
+                continue
+
+            break
+
     def _handle_options_selection(self):
         """Handles selection logic in the options menu."""
+        crt_enabled = self.settings.get("crt_enabled")
+
         if self.selected_index == 0:  # Toggle CRT Effect
             self.settings.toggle("crt_enabled")
             self.unsaved_changes = True
 
-        elif self.selected_index == 1:  # Cycle glitch level
+        elif self.selected_index == 1 and crt_enabled:  # Cycle glitch level
             glitch_levels = ["minimum", "medium", "maximum"]
             current_index = glitch_levels.index(self.settings.get("glitch_intensity"))
             self.settings.set("glitch_intensity", glitch_levels[(current_index + 1) % len(glitch_levels)])
             self.unsaved_changes = True
 
-        elif self.selected_index == 2:  # Pixelation level
+        elif self.selected_index == 2 and crt_enabled:  # Pixelation level
             glitch_levels = ["minimum", "medium", "maximum"]
             current_index = glitch_levels.index(self.settings.get("pixelation"))
             self.settings.set("pixelation", glitch_levels[(current_index + 1) % len(glitch_levels)])
@@ -97,52 +119,9 @@ class OptionsMenu:
             self.save_time = time.time()
 
         elif self.selected_index == 4:  # Back
-            # if self.unsaved_changes:
-            #     return not self._confirm_unsaved_changes()
-            return False  # Exit menu normally
+            return False  # Exit menu
 
         return True  # Stay in menu
-
-    def _confirm_unsaved_changes(self):
-        """Displays a confirmation popup if the user has unsaved changes."""
-        confirmation = self._show_confirmation_popup(
-            "Unsaved changes will be lost. Continue?", ["Yes", "No"]
-        )
-        return confirmation  # Returns True if "Yes" is selected, False otherwise
-
-    def _show_confirmation_popup(self, message, options):
-        """Displays a confirmation popup with selectable options."""
-        overlay = pygame.Surface((config.WIDTH, config.HEIGHT), pygame.SRCALPHA)
-        overlay.fill((0, 0, 0, 180))  # Semi-transparent dark background
-        self.screen.blit(overlay, (0, 0))
-
-        # Render the message
-        text_surface = self.small_font.render(message, True, config.WHITE)
-        text_rect = text_surface.get_rect(center=(config.WIDTH // 2, config.HEIGHT // 3))
-        self.screen.blit(text_surface, text_rect)
-
-        selected_index = 0  # Start with first option selected
-
-        while True:
-            self.screen.blit(overlay, (0, 0))  # Redraw overlay
-            self.screen.blit(text_surface, text_rect)  # Redraw message
-
-            for i, option in enumerate(options):
-                color = config.ORANGE if i == selected_index else config.WHITE
-                option_surface = self.small_font.render(option, True, color)
-                option_rect = option_surface.get_rect(center=(config.WIDTH // 2, config.HEIGHT // 2 + i * 40))
-                self.screen.blit(option_surface, option_rect)
-
-            pygame.display.flip()
-
-            for event in pygame.event.get():
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_UP:
-                        selected_index = (selected_index - 1) % len(options)
-                    elif event.key == pygame.K_DOWN:
-                        selected_index = (selected_index + 1) % len(options)
-                    elif event.key == pygame.K_RETURN:
-                        return selected_index == 0  # Returns True if "Yes" is selected, False if "No"
 
     def _draw_text(self, text, x, y, color=config.WHITE, font=None):
         """Helper function to render sharp, readable text."""
