@@ -6,7 +6,7 @@
 
 ## **What is it?**
 **Planetoids** is a fast-paced, retro-inspired **arcade space shooter** built in Python with **Pygame**.  
-Dodge asteroids, blast enemies, and experience a vintage arcade feel with CRT effects, glitch animations, and pixel-perfect scaling.
+Dodge asteroids and experience a vintage arcade feel with CRT effects, glitch animations, and pixel-perfect scaling.
 
 [![Issues](https://img.shields.io/github/issues/chris-greening/planetoids)](https://github.com/chris-greening/planetoids/issues)
 [![License](https://img.shields.io/github/license/chris-greening/planetoids)](LICENSE)
@@ -22,7 +22,6 @@ Dodge asteroids, blast enemies, and experience a vintage arcade feel with CRT ef
 - **Retro CRT visual effects & glitch animations**
 - **Classic arcade gameplay mechanics**
 - **Power-ups and increasing difficulty**
-- **Fullscreen and windowed mode support**
 - **Pixel-perfect scaling for all screen sizes**
 
 <p align="center">
