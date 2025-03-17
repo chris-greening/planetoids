@@ -30,7 +30,7 @@ def main():
             screen = pygame.display.set_mode((config.WIDTH, config.HEIGHT), pygame.FULLSCREEN)
         else:
             fixed_size = (960, 540)  # Fixed window size
-            pygame.display.set_mode(fixed_size, pygame.NOFRAME)
+            screen = pygame.display.set_mode(fixed_size, pygame.NOFRAME)
 
         pygame.display.set_caption("Planetoids")
         clock = pygame.time.Clock()
