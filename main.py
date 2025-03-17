@@ -87,6 +87,10 @@ def _event_handler(game_state):
                 game_state.toggle_pause()
             elif event.key == pygame.K_SPACE and not game_state.paused:
                 game_state.bullets.extend(game_state.player.shoot())
+        elif event.type == pygame.VIDEORESIZE:  # 🔹 Detect window resizing
+            new_width, new_height = event.w, event.h
+            config.update_dimensions(new_width, new_height)  # 🔹 Update game dimensions
+            pygame.display.set_mode((config.WIDTH, config.HEIGHT), pygame.RESIZABLE)
         game_state.handle_powerup_expiration(event)
 
 if __name__ == "__main__":

@@ -39,7 +39,7 @@ class Config:
         self.WIDTH = int(self.SCREEN_WIDTH * (self.BASE_WIDTH / self.SCREEN_WIDTH))
         self.HEIGHT = int(self.SCREEN_HEIGHT * (self.BASE_HEIGHT / self.SCREEN_HEIGHT))
 
-        self.WIDTH, self.HEIGHT = 960, 540
+        # self.WIDTH, self.HEIGHT = 960, 540
 
     def _scale_properties(self):
         """Update any game elements that depend on screen size."""
