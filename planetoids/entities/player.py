@@ -160,7 +160,7 @@ class Player:
 
         self.thrusting = False  # Reset thrust effect
 
-        rotation_speed = 200  # Degrees per second
+        rotation_speed = 220  # Degrees per second
         if keys[pygame.K_LEFT]:
             self.angle += rotation_speed * self.game_state.dt
         if keys[pygame.K_RIGHT]:
