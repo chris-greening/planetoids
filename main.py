@@ -19,7 +19,7 @@ def main():
 
     settings = Settings()
     fullscreen = settings.get("fullscreen_enabled")
-
+    # fullscreen = False
 
     while True:  # Main game loop that allows restarting
         pygame.mouse.set_visible(False)
@@ -30,7 +30,7 @@ def main():
             screen = pygame.display.set_mode((config.WIDTH, config.HEIGHT), pygame.FULLSCREEN)
         else:
             fixed_size = (960, 540)  # Fixed window size
-            screen = pygame.display.set_mode(fixed_size, pygame.NOFRAME)
+            screen = pygame.display.set_mode(fixed_size, pygame.RESIZABLE)
 
         pygame.display.set_caption("Planetoids")
         clock = pygame.time.Clock()
