@@ -259,7 +259,7 @@ class ShieldAsteroid(Asteroid):
         """Draw the asteroid with a shield effect if it's still active."""
         if self.current_shield > 0:
             shield_radius = self.size + 12  # Slightly larger than the asteroid
-            alpha = 200 if self.shield_strength == 2 else 50
+            alpha = 200 if self.current_shield == 2 else 100
             shield_surface = pygame.Surface((shield_radius * 2, shield_radius * 2), pygame.SRCALPHA)
             pygame.draw.circle(
                 shield_surface,
