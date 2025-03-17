@@ -10,7 +10,7 @@ from planetoids.ui.pause_menu import PauseMenu
 from planetoids.core.score import Score
 from planetoids.core.level import Level
 from planetoids.core.life import Life
-from planetoids.core import config
+from planetoids.core.config import config
 from planetoids.core.logger import logger
 
 class GameState:

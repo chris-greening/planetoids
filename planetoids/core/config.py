@@ -1,43 +1,54 @@
 import random
 import pygame
 
-def get_screen_size():
-    """Ensure Pygame is initialized before fetching display info."""
-    if not pygame.get_init():
-        pygame.init()
-    info = pygame.display.Info()
-    return info.current_w, info.current_h
+class Config:
+    """Handles dynamic game configuration, including screen scaling and colors."""
 
-def _update_dimensions():
-    """Recalculate WIDTH and HEIGHT based on current screen size."""
-    global SCREEN_WIDTH, SCREEN_HEIGHT, WIDTH, HEIGHT
-    SCREEN_WIDTH, SCREEN_HEIGHT = get_screen_size()
+    BASE_WIDTH = 1360
+    BASE_HEIGHT = 768
+    FPS = 60
 
-    WIDTH = int(SCREEN_WIDTH * (BASE_WIDTH / SCREEN_WIDTH))
-    HEIGHT = int(SCREEN_HEIGHT * (BASE_HEIGHT / SCREEN_HEIGHT))
+    # Colors
+    WHITE = (255, 255, 255)
+    BLACK = (0, 0, 0)
+    ORANGE = (255, 140, 0)
+    RED = (255, 0, 0)
+    CYAN = (0, 255, 255)
+    DARK_ORANGE = (255, 100, 0)
+    YELLOW = (255, 215, 0)
+    DIM_GRAY = (105, 105, 105)  # Dark gray, slightly faded
+    GREEN = (34, 139, 34)  # Darker, "hacker" style green
 
-BASE_WIDTH = 1360
-BASE_HEIGHT = 768
+    VERSION = "v0.1.0"
 
-SCREEN_WIDTH, SCREEN_HEIGHT = get_screen_size()
+    def __init__(self):
+        """Initialize screen dimensions and scaled properties."""
+        self._initialize_screen_size()
+        self._scale_properties()
 
-WIDTH = int(SCREEN_WIDTH * (BASE_WIDTH / SCREEN_WIDTH))
-HEIGHT = int(SCREEN_HEIGHT * (BASE_HEIGHT / SCREEN_HEIGHT))
+    def _initialize_screen_size(self):
+        """Ensure Pygame is initialized before fetching display info."""
+        if not pygame.get_init():
+            pygame.init()
+            pygame.display.set_mode((1, 1))  # Minimal window to enable display info
 
-# Constants
-FPS = 60
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-ORANGE = (255, 140, 0)
-RED = (255, 0, 0)
-CYAN = (0, 255, 255)
-DARK_ORANGE = (255, 100, 0)
-YELLOW = (255, 215, 0)
-DIM_GRAY = (105, 105, 105)  # Dark gray, slightly faded
-GREEN = (34, 139, 34)  # Darker, "hacker" style green
+        info = pygame.display.Info()
+        self.SCREEN_WIDTH = info.current_w
+        self.SCREEN_HEIGHT = info.current_h
 
-PLANET_X = random.randint(int(200 * (WIDTH / BASE_WIDTH)), int(WIDTH - 200 * (WIDTH / BASE_WIDTH)))
-PLANET_Y = random.randint(int(200 * (HEIGHT / BASE_HEIGHT)), int(HEIGHT - 200 * (HEIGHT / BASE_HEIGHT)))
-PLANET_RADIUS = random.randint(int(50 * (WIDTH / BASE_WIDTH)), int(150 * (WIDTH / BASE_WIDTH)))  # Scaled planet size
+        self.WIDTH = int(self.SCREEN_WIDTH * (self.BASE_WIDTH / self.SCREEN_WIDTH))
+        self.HEIGHT = int(self.SCREEN_HEIGHT * (self.BASE_HEIGHT / self.SCREEN_HEIGHT))
 
-VERSION = "v0.1.0"
+    def _scale_properties(self):
+        """Update any game elements that depend on screen size."""
+        self.PLANET_X = random.randint(int(200 * (self.WIDTH / self.BASE_WIDTH)), int(self.WIDTH - 200 * (self.WIDTH / self.BASE_WIDTH)))
+        self.PLANET_Y = random.randint(int(200 * (self.HEIGHT / self.BASE_HEIGHT)), int(self.HEIGHT - 200 * (self.HEIGHT / self.BASE_HEIGHT)))
+        self.PLANET_RADIUS = random.randint(int(50 * (self.WIDTH / self.BASE_WIDTH)), int(150 * (self.WIDTH / self.BASE_WIDTH)))
+
+    def update_screen_size(self):
+        """Allows dynamic screen resizing and updates dependent properties."""
+        self._initialize_screen_size()
+        self._scale_properties()
+
+# Global instance
+config = Config()

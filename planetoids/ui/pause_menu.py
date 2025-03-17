@@ -1,7 +1,7 @@
 import os
 import pygame
 
-from planetoids.core import config
+from planetoids.core.config import config
 from planetoids.effects.crt_effect import apply_crt_effect
 from planetoids.core.logger import logger
 from planetoids.ui import OptionsMenu

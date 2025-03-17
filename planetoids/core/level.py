@@ -1,6 +1,6 @@
 import pygame
 
-from planetoids.core import config
+from planetoids.core.config import config
 
 class Level:
     def __init__(self, settings):

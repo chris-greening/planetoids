@@ -2,7 +2,7 @@ import os
 
 import pygame
 
-from planetoids.core import config
+from planetoids.core.config import config
 from planetoids.effects import crt_effect
 
 class GameOver:

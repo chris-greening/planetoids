@@ -3,7 +3,7 @@ import time
 
 import pygame
 
-from planetoids.core.config import WIDTH, HEIGHT, CYAN
+from planetoids.core.config import config
 from planetoids.core.logger import logger
 
 class PowerUp:
@@ -44,8 +44,8 @@ class PowerUp:
         self.x += self.speed_x * self.game_state.dt * 60  # ✅ Scale movement by dt
         self.y += self.speed_y * self.game_state.dt * 60
 
-        self.x %= WIDTH
-        self.y %= HEIGHT
+        self.x %= config.WIDTH
+        self.y %= config.HEIGHT
 
     def draw(self, screen):
         """Draw the power-up with a blinking effect before expiration."""
@@ -72,7 +72,7 @@ class PowerUp:
 
     def _draw_main_powerup(self, screen):
         """Draws the main body of the power-up."""
-        pygame.draw.circle(screen, CYAN, (int(self.x), int(self.y)), self.radius)
+        pygame.draw.circle(screen, config.CYAN, (int(self.x), int(self.y)), self.radius)
 
     def _draw_powerup_symbol(self, screen):
         """Draws the symbol or letter representing the power-up."""

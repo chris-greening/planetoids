@@ -4,7 +4,7 @@ import pygame
 import dotenv
 
 from planetoids.effects import crt_effect
-from planetoids.core import config
+from planetoids.core.config import config
 from planetoids.core.game_state import GameState
 from planetoids.core.settings import Settings
 from planetoids.core.logger import logger
