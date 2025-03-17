@@ -1,7 +1,7 @@
 # **Planetoids**: A Retro-Inspired Space Shooter
 
 <p align="center">
-  <img src="media/gameplay.gif" alt="GIF of Planetoids gameplay showing asteroids, a spaceship, and CRT visual effects">
+  <img src="media/planetoids.gif" alt="GIF of Planetoids gameplay showing asteroids, a spaceship, and CRT visual effects">
 </p>
 
 ## **What is it?**
