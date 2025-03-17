@@ -1,6 +1,7 @@
 import json
 import os
 from appdirs import user_config_dir
+import sys
 
 class Settings:
     """Handles loading, modifying, and saving game settings."""
