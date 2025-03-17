@@ -22,7 +22,6 @@ Dodge asteroids and experience a vintage arcade feel with CRT effects, glitch an
 - **Retro CRT visual effects & glitch animations**
 - **Classic arcade gameplay mechanics**
 - **Power-ups and increasing difficulty**
-- **Fullscreen and windowed mode support**
 - **Pixel-perfect scaling for all screen sizes**
 
 <p align="center">
