@@ -4,7 +4,7 @@ import time
 
 import pygame
 
-from planetoids.core.config import WIDTH, HEIGHT, WHITE, ORANGE
+from planetoids.core.config import config
 from planetoids.entities.particle import Particle  # Import the new particle class
 from planetoids.entities.bullet import Bullet
 from planetoids.core.logger import logger
@@ -96,8 +96,8 @@ class Player:
     def reset_position(self):
         """Resets player position, stops movement, and enables brief invincibility."""
         print("Resetting player position")  # Debugging
-        self.x = WIDTH // 2
-        self.y = HEIGHT // 2
+        self.x = config.WIDTH // 2
+        self.y = config.HEIGHT // 2
         self.angle = 0
         self.velocity_x = 0
         self.velocity_y = 0
@@ -188,8 +188,8 @@ class Player:
         self.x += self.velocity_x * self.game_state.dt * 60
         self.y += self.velocity_y * self.game_state.dt * 60
 
-        self.x %= WIDTH
-        self.y %= HEIGHT
+        self.x %= config.WIDTH
+        self.y %= config.HEIGHT
 
         self.particles = [p for p in self.particles if p.lifetime > 0]
         for particle in self.particles:
@@ -226,7 +226,7 @@ class Player:
 
         # Draw player (blink effect when invincible)
         if not self.invincible or (self.invincibility_timer % 10 < 5):  # Blink effect
-            pygame.draw.polygon(screen, WHITE, [front, left, right], 1)
+            pygame.draw.polygon(screen, config.WHITE, [front, left, right], 1)
 
         # Draw thruster effect if accelerating
         if self.thrusting:
@@ -263,7 +263,7 @@ class Player:
             self.x - math.cos(angle_rad) * flicker_size * 2,
             self.y + math.sin(angle_rad) * flicker_size * 2
         )
-        pygame.draw.polygon(screen, ORANGE, [thruster_tip, left, right])
+        pygame.draw.polygon(screen, config.ORANGE, [thruster_tip, left, right])
 
     def _generate_explosion(self):
         """Initializes the explosion effect when the player dies."""
@@ -324,7 +324,7 @@ class Player:
         """Draws the explosion effect and ship fragments."""
         if self.explosion_timer > 0:
             for fragment in self.fragments:
-                pygame.draw.polygon(screen, WHITE, [fragment["pos"], fragment["pos"], fragment["pos"]], 1)
+                pygame.draw.polygon(screen, config.WHITE, [fragment["pos"], fragment["pos"], fragment["pos"]], 1)
 
             for particle in self.explosion_particles:
                 particle.draw(screen)

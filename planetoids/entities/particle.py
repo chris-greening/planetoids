@@ -3,7 +3,7 @@ import math
 
 import pygame
 
-from planetoids.core.config import ORANGE
+from planetoids.core.config import config
 
 class Particle:
     def __init__(self, x, y, angle, speed, game_state):
@@ -32,7 +32,7 @@ class Particle:
     def draw(self, screen):
         """Draw particle with fading effect."""
         if self.lifetime > 0 and self.alpha > 0:
-            faded_color = (ORANGE[0], ORANGE[1], ORANGE[2], max(self.alpha, 0))
+            faded_color = (config.ORANGE[0], config.ORANGE[1], config.ORANGE[2], max(self.alpha, 0))
             particle_surface = pygame.Surface((self.size * 2, self.size * 2), pygame.SRCALPHA)
             pygame.draw.circle(particle_surface, faded_color, (int(self.size), int(self.size)), int(self.size))
             screen.blit(particle_surface, (self.x, self.y))

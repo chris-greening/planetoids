@@ -3,7 +3,7 @@ import math
 
 import pygame
 
-from planetoids.core.config import WIDTH, HEIGHT, WHITE, ORANGE, DARK_ORANGE, CYAN
+from planetoids.core.config import config
 from planetoids.entities.particle import Particle
 from planetoids.core.logger import logger
 
@@ -14,8 +14,8 @@ class Asteroid:
     def __init__(self, game_state, x=None, y=None, size=120, stage=3):
         """Initialize an asteroid with position, size, and split stage."""
         self.game_state = game_state
-        self.x = x if x is not None else random.randint(0, WIDTH)
-        self.y = y if y is not None else random.randint(0, HEIGHT)
+        self.x = x if x is not None else random.randint(0, config.WIDTH)
+        self.y = y if y is not None else random.randint(0, config.HEIGHT)
         self.size = size  # Size of the asteroid
         self.stage = stage  # 3 = large, 2 = medium, 1 = small, 0 = disappears
         self.sides = random.randint(7, 12)  # Number of points
@@ -99,13 +99,13 @@ class Asteroid:
         self.y += dy
 
         if self.x < -self.size:
-            self.x = WIDTH + self.size
-        elif self.x > WIDTH + self.size:
+            self.x = config.WIDTH + self.size
+        elif self.x > config.WIDTH + self.size:
             self.x = -self.size
 
         if self.y < -self.size:
-            self.y = HEIGHT + self.size
-        elif self.y > HEIGHT + self.size:
+            self.y = config.HEIGHT + self.size
+        elif self.y > config.HEIGHT + self.size:
             self.y = -self.size
 
         # Update shape based on new position without changing offsets
@@ -113,7 +113,7 @@ class Asteroid:
 
     def draw(self, screen):
         """Draw the asteroid with an outline (wireframe)."""
-        pygame.draw.polygon(screen, WHITE, self.shape, 1)
+        pygame.draw.polygon(screen, config.WHITE, self.shape, 1)
 
     def __repr__(self):
         return f"{self.__class__.__name__}(x={round(self.x)}, y={round(self.y)}, size={self.size}, stage={self.stage})"
@@ -213,7 +213,7 @@ class ExplodingAsteroid(Asteroid):
         """Draw the asteroid as an orange polygon, or explosion if exploding."""
         if not self.exploding:
             # pygame.draw.polygon(screen, ORANGE, self.shape)  # Filled polygon
-            pygame.draw.polygon(screen, ORANGE, self.shape, 2)  # Outline
+            pygame.draw.polygon(screen, config.ORANGE, self.shape, 2)  # Outline
         else:
             self.draw_explosion(screen)  # Draw explosion animation
 
@@ -263,7 +263,7 @@ class ShieldAsteroid(Asteroid):
             shield_surface = pygame.Surface((shield_radius * 2, shield_radius * 2), pygame.SRCALPHA)
             pygame.draw.circle(
                 shield_surface,
-                (CYAN[0], CYAN[1], CYAN[2], alpha),
+                (config.CYAN[0], config.CYAN[1], config.CYAN[2], alpha),
                 (shield_radius, shield_radius),
                 shield_radius,
                 3
@@ -356,8 +356,8 @@ class BackgroundAsteroid:
     def __init__(self, game_state, x=None, y=None, size=120, stage=3):
         """Initialize an asteroid with position, size, and split stage."""
         self.game_state = game_state
-        self.x = x if x is not None else random.randint(0, WIDTH)
-        self.y = y if y is not None else random.randint(0, HEIGHT)
+        self.x = x if x is not None else random.randint(0, config.WIDTH)
+        self.y = y if y is not None else random.randint(0, config.HEIGHT)
         self.size = size  # Size of the asteroid
         self.stage = stage  # 3 = large, 2 = medium, 1 = small, 0 = disappears
         self.sides = random.randint(7, 12)  # Number of points
@@ -403,13 +403,13 @@ class BackgroundAsteroid:
         self.y += dy
 
         if self.x < -self.size:
-            self.x = WIDTH + self.size
-        elif self.x > WIDTH + self.size:
+            self.x = config.WIDTH + self.size
+        elif self.x > config.WIDTH + self.size:
             self.x = -self.size
 
         if self.y < -self.size:
-            self.y = HEIGHT + self.size
-        elif self.y > HEIGHT + self.size:
+            self.y = config.HEIGHT + self.size
+        elif self.y > config.HEIGHT + self.size:
             self.y = -self.size
 
         # Update shape based on new position without changing offsets
@@ -417,7 +417,7 @@ class BackgroundAsteroid:
 
     def draw(self, screen):
         """Draw the asteroid with an outline (wireframe)."""
-        pygame.draw.polygon(screen, WHITE, self.shape, 1)
+        pygame.draw.polygon(screen, config.WHITE, self.shape, 1)
 
     def __repr__(self):
         return f"{self.__class__.__name__}(x={round(self.x)}, y={round(self.y)}, size={self.size}, stage={self.stage})"

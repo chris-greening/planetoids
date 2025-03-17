@@ -3,7 +3,7 @@ import math
 
 import pygame
 
-from planetoids.core import config
+from planetoids.core.config import config
 from planetoids.entities.asteroid import BackgroundAsteroid
 from planetoids.effects.crt_effect import apply_crt_effect  # Import CRT effect function
 from planetoids.core.logger import logger

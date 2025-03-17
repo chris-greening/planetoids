@@ -10,7 +10,7 @@ from planetoids.ui.pause_menu import PauseMenu
 from planetoids.core.score import Score
 from planetoids.core.level import Level
 from planetoids.core.life import Life
-from planetoids.core import config
+from planetoids.core.config import config
 from planetoids.core.logger import logger
 
 class GameState:
@@ -275,7 +275,7 @@ class GameState:
     def _spawn_ricochet_bullet(self, x, y):
         """Creates and adds a ricochet bullet."""
         new_angle = random.randint(0, 360)  # Random ricochet angle
-        ricochet_bullet = Bullet(self.game_state, x, y, new_angle, ricochet=True)
+        ricochet_bullet = Bullet(self, x, y, new_angle, ricochet=True)
         self.bullets.append(ricochet_bullet)
 
     def _remove_destroyed_asteroids(self, asteroids_to_remove):

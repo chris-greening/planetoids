@@ -4,7 +4,7 @@ import pygame
 import dotenv
 
 from planetoids.effects import crt_effect
-from planetoids.core import config
+from planetoids.core.config import config
 from planetoids.core.game_state import GameState
 from planetoids.core.settings import Settings
 from planetoids.core.logger import logger
@@ -19,7 +19,7 @@ def main():
 
     settings = Settings()
     fullscreen = settings.get("fullscreen_enabled")
-
+    # fullscreen = False
 
     while True:  # Main game loop that allows restarting
         pygame.mouse.set_visible(False)
@@ -30,7 +30,7 @@ def main():
             screen = pygame.display.set_mode((config.WIDTH, config.HEIGHT), pygame.FULLSCREEN)
         else:
             fixed_size = (960, 540)  # Fixed window size
-            screen = pygame.display.set_mode(fixed_size, pygame.NOFRAME)
+            screen = pygame.display.set_mode(fixed_size, pygame.RESIZABLE)
 
         pygame.display.set_caption("Planetoids")
         clock = pygame.time.Clock()
@@ -87,6 +87,10 @@ def _event_handler(game_state):
                 game_state.toggle_pause()
             elif event.key == pygame.K_SPACE and not game_state.paused:
                 game_state.bullets.extend(game_state.player.shoot())
+        elif event.type == pygame.VIDEORESIZE:  # 🔹 Detect window resizing
+            new_width, new_height = event.w, event.h
+            config.update_dimensions(new_width, new_height)  # 🔹 Update game dimensions
+            pygame.display.set_mode((config.WIDTH, config.HEIGHT), pygame.RESIZABLE)
         game_state.handle_powerup_expiration(event)
 
 if __name__ == "__main__":

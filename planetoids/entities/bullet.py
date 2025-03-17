@@ -3,7 +3,7 @@ import random
 
 import pygame
 
-from planetoids.core.config import RED, WIDTH, HEIGHT
+from planetoids.core.config import config
 
 class Bullet:
     def __init__(self, game_state, x, y, angle, ricochet=False):
@@ -25,8 +25,8 @@ class Bullet:
 
         self.lifetime -= self.game_state.dt * 60
 
-        self.x %= WIDTH
-        self.y %= HEIGHT
+        self.x %= config.WIDTH
+        self.y %= config.HEIGHT
 
     def on_hit_asteroid(self, asteroid):
         """Handles bullet behavior when hitting an asteroid."""
@@ -38,4 +38,4 @@ class Bullet:
 
     def draw(self, screen):
         """Draw the bullet"""
-        pygame.draw.circle(screen, RED, (int(self.x), int(self.y)), 5)
+        pygame.draw.circle(screen, config.RED, (int(self.x), int(self.y)), 5)
