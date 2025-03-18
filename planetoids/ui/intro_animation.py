@@ -28,10 +28,10 @@ class IntroAnimation:
         """Runs the intro animation with terminal typing effect, glitch, and CRT effects."""
         logger.info("Intro animation playing")
         start_time = time.time()
-        char_index = 0  
+        char_index = 0
 
         while char_index < len(self.text) or time.time() - start_time < 1.8:  # Reduced total time
-            self.screen.fill((10, 15, 30))  
+            self.screen.fill((10, 15, 30))
 
             # Faster typing effect
             if char_index < len(self.text) and time.time() - start_time > char_index * self.typing_speed:
@@ -56,7 +56,7 @@ class IntroAnimation:
             pygame.display.flip()
             self.clock.tick(40)  # Faster frame rate for smoother effect
 
-        self._sequential_glitch_out()  
+        self._sequential_glitch_out()
 
     def _glitch_effect(self, surface, text_surface, x, y):
         """Applies a glitch effect by shifting color channels and adding distortion."""
@@ -67,8 +67,8 @@ class IntroAnimation:
             shift_x = random.randint(-4, 4)
             shift_y = random.randint(-2, 2)
 
-            slice_y = random.randint(0, max(0, height - 1))  
-            slice_height = random.randint(2, max(6, height - slice_y))  
+            slice_y = random.randint(0, max(0, height - 1))
+            slice_height = random.randint(2, max(6, height - slice_y))
 
             if slice_y + slice_height <= height:
                 slice_rect = pygame.Rect(0, slice_y, width, slice_height)
@@ -107,7 +107,7 @@ class IntroAnimation:
                 apply_crt_effect(self.screen)
 
                 pygame.display.flip()
-                self.clock.tick(25)
+                self.clock.tick(50)
 
         # **Extra 0.5s of continuous glitching before fade-out**
         end_time = time.time() + .75
@@ -125,7 +125,7 @@ class IntroAnimation:
             apply_crt_effect(self.screen)
 
             pygame.display.flip()
-            self.clock.tick(25)  # Keep the chaotic effect running
+            self.clock.tick(50)  # Keep the chaotic effect running
 
         self._fade_out()
 
