@@ -12,6 +12,7 @@ from planetoids.core.level import Level
 from planetoids.core.life import Life
 from planetoids.core.config import config
 from planetoids.core.logger import logger
+from planetoids.core.settings import get_font_path
 
 class GameState:
     def __init__(self, screen, settings, clock):
@@ -362,6 +363,7 @@ class GameState:
 
     def _draw_powerup_timer(self, screen):
         """Draws a shrinking timer bar for active powerups with their corresponding colors."""
+        y_offset = {"minimum": 75, "medium": 85, "maximum": 100}.get(self.settings.get("pixelation"), 200)
         if self.player.powerup_timer > 0:
             active_powerup = None
             powerup_color = (0, 255, 255)  # Default Cyan (fallback color)
@@ -382,9 +384,8 @@ class GameState:
                 pygame.draw.rect(screen, powerup_color, (config.WIDTH // 2 - 100, config.HEIGHT - 30, bar_width, 10))
 
                 # Draw the power-up name above the bar
-                font = pygame.font.Font(None, 24)
-                text_surface = font.render(active_powerup, True, (255, 255, 255))
-                text_rect = text_surface.get_rect(center=(config.WIDTH // 2, config.HEIGHT - 45))
+                text_surface = self.font.render(active_powerup, True, (255, 255, 255))
+                text_rect = text_surface.get_rect(center=(config.WIDTH // 2, config.HEIGHT - y_offset))
                 screen.blit(text_surface, text_rect)
 
     def calculate_collision_distance(self, obj1, obj2):
