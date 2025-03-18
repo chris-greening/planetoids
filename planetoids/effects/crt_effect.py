@@ -76,7 +76,7 @@ def _add_glitch_effect(height, width, glitch_surface, intensity):
         glitch_surface.blit(slice_copy, (offset, y_start))
 
 def _add_color_separation(screen, glitch_surface, intensity):
-    color_shift = {"minimum": 2, "medium": 4, "maximum": 8}.get(intensity, 4)
+    color_shift = {"minimum": 2, "medium": 6, "maximum": 10}.get(intensity, 4)
 
     if random.random() < 0.05:
         for i in range(3):
@@ -88,7 +88,7 @@ def _add_color_separation(screen, glitch_surface, intensity):
             screen.blit(color_shift_surface, (0, 0), special_flags=pygame.BLEND_ADD)
 
 def _add_rolling_static(screen, height, width, intensity):
-    static_chance = {"minimum": 0.1, "medium": 0.2, "maximum": 0.5}.get(intensity, 0.2)
+    static_chance = {"minimum": 0.1, "medium": 0.3, "maximum": 0.8}.get(intensity, 0.2)
 
     static_surface = pygame.Surface((width, height), pygame.SRCALPHA)
     for y in range(0, height, 8):
