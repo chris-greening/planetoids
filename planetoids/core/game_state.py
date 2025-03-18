@@ -3,7 +3,7 @@ import random
 import pygame
 
 from planetoids.entities.asteroid import Asteroid, ExplodingAsteroid, ShieldAsteroid
-from planetoids.entities.powerups import PowerUp, TemporalSlowdownPowerUp
+from planetoids.entities.powerups import PowerUp, TemporalSlowdownPowerUp, RicochetShotPowerUp, TrishotPowerUp, QuadShotPowerUp
 from planetoids.entities.bullet import Bullet
 from planetoids.entities.player import Player
 from planetoids.ui.pause_menu import PauseMenu
@@ -361,10 +361,31 @@ class GameState:
         pygame.time.set_timer(pygame.USEREVENT + 2, 2000)  # 2 sec invincibility
 
     def _draw_powerup_timer(self, screen):
-        """Draws a shrinking timer bar for active powerups."""
+        """Draws a shrinking timer bar for active powerups with their corresponding colors."""
         if self.player.powerup_timer > 0:
-            bar_width = int((self.player.powerup_timer / 300) * 200)  # Scale to 200px max
-            pygame.draw.rect(screen, (0, 255, 255), (config.WIDTH // 2 - 100, config.HEIGHT - 30, bar_width, 10))
+            active_powerup = None
+            powerup_color = (0, 255, 255)  # Default Cyan (fallback color)
+
+            # Map active power-ups to their corresponding colors
+            if self.player.trishot_active:
+                active_powerup = "Trishot"
+                powerup_color = TrishotPowerUp.color
+            elif self.player.quadshot_active:
+                active_powerup = "Quadshot"
+                powerup_color = QuadShotPowerUp.color
+            elif self.player.ricochet_active:
+                active_powerup = "Ricochet"
+                powerup_color = RicochetShotPowerUp.color
+
+            if active_powerup:
+                bar_width = int((self.player.powerup_timer / 300) * 200)  # Scale to 200px max
+                pygame.draw.rect(screen, powerup_color, (config.WIDTH // 2 - 100, config.HEIGHT - 30, bar_width, 10))
+
+                # Draw the power-up name above the bar
+                font = pygame.font.Font(None, 24)
+                text_surface = font.render(active_powerup, True, (255, 255, 255))
+                text_rect = text_surface.get_rect(center=(config.WIDTH // 2, config.HEIGHT - 45))
+                screen.blit(text_surface, text_rect)
 
     def calculate_collision_distance(self, obj1, obj2):
         """Calculates distance between two game objects."""

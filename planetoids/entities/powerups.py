@@ -68,13 +68,12 @@ class PowerUp:
 
     def _draw_glow(self, screen):
         """Draws the outer glow effect around the power-up."""
-        pygame.draw.circle(screen, (0, 100, 255), (int(self.x), int(self.y)), self.radius + 4, 1)
-        pygame.draw.circle(screen, (0, 150, 255), (int(self.x), int(self.y)), self.radius + 2, 1)
+        pygame.draw.circle(screen, getattr(self, "color", config.CYAN), (int(self.x), int(self.y)), self.radius + 4, 1)
+        pygame.draw.circle(screen, getattr(self, "color", config.CYAN), (int(self.x), int(self.y)), self.radius + 2, 1)
 
     def _draw_main_powerup(self, screen):
         """Draws the main body of the power-up."""
         pygame.draw.circle(screen, getattr(self, "color", config.CYAN), (int(self.x), int(self.y)), self.radius)
-
 
     def _draw_powerup_symbol(self, screen):
         """Draws the symbol or letter representing the power-up."""
