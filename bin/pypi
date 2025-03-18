@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Automate the process of building and uploading package to PyPI
+
+# Delete older version build directories
+directories=("dist/" "build/" "planetoids_game.egg-info/")
+for d in "${directories[@]}"; do
+    if [ -d "$d" ]; then
+        rm -rf "$d"
+        echo "🗑️  Deleted $d"
+    fi
+done
+
+# Build package
+python3 -m build || { echo "❌ Build failed!"; exit 1; }
+
+# Upload to PyPI
+twine upload dist/* || { echo "❌ Upload failed!"; exit 1; }
+
+echo "✅ PyPI deployment complete!"

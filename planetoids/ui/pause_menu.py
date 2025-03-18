@@ -5,6 +5,7 @@ from planetoids.core.config import config
 from planetoids.effects.crt_effect import apply_crt_effect
 from planetoids.core.logger import logger
 from planetoids.ui import OptionsMenu
+from planetoids.core.settings import get_font_path
 
 class PauseMenu:
     def __init__(self, screen, game_state):
@@ -16,7 +17,7 @@ class PauseMenu:
         self.game_state = game_state  # Access GameState to modify settings
 
         # Load the same retro pixel font as the Start Menu
-        font_path = os.path.join("assets", "fonts", "VT323.ttf")
+        font_path = get_font_path()
         self.font = pygame.font.Font(font_path, 64)  # Main menu font
         self.menu_font = pygame.font.Font(font_path, 64)  # Menu items
         self.small_font = pygame.font.Font(font_path, 36)  # Smaller for instructions

@@ -2,6 +2,16 @@ import json
 import os
 from appdirs import user_config_dir
 import sys
+import importlib.resources as pkg_resources
+from pathlib import Path
+
+def get_font_path():
+    """Fetch font path inside the installed package safely."""
+    if sys.version_info >= (3, 9):
+        return str(pkg_resources.files("planetoids") / "assets" / "fonts" / "VT323.ttf")
+    else:
+        with pkg_resources.path("planetoids.assets.fonts", "VT323.ttf") as font_path:
+            return str(font_path)
 
 class Settings:
     """Handles loading, modifying, and saving game settings."""
@@ -18,7 +28,7 @@ class Settings:
         "pixelation": "minimum",
     }
 
-    FONT_PATH = os.path.join("assets", "fonts", "VT323.ttf")
+    FONT_PATH = get_font_path()
 
     def __init__(self):
         """Initialize settings by loading from file or using defaults."""
