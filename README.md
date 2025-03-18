@@ -30,12 +30,48 @@ Dodge asteroids and experience a vintage arcade feel with CRT effects, glitch an
 
 ---
 
-## **🚀 Running the Game**
-Once cloned, you can start **Planetoids** directly from the source:
+## **💾 Installation**
 
+### **🔹 Install from PyPI (Recommended)**
+The easiest way to install **Planetoids** is through **pip**:
 ```sh
-python3 main.py
+pip install planetoids-game
 ```
+Once installed, launch the game by running:
+```sh
+planetoids
+```
+
+### **🔹 Install from Source**
+If you want the latest development version, you can install directly from GitHub:
+```sh
+git clone https://github.com/chris-greening/planetoids-game.git
+cd planetoids-game
+pip install -e .
+```
+Then, start the game with:
+```sh
+planetoids
+```
+---
+
+## **🚀 Running the Game**
+Once installed, you can start **Planetoids** in one of the following ways:
+
+### **🔹 Run from Source**
+If you cloned the repository, navigate to the project folder and run:
+```sh
+python3 -m planetoids
+```
+This ensures that Python finds the package correctly.
+
+### **🔹 Run as an Installed Package**
+If you installed **Planetoids** via **pip**, simply run:
+```sh
+planetoids
+```
+This will launch the game without needing to reference the Python interpreter directly.
+
 ---
 
 ## **🎮 Controls**
