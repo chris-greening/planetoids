@@ -6,6 +6,7 @@ import pygame
 from planetoids.core.config import config
 from planetoids.effects.crt_effect import apply_crt_effect
 from planetoids.core.logger import logger
+from planetoids.core.settings import get_font_path
 
 class IntroAnimation:
     """Handles the Greening Games intro animation with glitch, terminal typing, and CRT effects."""
@@ -13,7 +14,7 @@ class IntroAnimation:
     def __init__(self, screen, clock):
         self.screen = screen
         self.clock = clock
-        self.font = pygame.font.Font("assets/fonts/VT323.ttf", 120)  # Retro pixel-style font
+        self.font = pygame.font.Font(get_font_path(), 120)  # Retro pixel-style font
         self.text = "GREENING STUDIO"  # Full text
         self.typed_text = ""  # What has been typed so far
         self.cursor_visible = True  # Blinking cursor state
