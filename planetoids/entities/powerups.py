@@ -5,6 +5,7 @@ import pygame
 
 from planetoids.core.config import config
 from planetoids.core.logger import logger
+from planetoids.core.settings import get_font_path
 
 class PowerUp:
     """Base class for all power-ups."""
@@ -67,18 +68,18 @@ class PowerUp:
 
     def _draw_glow(self, screen):
         """Draws the outer glow effect around the power-up."""
-        pygame.draw.circle(screen, (0, 100, 255), (int(self.x), int(self.y)), self.radius + 4, 1)
-        pygame.draw.circle(screen, (0, 150, 255), (int(self.x), int(self.y)), self.radius + 2, 1)
+        pygame.draw.circle(screen, getattr(self, "color", config.CYAN), (int(self.x), int(self.y)), self.radius + 4, 1)
+        pygame.draw.circle(screen, getattr(self, "color", config.CYAN), (int(self.x), int(self.y)), self.radius + 2, 1)
 
     def _draw_main_powerup(self, screen):
         """Draws the main body of the power-up."""
-        pygame.draw.circle(screen, config.CYAN, (int(self.x), int(self.y)), self.radius)
+        pygame.draw.circle(screen, getattr(self, "color", config.CYAN), (int(self.x), int(self.y)), self.radius)
 
     def _draw_powerup_symbol(self, screen):
         """Draws the symbol or letter representing the power-up."""
-        font = pygame.font.Font(None, 32)
+        font = pygame.font.Font(get_font_path(), 32)
         text = font.render(self.get_symbol(), True, (0, 0, 0))
-        screen.blit(text, (self.x - 5, self.y - 5))
+        screen.blit(text, (self.x-6, self.y-14))
 
     def is_expired(self):
         """Check if the power-up should disappear."""
@@ -90,6 +91,7 @@ class PowerUp:
 class TrishotPowerUp(PowerUp):
     """Trishot power-up that enables triple bullets for a limited time."""
     spawn_chance = 1.0
+    color = (255, 165, 0)  # Orange
 
     def __init__(self, game_state, x, y):
         """Initialize the trishot power-up."""
@@ -106,6 +108,7 @@ class TrishotPowerUp(PowerUp):
 class ShieldPowerUp(PowerUp):
     """Shield power-up that reenables player's shield"""
     spawn_chance = 1.0
+    color = (0, 255, 255)  # Cyan
 
     def __init__(self, game_state, x, y):
         """Initialize the shield power-up."""
@@ -122,6 +125,7 @@ class ShieldPowerUp(PowerUp):
 class QuadShotPowerUp(PowerUp):
     """QuadShot power-up that enables four-directional bullets for a limited time."""
     spawn_chance = 1.0
+    color = (255, 0, 255) 
 
     def apply(self, player):
         """Grants the player QuadShot mode."""
@@ -133,6 +137,7 @@ class QuadShotPowerUp(PowerUp):
 class RicochetShotPowerUp(PowerUp):
     """Ricochet Shot power-up that makes bullets bounce off asteroids once."""
     spawn_chance = 1.0
+    color = (0, 255, 0)
 
     def apply(self, player):
         """Grants the player Ricochet mode."""
@@ -144,6 +149,7 @@ class RicochetShotPowerUp(PowerUp):
 class InvincibilityPowerUp(PowerUp):
     """Invincibility powerup"""
     spawn_chance = 1.0
+    color = (255, 255, 0)
 
     def apply(self, player):
         """Grants the player Invincibility mode."""
@@ -155,6 +161,7 @@ class InvincibilityPowerUp(PowerUp):
 class TemporalSlowdownPowerUp(PowerUp):
     """Slows all asteroids dramatically for a few seconds."""
     spawn_chance = 1.0
+    color = (135, 206, 250)
 
     def apply(self, game_state):
         """Activates slow-motion effect on all asteroids."""
