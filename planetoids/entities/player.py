@@ -8,6 +8,7 @@ from planetoids.core.config import config
 from planetoids.entities.particle import Particle  # Import the new particle class
 from planetoids.entities.bullet import Bullet
 from planetoids.core.logger import logger
+from planetoids.entities.powerups import RicochetShotPowerUp, TrishotPowerUp, QuadShotPowerUp
 
 class Player:
     def __init__(self, settings, game_state):
@@ -26,6 +27,7 @@ class Player:
         self.ricochet_active = False
         self.ricochet_piercing = False
         self.powerup_timer = 0
+        self.active_powerup_color = None  # Store the color of the active power-up
         self.explosion_particles = []  # Temporary explosion effect
         self.fragments = []  # Pieces of the ship
         self.explosion_timer = 30
@@ -72,26 +74,33 @@ class Player:
         logger.info(f"Invincibility enabled")
 
     def enable_ricochet(self):
-        """Activates quadshot mode for a limited time."""
+        """Activates ricochet shot mode for a limited time."""
         self._disable_previous_shots()
         self.ricochet_active = True
         self.ricochet_piercing = True
         self.powerup_timer = 300
-        logger.info(f"Ricochet enabled")
+        self.active_powerup_color = RicochetShotPowerUp.color  # Ricochet Shot Aura
+        self.powerup_aura_timer = 300
+        logger.info("Ricochet enabled")
 
     def enable_quadshot(self):
         """Activates quadshot mode for a limited time."""
         self._disable_previous_shots()
         self.quadshot_active = True
         self.powerup_timer = 300
-        logger.info(f"Quadshot enabled")
+        self.active_powerup_color = QuadShotPowerUp.color  # Quadshot Aura
+        self.powerup_aura_timer = 300
+        logger.info("Quadshot enabled")
 
     def enable_trishot(self):
         """Activates trishot mode for a limited time."""
         self._disable_previous_shots()
         self.trishot_active = True
         self.powerup_timer = 300
-        logger.info(f"Trishot enabled")
+        self.active_powerup_color = TrishotPowerUp.color  # Trishot Aura
+        self.powerup_aura_timer = 300
+        logger.info("Trishot enabled")
+
 
     def reset_position(self):
         """Resets player position, stops movement, and enables brief invincibility."""
@@ -195,6 +204,22 @@ class Player:
         for particle in self.particles:
             particle.update()
 
+    def draw_aura(self, screen):
+        """Draws a soft, pulsating aura around the player when a power-up is active."""
+        if self.powerup_aura_timer > 0:
+            pulse_factor = 1 + 0.1 * math.sin(pygame.time.get_ticks() * 0.01)  # Smooth pulsation
+            aura_radius = int(50 * pulse_factor)  # Adjust size dynamically
+            alpha = int(100 + 40 * pulse_factor)  # Opacity range: 100 - 140
+
+            aura_surface = pygame.Surface((aura_radius * 2, aura_radius * 2), pygame.SRCALPHA)
+            aura_surface.fill((0, 0, 0, 0))  # Transparent background
+
+            if self.active_powerup_color:
+                aura_color = (*self.active_powerup_color[:3], alpha)  # Apply pulsating transparency
+                pygame.draw.circle(aura_surface, aura_color, (aura_radius, aura_radius), aura_radius)
+
+            screen.blit(aura_surface, (self.x - aura_radius, self.y - aura_radius))
+
     def _handle_shield_regeneration(self):
         """Regenerates shield every 30 seconds if broken."""
         if not self.shield_active:
@@ -214,6 +239,11 @@ class Player:
     def draw(self, screen):
         """Draws the player ship and particles."""
         angle_rad = math.radians(self.angle)
+
+        if self.powerup_timer > 0 and self.active_powerup_color:
+            if (self.trishot_active or self.quadshot_active or self.ricochet_active):
+            # Aura effect: Expanding and fading glow
+                self.draw_aura(screen)
 
         # Triangle points relative to the center
         front = (self.x + math.cos(angle_rad) * self.size, self.y - math.sin(angle_rad) * self.size)
