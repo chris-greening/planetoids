@@ -7,6 +7,7 @@ from planetoids.effects import crt_effect
 from planetoids.core.config import config
 from planetoids.core.game_state import GameState
 from planetoids.core.settings import Settings
+from planetoids.core.settings import get_font_path
 from planetoids.core.logger import logger
 from planetoids.ui import IntroAnimation, GameOver, StartMenu
 
@@ -48,6 +49,10 @@ def main():
         game_state = GameState(screen, settings, clock)
         game_state.spawn_asteroids(5)
 
+        # ✅ Display controls overlay for first few seconds
+        show_controls_timer = 5  # Show for 3 seconds
+        font = pygame.font.Font(get_font_path(), 36)
+
         running = True
         while running:
             screen.fill(config.BLACK)
@@ -66,6 +71,14 @@ def main():
 
             # Draw everything
             game_state.draw_all(screen)
+
+            if show_controls_timer > 0:
+                _draw_text(screen, "CONTROLS:", config.WIDTH // 2 - 80, config.HEIGHT // 3 + 180, config.YELLOW, font)
+                _draw_text(screen, "Arrow keys - Movement", config.WIDTH // 2 - 50, config.HEIGHT // 3 + 220, config.GREEN, font)
+                _draw_text(screen, "SPACE - Shoot", config.WIDTH // 2 - 50, config.HEIGHT // 3 + 260, config.GREEN, font)
+                _draw_text(screen, "P - Pause", config.WIDTH // 2 - 50, config.HEIGHT // 3 + 300, config.GREEN, font)
+
+                show_controls_timer -= dt  # Decrease timer
 
             if settings.get("crt_enabled"):
                 crt_effect.apply_crt_effect(screen, settings)
@@ -92,6 +105,13 @@ def _event_handler(game_state):
             config.update_dimensions(new_width, new_height)  # 🔹 Update game dimensions
             pygame.display.set_mode((config.WIDTH, config.HEIGHT), pygame.RESIZABLE)
         game_state.handle_powerup_expiration(event)
+
+def _draw_text(screen, text, x, y, color=config.WHITE, font=None):
+    """Helper function to render sharp, readable text."""
+    if font is None:
+        font = pygame.font.Font(None, 36)  # Default font if none provided
+    rendered_text = font.render(text, True, color)
+    screen.blit(rendered_text, (x, y))
 
 if __name__ == "__main__":
     main()
