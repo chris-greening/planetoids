@@ -10,6 +10,7 @@ Dodge asteroids and experience a vintage arcade feel with CRT effects, glitch an
 
 [![Issues](https://img.shields.io/github/issues/chris-greening/planetoids)](https://github.com/chris-greening/planetoids/issues)
 [![License](https://img.shields.io/github/license/chris-greening/planetoids)](LICENSE)
+[![PyPI Downloads](https://static.pepy.tech/badge/planetoids-game)](https://pepy.tech/projects/planetoids-game)
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/chrisgreening)
 
