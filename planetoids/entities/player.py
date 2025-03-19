@@ -256,7 +256,7 @@ class Player:
 
         # Draw player (blink effect when invincible)
         if not self.invincible or (self.invincibility_timer % 10 < 5):  # Blink effect
-            pygame.draw.polygon(screen, config.WHITE, [front, left, right], 1)
+            pygame.draw.polygon(screen, config.WHITE, [front, left, right], 4)
 
         # Draw thruster effect if accelerating
         if self.thrusting:
@@ -277,7 +277,7 @@ class Player:
             for _ in range(5):  # 5 pieces flying out
                 offset_x = random.randint(-10, 10)
                 offset_y = random.randint(-10, 10)
-                pygame.draw.circle(screen, (100, 100, 255), (int(self.x + offset_x), int(self.y + offset_y)), 3)
+                pygame.draw.circle(screen, (100, 100, 255), (int(self.x + offset_x), int(self.y + offset_y)), 4)
 
     def _generate_exhaust(self):
         """Adds new particles behind the ship."""
@@ -354,7 +354,7 @@ class Player:
         """Draws the explosion effect and ship fragments."""
         if self.explosion_timer > 0:
             for fragment in self.fragments:
-                pygame.draw.polygon(screen, config.WHITE, [fragment["pos"], fragment["pos"], fragment["pos"]], 1)
+                pygame.draw.polygon(screen, config.WHITE, [fragment["pos"], fragment["pos"], fragment["pos"]], 4)
 
             for particle in self.explosion_particles:
                 particle.draw(screen)
