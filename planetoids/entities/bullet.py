@@ -12,8 +12,8 @@ class Bullet:
         self.x = x
         self.y = y
         self.angle = angle
-        self.speed = 8
-        self.lifetime = 60
+        self.speed = 15
+        self.lifetime = 40
         self.ricochet = ricochet
         self.piercing = ricochet
 
@@ -46,7 +46,7 @@ class Bullet:
             screen.blit(trail_surface, (int(tx) - 3, int(ty) - 3))
 
         # 🔹 Draw bullet
-        pygame.draw.circle(screen, config.RED, (int(self.x), int(self.y)), 6)
+        pygame.draw.circle(screen, config.RED, (int(self.x), int(self.y)), 7)
 
     def on_hit_asteroid(self, asteroid):
         """Handles bullet behavior when hitting an asteroid."""
