@@ -50,13 +50,19 @@ class Player:
 
         if self.quadshot_active:
             angles = [self.angle, self.angle + 90, self.angle + 180, self.angle + 270]  # QuadShot based on player angle
+            color = QuadShotPowerUp.color
         elif self.trishot_active:
             angles = [self.angle - 15, self.angle, self.angle + 15]  # Trishot spread
+            color = TrishotPowerUp.color
+        elif self.ricochet_active:
+            color = RicochetShotPowerUp.color
+            angles = [self.angle]
         else:
+            color = config.RED
             angles = [self.angle]  # Normal shot
-
+        print(color)
         for angle in angles:
-            bullets.append(Bullet(self.game_state, self.x, self.y, angle))
+            bullets.append(Bullet(self.game_state, self.x, self.y, angle, color=color))
 
         return bullets
 
