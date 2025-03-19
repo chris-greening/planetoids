@@ -417,7 +417,7 @@ class BackgroundAsteroid:
 
     def draw(self, screen):
         """Draw the asteroid with an outline (wireframe)."""
-        pygame.draw.polygon(screen, config.WHITE, self.shape, 1)
+        pygame.draw.polygon(screen, config.WHITE, self.shape, 4)
 
     def __repr__(self):
         return f"{self.__class__.__name__}(x={round(self.x)}, y={round(self.y)}, size={self.size}, stage={self.stage})"

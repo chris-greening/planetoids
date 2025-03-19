@@ -11,7 +11,7 @@ class PowerUp:
     """Base class for all power-ups."""
     subclasses = []
 
-    def __init__(self, game_state, x, y, radius=15):
+    def __init__(self, game_state, x, y, radius=20):
         """Initialize power-up properties."""
         self.game_state = game_state
         self.x = x

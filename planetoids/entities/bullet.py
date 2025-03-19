@@ -46,7 +46,7 @@ class Bullet:
             screen.blit(trail_surface, (int(tx) - 3, int(ty) - 3))
 
         # 🔹 Draw bullet
-        pygame.draw.circle(screen, config.RED, (int(self.x), int(self.y)), 5)
+        pygame.draw.circle(screen, config.RED, (int(self.x), int(self.y)), 6)
 
     def on_hit_asteroid(self, asteroid):
         """Handles bullet behavior when hitting an asteroid."""
