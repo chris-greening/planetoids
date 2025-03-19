@@ -297,7 +297,7 @@ class GameState:
     def _spawn_ricochet_bullet(self, x, y):
         """Creates and adds a ricochet bullet."""
         new_angle = random.randint(0, 360)  # Random ricochet angle
-        ricochet_bullet = Bullet(self, x, y, new_angle, ricochet=True)
+        ricochet_bullet = Bullet(self, x, y, new_angle, ricochet=True, color=RicochetShotPowerUp.color, radius=14)
         self.bullets.append(ricochet_bullet)
 
     def _remove_destroyed_asteroids(self, asteroids_to_remove):
