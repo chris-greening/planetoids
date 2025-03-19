@@ -47,7 +47,7 @@ def main():
 
         # Create GameState instance
         game_state = GameState(screen, settings, clock)
-        game_state.spawn_asteroids(5)
+        game_state.spawn_asteroids(10)
 
         # ✅ Display controls overlay for first few seconds
         show_controls_timer = 5  # Show for 3 seconds

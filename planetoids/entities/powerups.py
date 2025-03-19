@@ -1,5 +1,6 @@
 import random
 import time
+import math
 
 import pygame
 
@@ -22,6 +23,9 @@ class PowerUp:
         self.spawn_time = time.time()  # Store the spawn time
 
         logger.info(f"Spawned {repr(self)}")
+
+        self.particles = [{"x": self.x, "y": self.y, "vx": random.uniform(-0.5, 0.5), "vy": random.uniform(-0.5, 0.5)}
+                  for _ in range(6)]
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
@@ -48,6 +52,12 @@ class PowerUp:
         self.x %= config.WIDTH
         self.y %= config.HEIGHT
 
+        for p in self.particles:
+            p["x"] += p["vx"]
+            p["y"] += p["vy"]
+            p["vx"] += random.uniform(-0.05, 0.05)
+            p["vy"] += random.uniform(-0.05, 0.05)
+
     def draw(self, screen):
         """Draw the power-up with a blinking effect before expiration."""
 
@@ -58,6 +68,9 @@ class PowerUp:
         self._draw_main_powerup(screen)
         self._draw_powerup_symbol(screen)
 
+        for p in self.particles:
+            pygame.draw.circle(screen, getattr(self, "color", config.CYAN), (int(p["x"]), int(p["y"])), 2)
+
     def _should_skip_drawing(self):
         """Determines if the power-up should be skipped for blinking or expiration."""
         if self.is_expired():
@@ -65,11 +78,29 @@ class PowerUp:
 
         elapsed_time = time.time() - self.spawn_time
         return elapsed_time > 10 and int(elapsed_time * 5) % 2 == 0  # Blinks after 10s
+        return False  # Always draw, just with varying transparency
 
     def _draw_glow(self, screen):
-        """Draws the outer glow effect around the power-up."""
-        pygame.draw.circle(screen, getattr(self, "color", config.CYAN), (int(self.x), int(self.y)), self.radius + 4, 1)
-        pygame.draw.circle(screen, getattr(self, "color", config.CYAN), (int(self.x), int(self.y)), self.radius + 2, 1)
+        """Draws animated tendrils of energy around the power-up."""
+        glow_surface = pygame.Surface((self.radius * 4, self.radius * 4), pygame.SRCALPHA)
+        
+        pulse = 2 + (math.sin(pygame.time.get_ticks() * 0.005) * 2)  # Subtle pulsing
+        center = (self.radius * 2, self.radius * 2)
+        
+        for _ in range(5):  
+            if random.random() < 0.7: 
+                angle = random.uniform(0, math.tau)
+                length = random.uniform(self.radius, self.radius * 2.5)
+                end_x = center[0] + math.cos(angle) * length
+                end_y = center[1] + math.sin(angle) * length
+                
+                color = (*getattr(self, "color", config.CYAN), random.randint(50, 180))
+                pygame.draw.line(glow_surface, color, center, (end_x, end_y), random.randint(1, 3)) 
+                for i in range(4):
+                    alpha = max(0, 150 - (i * 40))
+                    pygame.draw.circle(glow_surface, (*getattr(self, "color", config.CYAN), alpha), center, int(self.radius + pulse + (i * 2)))
+
+        screen.blit(glow_surface, (self.x - self.radius * 2, self.y - self.radius * 2), special_flags=pygame.BLEND_ADD)
 
     def _draw_main_powerup(self, screen):
         """Draws the main body of the power-up."""
