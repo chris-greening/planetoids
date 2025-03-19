@@ -138,7 +138,7 @@ class FastAsteroid(Asteroid):
 
     def draw(self, screen):
         """Draws the asteroid with a motion blur effect."""
-        pygame.draw.polygon(screen, FastAsteroid.color, self.shape, 1)
+        pygame.draw.polygon(screen, FastAsteroid.color, self.shape, 4)
 
     def __init_subclass__(cls, **kwargs):
         """Ensures all children of FastAsteroid inherit speed boost."""
@@ -213,7 +213,7 @@ class ExplodingAsteroid(Asteroid):
         """Draw the asteroid as an orange polygon, or explosion if exploding."""
         if not self.exploding:
             # pygame.draw.polygon(screen, ORANGE, self.shape)  # Filled polygon
-            pygame.draw.polygon(screen, config.ORANGE, self.shape, 2)  # Outline
+            pygame.draw.polygon(screen, config.ORANGE, self.shape, 4)  # Outline
         else:
             self.draw_explosion(screen)  # Draw explosion animation
 
@@ -266,7 +266,7 @@ class ShieldAsteroid(Asteroid):
                 (config.CYAN[0], config.CYAN[1], config.CYAN[2], alpha),
                 (shield_radius, shield_radius),
                 shield_radius,
-                3
+                4
             )
             screen.blit(shield_surface, (self.x - shield_radius, self.y - shield_radius))
         super().draw(screen)
