@@ -184,13 +184,18 @@ class GameState:
         self._draw_powerup_timer(screen)
         self.level.draw(screen)
         self.score.draw(screen)
+        self._draw_debris(screen)
+        self._draw_score_popups(screen)
 
         self._asteroid_slowdown_active(screen)
 
-        for popup in self.score_popups:
-            popup.draw(screen, self.score_font)
+    def _draw_debris(self, screen):
         for debris in self.debris:
             debris.draw(screen)
+
+    def _draw_score_popups(self, screen):
+        for popup in self.score_popups:
+            popup.draw(screen, self.score_font)
 
     def _asteroid_slowdown_active(self, screen):
         # Draw slowdown visual effect
