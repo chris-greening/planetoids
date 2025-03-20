@@ -321,10 +321,8 @@ class GameState:
 
     def _handle_player_asteroid_collision(self, screen):
         """Handles collisions between the player and asteroids, triggering the explosion before respawn."""
-
         if self.respawn_timer > 0:
             return  # Player is currently respawning, ignore collisions
-
         for asteroid in self.asteroids:
             if self._is_collision(self.player, asteroid):
                 self._trigger_player_explosion(screen)
@@ -336,17 +334,13 @@ class GameState:
 
     def _trigger_player_explosion(self, screen):
         """Handles the player explosion animation and sets up respawn or game over."""
-
         if self.player.invincible:
             return  # Skip if player is currently invincible
-
         if self.player.shield_active:
             self.player.take_damage()
             return  # Shield absorbs the hit
-
         self.player._generate_explosion()  # Trigger explosion animation
         self.respawn_timer = 30  # Delay respawn for explosion duration
-
         self.life.decrement()
 
     def check_for_collisions(self, screen):
@@ -356,13 +350,10 @@ class GameState:
 
     def handle_player_collision(self, screen):
         """Handles player collision logic, including shield effects, death animation, and respawn/game over."""
-
         if self._player_is_invincible():
             return
-
         if self._player_has_shield():
             return
-
         self._process_player_death(screen)
 
     def _player_is_invincible(self):
@@ -380,16 +371,14 @@ class GameState:
         """Handles player death animation, life count, and respawn or game over."""
         self.player.death_animation(screen)  # Play death effect
         self.life.decrement()
-
         if self.life.get_lives() > 0:
             self.respawn_player()
 
     def respawn_player(self):
         """Respawns the player at the center after the timer expires."""
         if self.respawn_timer > 0:
-            return  # Prevent accidental multiple calls
-
-        print("Respawning player!")  # Debugging
+            return
+        logger.info("Respawning player!")
         self.player.reset_position()
         self.player.invincible = True
         pygame.time.set_timer(pygame.USEREVENT + 2, 2000)  # 2 sec invincibility
