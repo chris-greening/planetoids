@@ -64,7 +64,6 @@ class Player:
             color = config.RED
             angles = [self.angle]  # Normal shot
             radius = 7
-        print(color)
         for angle in angles:
             bullets.append(Bullet(self.game_state, self.x, self.y, angle, color=color, radius=radius))
 
@@ -325,7 +324,15 @@ class Player:
 
         # Generate explosion particles
         for _ in range(15):
-            self.explosion_particles.append(Particle(self.x, self.y, random.uniform(0, 360), random.uniform(1, 3), self.game_state))
+            self.explosion_particles.append(
+                Particle(
+                    self.x,
+                    self.y,
+                    random.uniform(0, 360),
+                    random.uniform(1, 3),
+                    self.game_state
+                )
+            )
 
         logger.info("Player explosion generated")
 
@@ -367,6 +374,5 @@ class Player:
         if self.explosion_timer > 0:
             for fragment in self.fragments:
                 pygame.draw.polygon(screen, config.WHITE, [fragment["pos"], fragment["pos"], fragment["pos"]], 4)
-
             for particle in self.explosion_particles:
                 particle.draw(screen)
