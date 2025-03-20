@@ -22,6 +22,7 @@ def main():
     fullscreen = settings.get("fullscreen_enabled")
     # fullscreen = False
 
+    game_start = True
     while True:  # Main game loop that allows restarting
         pygame.mouse.set_visible(False)
 
@@ -37,9 +38,10 @@ def main():
         clock = pygame.time.Clock()
 
         # Intro animation if not debugging
-        if not DEBUG_MODE:
+        if not DEBUG_MODE and game_start:
             intro = IntroAnimation(screen, clock)
             intro.play()
+            game_start = False
 
         # Show the start menu
         start_menu = StartMenu(screen, clock, settings)
