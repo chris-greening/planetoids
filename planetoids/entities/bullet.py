@@ -46,7 +46,6 @@ class Bullet:
             trail_surface = pygame.Surface((6, 6), pygame.SRCALPHA)
             pygame.draw.circle(trail_surface, (color[0], color[1], color[2], alpha), (3, 3), 3)
             screen.blit(trail_surface, (int(tx) - 3, int(ty) - 3))
-        print(color)
         pygame.draw.circle(screen, color, (int(self.x), int(self.y)), radius)
 
     def on_hit_asteroid(self, asteroid):

@@ -36,6 +36,7 @@ class GameState:
         self.dt = 1.0
         logger.info("GameState instantiated")
         self.score_popups = []
+        self.debris = []
 
     @property
     def font(self):
@@ -98,7 +99,11 @@ class GameState:
         if self.player.explosion_timer > 0:
             self.player._update_explosion()
 
+        for debris in self.debris:
+            debris.update(dt)
+
         self.score_popups = [popup for popup in self.score_popups if popup.update()]
+        self.debris = [d for d in self.debris if d.lifetime > 0]
 
         # if not self.player.slowed_by_ice:
         #     self.player.velocity_x = max(self.player.velocity_x, self.player.base_velocity_x * dt * 60)
@@ -184,6 +189,8 @@ class GameState:
 
         for popup in self.score_popups:
             popup.draw(screen, self.score_font)
+        for debris in self.debris:
+            debris.draw(screen)
 
     def _asteroid_slowdown_active(self, screen):
         # Draw slowdown visual effect
