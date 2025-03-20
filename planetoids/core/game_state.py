@@ -13,6 +13,7 @@ from planetoids.core.life import Life
 from planetoids.core.config import config
 from planetoids.core.logger import logger
 from planetoids.core.settings import get_font_path
+from planetoids.entities.score_popup import ScorePopup
 
 class GameState:
     def __init__(self, screen, settings, clock):
@@ -34,12 +35,21 @@ class GameState:
         self.slowdown_timer = 0
         self.dt = 1.0
         logger.info("GameState instantiated")
+        self.score_popups = []
+        self.debris = []
 
     @property
     def font(self):
         return pygame.font.Font(
             self.settings.FONT_PATH,
             {"minimum":36, "medium": 48, "maximum": 64}.get(self.settings.get("pixelation"), 36)
+        )
+
+    @property
+    def score_font(self):
+        return pygame.font.Font(
+            self.settings.FONT_PATH,
+            {"minimum":36, "medium": 48, "maximum": 60}.get(self.settings.get("pixelation"), 36)
         )
 
     def update_dt(self, dt):
@@ -88,6 +98,12 @@ class GameState:
 
         if self.player.explosion_timer > 0:
             self.player._update_explosion()
+
+        for debris in self.debris:
+            debris.update(dt)
+
+        self.score_popups = [popup for popup in self.score_popups if popup.update()]
+        self.debris = [d for d in self.debris if d.lifetime > 0]
 
         # if not self.player.slowed_by_ice:
         #     self.player.velocity_x = max(self.player.velocity_x, self.player.base_velocity_x * dt * 60)
@@ -171,6 +187,11 @@ class GameState:
 
         self._asteroid_slowdown_active(screen)
 
+        for popup in self.score_popups:
+            popup.draw(screen, self.score_font)
+        for debris in self.debris:
+            debris.draw(screen)
+
     def _asteroid_slowdown_active(self, screen):
         # Draw slowdown visual effect
         if self.asteroid_slowdown_active:
@@ -243,6 +264,13 @@ class GameState:
         """Applies effects when a bullet hits an asteroid."""
         bullet.on_hit_asteroid(asteroid)
         self.score.update_score(asteroid)
+        if asteroid.size >= 40:
+            score_value = 100
+        elif asteroid.size >= 20:
+            score_value = 200
+        else:
+            score_value = 300
+        self.score_popups.append(ScorePopup(asteroid.x, asteroid.y, score_value))  # Example score
 
     def _handle_asteroid_destruction(self, asteroid, asteroids_to_remove, new_asteroids):
         """Determines how an asteroid is destroyed or split."""
@@ -276,7 +304,7 @@ class GameState:
     def _spawn_ricochet_bullet(self, x, y):
         """Creates and adds a ricochet bullet."""
         new_angle = random.randint(0, 360)  # Random ricochet angle
-        ricochet_bullet = Bullet(self, x, y, new_angle, ricochet=True)
+        ricochet_bullet = Bullet(self, x, y, new_angle, ricochet=True, color=RicochetShotPowerUp.color, radius=14)
         self.bullets.append(ricochet_bullet)
 
     def _remove_destroyed_asteroids(self, asteroids_to_remove):

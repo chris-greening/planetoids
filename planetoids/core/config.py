@@ -11,16 +11,16 @@ class Config:
     # Colors
     WHITE = (255, 255, 255)
     BLACK = (0, 0, 0)
-    ORANGE = (255, 140, 0)
-    RED = (255, 0, 0)
-    CYAN = (0, 255, 255)
-    BLUE = (0, 146, 255)
-    DARK_ORANGE = (255, 100, 0)
-    YELLOW = (255, 215, 0)
+    ORANGE = (255, 100, 0)
+    RED = (255, 40, 60)
+    CYAN = (0, 255, 220)
+    BLUE = (0, 180, 255)
+    DARK_ORANGE = (255, 80, 20)
+    YELLOW = (255, 255, 80)
     DIM_GRAY = (105, 105, 105)  # Dark gray, slightly faded
     GREEN = (34, 139, 34)  # Darker, "hacker" style green
 
-    VERSION = "v0.2.0"
+    VERSION = "v0.3.0"
 
     def __init__(self):
         """Initialize screen dimensions and scaled properties."""

@@ -7,17 +7,18 @@ import pygame
 from planetoids.core.config import config
 
 class Bullet:
-    def __init__(self, game_state, x, y, angle, ricochet=False):
+    def __init__(self, game_state, x, y, angle, ricochet=False, color=config.RED, radius=7):
         self.game_state = game_state
         self.x = x
         self.y = y
         self.angle = angle
-        self.speed = 8
-        self.lifetime = 60
+        self.speed = 15
+        self.lifetime = 40
         self.ricochet = ricochet
         self.piercing = ricochet
+        self.color = color
+        self.radius = radius
 
-        # 🔹 Stores the last few positions for the trail effect
         self.trail = collections.deque(maxlen=7)  # Number of previous frames to track
 
     def update(self):
@@ -38,15 +39,14 @@ class Bullet:
 
     def draw(self, screen):
         """Draw the bullet with a glowing trail effect."""
-        # 🔹 Draw fading trail
+        color = self.color
+        radius = self.radius
         for i, (tx, ty) in enumerate(self.trail):
             alpha = int(255 * (i / len(self.trail)))  # Gradual fade-out
             trail_surface = pygame.Surface((6, 6), pygame.SRCALPHA)
-            pygame.draw.circle(trail_surface, (255, 50, 50, alpha), (3, 3), 3)
+            pygame.draw.circle(trail_surface, (color[0], color[1], color[2], alpha), (3, 3), 3)
             screen.blit(trail_surface, (int(tx) - 3, int(ty) - 3))
-
-        # 🔹 Draw bullet
-        pygame.draw.circle(screen, config.RED, (int(self.x), int(self.y)), 5)
+        pygame.draw.circle(screen, color, (int(self.x), int(self.y)), radius)
 
     def on_hit_asteroid(self, asteroid):
         """Handles bullet behavior when hitting an asteroid."""

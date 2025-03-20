@@ -50,13 +50,23 @@ class Player:
 
         if self.quadshot_active:
             angles = [self.angle, self.angle + 90, self.angle + 180, self.angle + 270]  # QuadShot based on player angle
+            color = QuadShotPowerUp.color
+            radius = 7
         elif self.trishot_active:
             angles = [self.angle - 15, self.angle, self.angle + 15]  # Trishot spread
+            color = TrishotPowerUp.color
+            radius = 7
+        elif self.ricochet_active:
+            color = RicochetShotPowerUp.color
+            angles = [self.angle]
+            radius = 14
         else:
+            color = config.RED
             angles = [self.angle]  # Normal shot
-
+            radius = 7
+        print(color)
         for angle in angles:
-            bullets.append(Bullet(self.game_state, self.x, self.y, angle))
+            bullets.append(Bullet(self.game_state, self.x, self.y, angle, color=color, radius=radius))
 
         return bullets
 
@@ -169,7 +179,7 @@ class Player:
 
         self.thrusting = False  # Reset thrust effect
 
-        rotation_speed = 220  # Degrees per second
+        rotation_speed = 250  # Degrees per second
         if keys[pygame.K_LEFT]:
             self.angle += rotation_speed * self.game_state.dt
         if keys[pygame.K_RIGHT]:
@@ -256,7 +266,7 @@ class Player:
 
         # Draw player (blink effect when invincible)
         if not self.invincible or (self.invincibility_timer % 10 < 5):  # Blink effect
-            pygame.draw.polygon(screen, config.WHITE, [front, left, right], 1)
+            pygame.draw.polygon(screen, config.WHITE, [front, left, right], 4)
 
         # Draw thruster effect if accelerating
         if self.thrusting:
@@ -277,7 +287,7 @@ class Player:
             for _ in range(5):  # 5 pieces flying out
                 offset_x = random.randint(-10, 10)
                 offset_y = random.randint(-10, 10)
-                pygame.draw.circle(screen, (100, 100, 255), (int(self.x + offset_x), int(self.y + offset_y)), 3)
+                pygame.draw.circle(screen, (100, 100, 255), (int(self.x + offset_x), int(self.y + offset_y)), 4)
 
     def _generate_exhaust(self):
         """Adds new particles behind the ship."""
@@ -354,7 +364,7 @@ class Player:
         """Draws the explosion effect and ship fragments."""
         if self.explosion_timer > 0:
             for fragment in self.fragments:
-                pygame.draw.polygon(screen, config.WHITE, [fragment["pos"], fragment["pos"], fragment["pos"]], 1)
+                pygame.draw.polygon(screen, config.WHITE, [fragment["pos"], fragment["pos"], fragment["pos"]], 4)
 
             for particle in self.explosion_particles:
                 particle.draw(screen)

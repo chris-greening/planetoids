@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="planetoids-game",
-    version="0.2.0",
+    version="0.3.0",
     author="Chris Greening",
     author_email="chris@christophergreening.com",
     description="A retro-style space shooter game built with Pygame.",

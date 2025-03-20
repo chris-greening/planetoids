@@ -6,6 +6,7 @@ import pygame
 from planetoids.core.config import config
 from planetoids.entities.particle import Particle
 from planetoids.core.logger import logger
+from planetoids.entities.debris import Debris
 
 class Asteroid:
     asteroid_types = []
@@ -45,6 +46,7 @@ class Asteroid:
 
     def split(self):
         """Splits into two smaller asteroids with weighted chance"""
+        asteroids = []
         if self.stage > 1:
             new_size = self.size // 2
             new_stage = self.stage - 1
@@ -55,9 +57,14 @@ class Asteroid:
             asteroid1 = asteroid_class_1(self.game_state, self.x + random.randint(-5, 5), self.y + random.randint(-5, 5), size=new_size, stage=new_stage)
             asteroid2 = asteroid_class_2(self.game_state, self.x + random.randint(-5, 5), self.y + random.randint(-5, 5), size=new_size, stage=new_stage)
             logger.info(f"Asteroid {self} split into {asteroid1} and {asteroid2}")
-            return [asteroid1, asteroid2]
-        logger.info(f"{self} destroyed")
-        return []
+            # self.game_state.spawn_asteroid_fragments(self)  # Keep normal splitting behavior
+
+            asteroids = [asteroid1, asteroid2]
+        for _ in range(random.randint(3, 6)):  # Random number of debris pieces
+                angle = random.uniform(0, 360)  # Random scatter direction
+                speed = random.uniform(1, 3)  # Small speed variation
+                self.game_state.debris.append(Debris(self.x, self.y, angle, speed))
+        return asteroids
 
     @classmethod
     def get_asteroid_type(cls):
@@ -113,7 +120,7 @@ class Asteroid:
 
     def draw(self, screen):
         """Draw the asteroid with an outline (wireframe)."""
-        pygame.draw.polygon(screen, config.WHITE, self.shape, 1)
+        pygame.draw.polygon(screen, config.WHITE, self.shape, 4)
 
     def __repr__(self):
         return f"{self.__class__.__name__}(x={round(self.x)}, y={round(self.y)}, size={self.size}, stage={self.stage})"
@@ -138,7 +145,7 @@ class FastAsteroid(Asteroid):
 
     def draw(self, screen):
         """Draws the asteroid with a motion blur effect."""
-        pygame.draw.polygon(screen, FastAsteroid.color, self.shape, 1)
+        pygame.draw.polygon(screen, FastAsteroid.color, self.shape, 4)
 
     def __init_subclass__(cls, **kwargs):
         """Ensures all children of FastAsteroid inherit speed boost."""
@@ -213,7 +220,7 @@ class ExplodingAsteroid(Asteroid):
         """Draw the asteroid as an orange polygon, or explosion if exploding."""
         if not self.exploding:
             # pygame.draw.polygon(screen, ORANGE, self.shape)  # Filled polygon
-            pygame.draw.polygon(screen, config.ORANGE, self.shape, 2)  # Outline
+            pygame.draw.polygon(screen, config.ORANGE, self.shape, 4)  # Outline
         else:
             self.draw_explosion(screen)  # Draw explosion animation
 
@@ -266,7 +273,7 @@ class ShieldAsteroid(Asteroid):
                 (config.CYAN[0], config.CYAN[1], config.CYAN[2], alpha),
                 (shield_radius, shield_radius),
                 shield_radius,
-                3
+                4
             )
             screen.blit(shield_surface, (self.x - shield_radius, self.y - shield_radius))
         super().draw(screen)
@@ -417,7 +424,7 @@ class BackgroundAsteroid:
 
     def draw(self, screen):
         """Draw the asteroid with an outline (wireframe)."""
-        pygame.draw.polygon(screen, config.WHITE, self.shape, 1)
+        pygame.draw.polygon(screen, config.WHITE, self.shape, 4)
 
     def __repr__(self):
         return f"{self.__class__.__name__}(x={round(self.x)}, y={round(self.y)}, size={self.size}, stage={self.stage})"
