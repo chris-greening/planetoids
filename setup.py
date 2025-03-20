@@ -6,7 +6,7 @@ setup(
     author="Chris Greening",
     author_email="chris@christophergreening.com",
     description="A retro-style space shooter game built with Pygame.",
-    long_description=open("README.md", encoding="utf-8").read(),  # ✅ Specify encoding
+    long_description=open("README.md", encoding="utf-8").read(),
     long_description_content_type="text/markdown",
     url="https://github.com/chris-greening/planetoids",
     packages=find_packages(),
