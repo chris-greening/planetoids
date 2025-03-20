@@ -75,6 +75,7 @@ class Player:
         self.quadshot_active = False
         self.ricochet_active = False
         self.ricochet_piercing = False
+        logger.info("Previous shots disabled")
 
     def enable_invincibility(self):
         """Activates quadshot mode for a limited time."""
@@ -110,7 +111,6 @@ class Player:
         self.active_powerup_color = TrishotPowerUp.color  # Trishot Aura
         self.powerup_aura_timer = 300
         logger.info("Trishot enabled")
-
 
     def reset_position(self):
         """Resets player position, stops movement, and enables brief invincibility."""
@@ -326,6 +326,8 @@ class Player:
         # Generate explosion particles
         for _ in range(15):
             self.explosion_particles.append(Particle(self.x, self.y, random.uniform(0, 360), random.uniform(1, 3), self.game_state))
+
+        logger.info("Player explosion generated")
 
     def _update_explosion(self):
         """Updates explosion animation frame by frame using delta time."""
