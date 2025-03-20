@@ -1,11 +1,13 @@
 import pygame
 
 from planetoids.core.config import config
+from planetoids.core.logger import logger
 
 class Level:
     def __init__(self, settings):
         self.settings = settings
         self.level = 1
+        logger.info(f"Level instantiated with level {self.level}")
 
     @property
     def font(self):
@@ -15,6 +17,7 @@ class Level:
         )
 
     def increment_level(self):
+        logger.info(f"Incrementing level from {self.level} to {self.level + 1}")
         self.level += 1
 
     def get_level(self):

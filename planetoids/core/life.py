@@ -1,11 +1,13 @@
 import pygame
 
 from planetoids.core.config import config
+from planetoids.core.logger import logger
 
 class Life:
     def __init__(self, settings):
         self.settings = settings
         self.lives = 3
+        logger.info(f"Life instantiated with {self.lives} lives")
 
     @property
     def font(self):
@@ -15,6 +17,7 @@ class Life:
         )
 
     def decrement(self):
+        logger.info(f"Decrement lives from {self.lives} to {self.lives - 1}")
         self.lives -= 1
 
     def get_lives(self):
