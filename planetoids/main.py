@@ -92,6 +92,7 @@ def main():
 
             # Check for Game Over condition
             if game_state.life.lives <= 0:
+                game_state.score.maybe_save_high_score()
                 game_over_screen = GameOver(game_state, settings)
                 restart_game = game_over_screen.game_over(screen, dt)
 
