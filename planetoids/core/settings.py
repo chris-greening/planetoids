@@ -25,7 +25,7 @@ class Settings:
         "fullscreen_enabled": True,
         "crt_enabled": False,
         "glitch_intensity": "medium",
-        "pixelation": "minimum",
+        "pixelation": "minimum"
     }
 
     FONT_PATH = get_font_path()

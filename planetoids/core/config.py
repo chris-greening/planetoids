@@ -20,7 +20,7 @@ class Config:
     DIM_GRAY = (105, 105, 105)  # Dark gray, slightly faded
     GREEN = (34, 139, 34)  # Darker, "hacker" style green
 
-    VERSION = "v0.4.0"
+    VERSION = "v0.5.0"
 
     def __init__(self):
         """Initialize screen dimensions and scaled properties."""
