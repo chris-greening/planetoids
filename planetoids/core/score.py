@@ -35,13 +35,18 @@ class Score:
             self.new_high_score = True  # ✅ Mark that we’ve beaten the previous high score
 
     def draw(self, screen):
-        offset = {"minimum": 200, "medium": 300, "maximum": 400}.get(self.settings.get("pixelation"), 200)
+        offset = {"minimum": 200, "medium": 300, "maximum": 400}.get(
+            self.settings.get("pixelation"), 200
+        )
 
         score_text = self.font.render(f"Score: {self.score}", True, config.WHITE)
-        screen.blit(score_text, (config.WIDTH - offset, 20))
-
         high_score_text = self.font.render(f"High Score: {self.high_score}", True, config.YELLOW)
-        high_score_rect = high_score_text.get_rect(center=(config.WIDTH // 2, 20))
+
+        # Use centery for better vertical alignment
+        high_score_rect = high_score_text.get_rect(center=(config.WIDTH // 2, 30))
+        score_rect = score_text.get_rect(topright=(config.WIDTH - 20, high_score_rect.top))
+
+        screen.blit(score_text, score_rect)
         screen.blit(high_score_text, high_score_rect)
 
     def maybe_save_high_score(self):
