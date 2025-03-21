@@ -20,7 +20,6 @@ class StartMenu:
         self.settings = settings
 
         # Load a refined vintage arcade font (Sleek but retro)
-        self.font = pygame.font.Font(self.settings.FONT_PATH, 120)
         self.menu_font = pygame.font.Font(self.settings.FONT_PATH, 64)
         self.small_font = pygame.font.Font(self.settings.FONT_PATH, 36)
 
@@ -40,6 +39,13 @@ class StartMenu:
             for _ in range(5)
         ]
         logger.info("StartMenu instantiated")
+
+    @property
+    def font(self):
+        return pygame.font.Font(
+            self.settings.FONT_PATH,
+            {"minimum": 36, "medium": 48, "maximum": 64}.get(self.settings.get("pixelation"), 36)
+        )
 
     def show(self):
         """Displays the start menu with moving asteroid background using delta time."""
@@ -78,19 +84,23 @@ class StartMenu:
             color = config.WHITE if i != self.selected_index else config.ORANGE  # Highlight selected option
             self._draw_text(item, config.WIDTH // 2 - 120, config.HEIGHT // 2 + i * 50, color, self.menu_font)
 
-        self._draw_text("Press ENTER to select", config.WIDTH // 2 - 140, config.HEIGHT - 40, config.DIM_GRAY, self.small_font)
+        x_offset = {"minimum": 0, "medium": 30, "maximum": 60}.get(self.settings.get("pixelation"), 40)
+        y_offset = {"minimum": 45, "medium": 60, "maximum": 75}.get(self.settings.get("pixelation"), 40)
+        text_surface = self.font.render("Press ENTER to select", True, config.DIM_GRAY)
+        text_width = text_surface.get_width()
+        self._draw_text("Press ENTER to select", (config.WIDTH - text_width) // 2 + x_offset, config.HEIGHT - y_offset, config.DIM_GRAY, self.font)
         self._draw_studio_branding()
         self._draw_version()
 
     def _draw_version(self):
         """Displays the game version in the bottom right corner."""
-        version_text = self.small_font.render(config.VERSION, True, config.DIM_GRAY)
+        version_text = self.font.render(config.VERSION, True, config.DIM_GRAY)
         version_rect = version_text.get_rect(bottomright=(config.WIDTH - 10, config.HEIGHT - 10))
         self.screen.blit(version_text, version_rect)
 
     def _draw_studio_branding(self):
         """Displays 'Greening Studio' in the bottom left corner."""
-        studio_text = self.small_font.render("GREENING STUDIO", True, config.GREEN)
+        studio_text = self.font.render("GREENING STUDIO", True, config.GREEN)
         studio_rect = studio_text.get_rect(bottomleft=(10, config.HEIGHT - 10))
         self.screen.blit(studio_text, studio_rect)
 
