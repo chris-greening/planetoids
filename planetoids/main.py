@@ -75,10 +75,14 @@ def main():
             game_state.draw_all(screen)
 
             if show_controls_timer > 0:
-                _draw_text(screen, "CONTROLS:", config.WIDTH // 2 - 80, config.HEIGHT // 3 + 180, config.YELLOW, font)
-                _draw_text(screen, "Arrow keys - Movement", config.WIDTH // 2 - 50, config.HEIGHT // 3 + 220, config.GREEN, font)
-                _draw_text(screen, "SPACE - Shoot", config.WIDTH // 2 - 50, config.HEIGHT // 3 + 260, config.GREEN, font)
-                _draw_text(screen, "P - Pause", config.WIDTH // 2 - 50, config.HEIGHT // 3 + 300, config.GREEN, font)
+                font_size = {"minimum":36, "medium": 48, "maximum": 64}.get(settings.get("pixelation"), 36)
+
+                controls_font = pygame.font.Font(get_font_path(), font_size)
+
+                _draw_text(screen, "CONTROLS:", config.WIDTH // 2 - 80, config.HEIGHT // 3 + 180, config.YELLOW, controls_font)
+                _draw_text(screen, "Arrow keys - Movement", config.WIDTH // 2 - 50, config.HEIGHT // 3 + 220, config.GREEN, controls_font)
+                _draw_text(screen, "SPACE - Shoot", config.WIDTH // 2 - 50, config.HEIGHT // 3 + 260, config.GREEN, controls_font)
+                _draw_text(screen, "P - Pause", config.WIDTH // 2 - 50, config.HEIGHT // 3 + 300, config.GREEN, controls_font)
 
                 show_controls_timer -= dt  # Decrease timer
 
