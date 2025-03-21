@@ -18,32 +18,40 @@ class GameOver:
     def _display_game_over(self, screen, dt):
         """Displays 'GAME OVER' while keeping asteroids moving in the background."""
         game_over_font = pygame.font.Font(self.settings.FONT_PATH, 64)
+        prompt_font = pygame.font.Font(self.settings.FONT_PATH, 32)
 
         text = game_over_font.render("GAME OVER", True, config.YELLOW)
         text_rect = text.get_rect(center=(config.WIDTH // 2, config.HEIGHT // 2))
 
+        prompt_text = prompt_font.render("Press any key to continue", True, config.DIM_GRAY)
+        prompt_rect = prompt_text.get_rect(center=(config.WIDTH // 2, config.HEIGHT // 2 + 80))
+
+        start_time = pygame.time.get_ticks()
         game_over = True
+
         while game_over:
             screen.fill(config.BLACK)
 
-            # Keep asteroids moving in the background
             for asteroid in self.game_state.asteroids:
                 asteroid.update()
                 asteroid.draw(screen)
 
-            # Draw "GAME OVER" text
             screen.blit(text, text_rect)
 
-            if self.game_state.settings.get("crt_enabled"):
+            # Show prompt only after 3 seconds (3000 milliseconds)
+            if pygame.time.get_ticks() - start_time > 3000:
+                screen.blit(prompt_text, prompt_rect)
+
+            if self.settings.get("crt_enabled"):
                 crt_effect.apply_crt_effect(screen, self.settings)
 
             pygame.display.flip()
             self.game_state.clock.tick(config.FPS)
 
-            # Wait for a key press to return to the main menu
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     exit()
-                if event.type == pygame.KEYDOWN:  # Any key press exits the Game Over screen
-                    game_over = False  # Exit loop and return to main menu
+                # Only allow exit after 3 seconds
+                if event.type == pygame.KEYDOWN and pygame.time.get_ticks() - start_time > 3000:
+                    game_over = False
