@@ -66,7 +66,13 @@ class StartMenu:
 
     def _draw_main_menu(self):
         """Draws the main start menu with a refined arcade look."""
-        self._draw_text("PLANETOIDS", config.WIDTH // 2 - 160, config.HEIGHT // 4, color=config.YELLOW, font=self.font)
+        title_font = pygame.font.Font(
+            self.settings.FONT_PATH,
+            200
+        )
+        title_surface = title_font.render("PLANETOIDS", True, config.YELLOW)
+        title_rect = title_surface.get_rect(center=(config.WIDTH // 2, config.HEIGHT // 3))
+        self.screen.blit(title_surface, title_rect)
 
         for i, item in enumerate(self.menu_items):
             color = config.WHITE if i != self.selected_index else config.ORANGE  # Highlight selected option

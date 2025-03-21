@@ -17,7 +17,7 @@ class GameOver:
 
     def _display_game_over(self, screen, dt):
         """Displays 'GAME OVER' while keeping asteroids moving in the background."""
-        game_over_font = pygame.font.Font(self.settings.FONT_PATH, 128)
+        game_over_font = pygame.font.Font(self.settings.FONT_PATH, 256)
         font_size = {"minimum":36, "medium": 48, "maximum": 64}.get(self.settings.get("pixelation"), 36)
         prompt_font = pygame.font.Font(self.settings.FONT_PATH, font_size)
 
@@ -25,7 +25,7 @@ class GameOver:
         text_rect = text.get_rect(center=(config.WIDTH // 2, config.HEIGHT // 2))
 
         prompt_text = prompt_font.render("Press any key to continue", True, config.DIM_GRAY)
-        prompt_rect = prompt_text.get_rect(center=(config.WIDTH // 2, config.HEIGHT // 2 + 80))
+        prompt_rect = prompt_text.get_rect(center=(config.WIDTH // 2, config.HEIGHT // 2 + 120))
 
         start_time = pygame.time.get_ticks()
         game_over = True
