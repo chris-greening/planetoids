@@ -9,14 +9,19 @@ def check_for_update(current_version, callback):
         try:
             with urllib.request.urlopen(GITHUB_VERSION_URL, timeout=2) as response:
                 latest = response.read().decode("utf-8").strip()
+                print(f"Latest version: {latest}")
                 if _is_newer_version(latest, current_version):
                     callback(latest)
-        except Exception:
+                    print(f"New version available: {latest}")
+        except Exception as e:
             pass  # Fail silently, especially if offline
+            print(e)
 
     threading.Thread(target=_check, daemon=True).start()
 
 def _is_newer_version(remote, local):
     """Compare semantic versions like '0.2.1' and '0.3.0'."""
-    def parse(v): return [int(x) for x in v.strip().split(".")]
-    return parse(remote) > parse(local)
+    newer_version = False
+    if remote != local:
+        newer_version = True
+    return newer_version
