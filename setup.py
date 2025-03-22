@@ -1,8 +1,11 @@
 from setuptools import setup, find_packages
 
+with open("planetoids/core/version.txt", "r") as f:
+    version = f.read().strip()
+
 setup(
     name="planetoids-game",
-    version="0.5.0",
+    version=version,
     author="Chris Greening",
     author_email="chris@christophergreening.com",
     description="A retro-style space shooter game built with Pygame.",
