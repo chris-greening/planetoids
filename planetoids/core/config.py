@@ -1,5 +1,10 @@
 import random
 import pygame
+import importlib.resources
+
+def get_local_version():
+    with importlib.resources.open_text("planetoids.core", "version.txt") as f:
+        return f.read().strip()
 
 class Config:
     """Handles dynamic game configuration, including screen scaling and colors."""
@@ -20,8 +25,7 @@ class Config:
     DIM_GRAY = (105, 105, 105)  # Dark gray, slightly faded
     GREEN = (34, 139, 34)  # Darker, "hacker" style green
 
-    with open("planetoids/core/version.txt", "r") as f:
-        VERSION = f.read().strip()
+    VERSION = get_local_version()
 
     def __init__(self):
         """Initialize screen dimensions and scaled properties."""

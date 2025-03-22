@@ -1,2 +1,3 @@
 include README.md
 recursive-include planetoids/assets *
+include planetoids/core/version.txt

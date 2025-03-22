@@ -14,6 +14,9 @@ setup(
     url="https://github.com/chris-greening/planetoids",
     packages=find_packages(),
     include_package_data=True,
+    package_data={
+        "planetoids.core": ["version.txt"],  # 👈 Make sure version.txt is here
+    },
     install_requires=[
         "pygame",
         "appdirs"
