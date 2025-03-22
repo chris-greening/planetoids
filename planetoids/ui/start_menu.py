@@ -8,6 +8,7 @@ from planetoids.entities.asteroid import BackgroundAsteroid
 from planetoids.effects.crt_effect import apply_crt_effect  # Import CRT effect function
 from planetoids.core.logger import logger
 from planetoids.ui.options_menu import OptionsMenu
+from planetoids.core.version_checker import check_for_update
 
 class StartMenu:
     def __init__(self, screen, clock, settings):
@@ -40,12 +41,18 @@ class StartMenu:
         ]
         logger.info("StartMenu instantiated")
 
+        self.latest_version = None
+        check_for_update(config.VERSION, self._on_new_version_found)
+
     @property
     def font(self):
         return pygame.font.Font(
             self.settings.FONT_PATH,
             {"minimum": 36, "medium": 48, "maximum": 64}.get(self.settings.get("pixelation"), 36)
         )
+
+    def _on_new_version_found(self, latest_version):
+        self.latest_version = latest_version
 
     def show(self):
         """Displays the start menu with moving asteroid background using delta time."""
@@ -91,6 +98,12 @@ class StartMenu:
         self._draw_text("Press ENTER to select", (config.WIDTH - text_width) // 2 + x_offset, config.HEIGHT - y_offset, config.DIM_GRAY, self.font)
         self._draw_studio_branding()
         self._draw_version()
+
+        if self.latest_version:
+            update_msg = f"New version available: v{self.latest_version}"
+            update_text = self.small_font.render(update_msg, True, config.YELLOW)
+            update_rect = update_text.get_rect(center=(config.WIDTH // 2, config.HEIGHT - 40))
+            self.screen.blit(update_text, update_rect)
 
     def _draw_version(self):
         """Displays the game version in the bottom right corner."""
