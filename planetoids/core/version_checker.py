@@ -1,7 +1,7 @@
 import urllib.request
 import threading
 
-GITHUB_VERSION_URL = "https://raw.githubusercontent.com/chris-greening/planetoids/main/version.txt"
+GITHUB_VERSION_URL = "https://raw.githubusercontent.com/chris-greening/planetoids/refs/heads/main/planetoids/core/version.txt"
 
 def check_for_update(current_version, callback):
     """Checks GitHub for latest version and triggers callback if newer version exists."""
