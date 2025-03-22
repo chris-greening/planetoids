@@ -87,6 +87,12 @@ class StartMenu:
         title_rect = title_surface.get_rect(center=(config.WIDTH // 2, config.HEIGHT // 3))
         self.screen.blit(title_surface, title_rect)
 
+        if self.latest_version:
+            update_msg = f"New version available: v{self.latest_version}!"
+            update_text = self.font.render(update_msg, True, config.YELLOW)
+            update_rect = title_surface.get_rect(center=(config.WIDTH // 2, config.HEIGHT // 3 + 175))
+            self.screen.blit(update_text, update_rect)
+
         for i, item in enumerate(self.menu_items):
             color = config.WHITE if i != self.selected_index else config.ORANGE  # Highlight selected option
             self._draw_text(item, config.WIDTH // 2 - 120, config.HEIGHT // 2 + i * 50, color, self.menu_font)
@@ -98,12 +104,6 @@ class StartMenu:
         self._draw_text("Press ENTER to select", (config.WIDTH - text_width) // 2 + x_offset, config.HEIGHT - y_offset, config.DIM_GRAY, self.font)
         self._draw_studio_branding()
         self._draw_version()
-
-        if self.latest_version:
-            update_msg = f"New version available: v{self.latest_version}"
-            update_text = self.small_font.render(update_msg, True, config.YELLOW)
-            update_rect = update_text.get_rect(center=(config.WIDTH // 2, config.HEIGHT - 40))
-            self.screen.blit(update_text, update_rect)
 
     def _draw_version(self):
         """Displays the game version in the bottom right corner."""
