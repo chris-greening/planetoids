@@ -271,11 +271,11 @@ class GameState:
         bullet.on_hit_asteroid(asteroid)
         self.score.update_score(asteroid)
         if asteroid.size >= 40:
-            score_value = 100
+            score_value = 100 * self.score.multiplier
         elif asteroid.size >= 20:
-            score_value = 200
+            score_value = 200 * self.score.multiplier
         else:
-            score_value = 300
+            score_value = 300 * self.score.multiplier
         self.score_popups.append(ScorePopup(asteroid.x, asteroid.y, score_value))  # Example score
 
     def _handle_asteroid_destruction(self, asteroid, asteroids_to_remove, new_asteroids):

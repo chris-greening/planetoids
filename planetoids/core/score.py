@@ -23,7 +23,6 @@ class Score:
         self.multiplier_decay_rates = {1: 0.1, 2: 0.2, 3: 0.3, 4: 0.4}
         self.last_multiplier_increase = 0
 
-
     @property
     def font(self):
         return pygame.font.Font(
@@ -45,8 +44,7 @@ class Score:
             self.multiplier_progress = min(
                 self.multiplier_progress,
                 self.multiplier_thresholds[self.multiplier]
-    )  # ✅ Cap it if already at max
-
+    )
 
         self.last_hit_time = time.time()
 
@@ -71,14 +69,14 @@ class Score:
 
     def draw_multiplier(self, screen):
         """Draws multiplier bar and label beneath the score in the top-right."""
-        max_bar_width = 120
-        bar_height = 10
+        max_bar_width = 250
+        bar_height = 20
 
         # Align with top-right corner under score
         padding = 20
         spacing = 10
         x = config.WIDTH - max_bar_width - padding
-        y = 70  # Position slightly below the score text
+        y = {"minimum": 80, "medium": 98, "maximum": 116}.get(self.settings.get("pixelation"), 80)
 
         fill_ratio = self.multiplier_progress / self.multiplier_thresholds[self.multiplier]
         fill_ratio = max(0, min(fill_ratio, 1.0))
@@ -91,10 +89,8 @@ class Score:
         pygame.draw.rect(screen, color, (x, y, fill_width, bar_height))
 
         # Label aligned to top-right above the bar
-        font = pygame.font.Font(self.settings.FONT_PATH, 22)
-        label = font.render(f"{self.multiplier}x", True, color)
+        label = self.font.render(f"{self.multiplier}x", True, color)
         screen.blit(label, (x + max_bar_width - label.get_width(), y - label.get_height() - 2))
-
 
     def draw(self, screen):
         offset = {"minimum": 200, "medium": 300, "maximum": 400}.get(
