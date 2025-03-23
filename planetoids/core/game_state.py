@@ -3,7 +3,7 @@ import random
 import pygame
 
 from planetoids.entities.asteroid import Asteroid, ExplodingAsteroid, ShieldAsteroid
-from planetoids.entities.powerups import PowerUp, TemporalSlowdownPowerUp, RicochetShotPowerUp, TrishotPowerUp, QuadShotPowerUp
+from planetoids.entities.powerups import PowerUp, TemporalSlowdownPowerUp, RicochetShotPowerUp, InvincibilityPowerUp, TrishotPowerUp, QuadShotPowerUp
 from planetoids.entities.bullet import Bullet
 from planetoids.entities.player import Player
 from planetoids.ui.pause_menu import PauseMenu
@@ -392,11 +392,12 @@ class GameState:
         if self.player.powerup_timer <= 0:
             return
 
-        # 🔹 Map each flag to its corresponding class and label
+        # Map each flag to its corresponding class and label
         powerup_mappings = [
             (self.player.trishot_active, TrishotPowerUp, "Trishot"),
             (self.player.quadshot_active, QuadShotPowerUp, "Quadshot"),
             (self.player.ricochet_active, RicochetShotPowerUp, "Ricochet"),
+            (self.player.invincible, InvincibilityPowerUp, "Invincibility")
         ]
 
         for is_active, powerup_class, label in powerup_mappings:
