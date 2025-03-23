@@ -21,6 +21,8 @@ class Score:
 
         self.multiplier_thresholds = {1: 1.0, 2: 1.0, 3: 1.0, 4: 1.0}
         self.multiplier_decay_rates = {1: 0.05, 2: 0.1, 3: 0.15, 4: 0.3}
+        self.last_multiplier_increase = 0
+
 
     @property
     def font(self):
@@ -35,12 +37,10 @@ class Score:
         progress_increase = {1: 0.4, 2: 0.25, 3: 0.15}.get(self.multiplier, 0.1)
         self.multiplier_progress += progress_increase
 
-        if self.multiplier_progress >= self.multiplier_thresholds[self.multiplier]:
-            if self.multiplier < 4:
-                self.multiplier += 1
-                self.multiplier_progress = 0.0
-            else:
-                self.multiplier_progress = self.multiplier_thresholds[4]
+        if self.multiplier_progress >= self.multiplier_thresholds[self.multiplier] and self.multiplier < 4:
+            self.multiplier += 1
+            self.multiplier_progress = 0.1  # Clear progress after increasing level
+            self.last_hit_time = time.time()
 
         self.last_hit_time = time.time()
 
