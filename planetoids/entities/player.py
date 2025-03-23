@@ -78,7 +78,7 @@ class Player:
 
     def enable_invincibility(self):
         """Activates invincibility for a limited time."""
-        self._disable_previous_shots()
+        # self._disable_previous_shots()
         self.set_invincibility(timer=300)
         self.powerup_timer = 300
         logger.info(f"Invincibility enabled")
