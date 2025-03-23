@@ -2,15 +2,13 @@ import random
 
 import pygame
 
-def apply_crt_effect(screen, settings=None):
+def apply_crt_effect(screen, intensity="medium", pixelation="minimum"):
     """Apply CRT effect to the screen."""
-    if settings is None:
-        settings = {"pixelation": "minimum", "glitch_intensity": "medium"}
     _apply_scanlines(screen)
-    _apply_pixelation(screen, settings.get("pixelation"))
+    _apply_pixelation(screen, pixelation=pixelation)
     _apply_flicker(screen)
     _apply_glow(screen)
-    _apply_vhs_glitch(screen, settings.get("glitch_intensity"))  # NEW: Add VHS glitch effect
+    _apply_vhs_glitch(screen, intensity=intensity)  # NEW: Add VHS glitch effect
 
 def _apply_scanlines(screen):
     """Draws horizontal scanlines to simulate an old CRT screen."""

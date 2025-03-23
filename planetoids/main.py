@@ -87,7 +87,11 @@ def main():
                 show_controls_timer -= dt  # Decrease timer
 
             if settings.get("crt_enabled"):
-                crt_effect.apply_crt_effect(screen, settings)
+                crt_effect.apply_crt_effect(
+                    screen,
+                    intensity=settings.get("glitch_intensity"),
+                    pixelation=settings.get("pixelation")
+                )
             pygame.display.flip()
 
             # Check for Game Over condition

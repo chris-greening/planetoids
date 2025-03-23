@@ -70,7 +70,11 @@ class StartMenu:
             self._draw_main_menu()
 
             if self.settings.get("crt_enabled"):
-                apply_crt_effect(self.screen, self.settings)
+                apply_crt_effect(
+                    self.screen,
+                    intensity=self.settings.get("glitch_intensity"),
+                    pixelation=self.settings.get("pixelation")
+                )
 
             pygame.display.flip()
             self._handle_events()

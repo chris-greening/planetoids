@@ -44,7 +44,11 @@ class GameOver:
                 screen.blit(prompt_text, prompt_rect)
 
             if self.settings.get("crt_enabled"):
-                crt_effect.apply_crt_effect(screen, self.settings)
+                crt_effect.apply_crt_effect(
+                    screen,
+                    intensity=self.settings.get("glitch_intensity"),
+                    pixelation=self.settings.get("pixelation")
+                )
 
             pygame.display.flip()
             self.game_state.clock.tick(config.FPS)
