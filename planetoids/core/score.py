@@ -19,8 +19,8 @@ class Score:
         self.multiplier_progress = 0.0
         self.last_hit_time = time.time()
 
-        self.multiplier_thresholds = {1: 1.0, 2: 1.25, 3: 1.5, 4: 2.0}
-        self.multiplier_decay_rates = {1: 0.1, 2: 0.2, 3: 0.3, 4: 0.4}
+        self.multiplier_thresholds = {1: 1.0, 2: 1.5, 3: 2.0, 4: 3.5}
+        self.multiplier_decay_rates = {1: 0.1, 2: 0.25, 3: 0.4, 4: 0.55}
         self.last_multiplier_increase = 0
 
     @property
