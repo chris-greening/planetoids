@@ -37,6 +37,8 @@ class GameOver:
                 asteroid.update()
                 asteroid.draw(screen)
 
+            self.game_state.score.draw(screen, show_multiplier=False)
+
             screen.blit(text, text_rect)
 
             # Show prompt only after 3 seconds (3000 milliseconds)
