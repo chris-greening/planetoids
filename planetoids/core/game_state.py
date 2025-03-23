@@ -384,31 +384,39 @@ class GameState:
         pygame.time.set_timer(pygame.USEREVENT + 2, 2000)  # 2 sec invincibility
 
     def _draw_powerup_timer(self, screen):
-        """Draws a shrinking timer bar for active powerups with their corresponding colors."""
-        y_offset = {"minimum": 75, "medium": 85, "maximum": 100}.get(self.settings.get("pixelation"), 200)
-        if self.player.powerup_timer > 0:
-            active_powerup = None
-            powerup_color = (0, 255, 255)  # Default Cyan (fallback color)
+        """Draws a shrinking timer bar for active powerups with their corresponding colors and labels."""
+        y_offset = {"minimum": 75, "medium": 85, "maximum": 100}.get(
+            self.settings.get("pixelation"), 85
+        )
 
-            # Map active power-ups to their corresponding colors
-            if self.player.trishot_active:
-                active_powerup = "Trishot"
-                powerup_color = TrishotPowerUp.color
-            elif self.player.quadshot_active:
-                active_powerup = "Quadshot"
-                powerup_color = QuadShotPowerUp.color
-            elif self.player.ricochet_active:
-                active_powerup = "Ricochet"
-                powerup_color = RicochetShotPowerUp.color
+        if self.player.powerup_timer <= 0:
+            return
 
-            if active_powerup:
-                bar_width = int((self.player.powerup_timer / 300) * 200)  # Scale to 200px max
-                pygame.draw.rect(screen, powerup_color, (config.WIDTH // 2 - 100, config.HEIGHT - 30, bar_width, 10))
+        # 🔹 Map each flag to its corresponding class and label
+        powerup_mappings = [
+            (self.player.trishot_active, TrishotPowerUp, "Trishot"),
+            (self.player.quadshot_active, QuadShotPowerUp, "Quadshot"),
+            (self.player.ricochet_active, RicochetShotPowerUp, "Ricochet"),
+        ]
 
-                # Draw the power-up name above the bar
-                text_surface = self.font.render(active_powerup, True, (255, 255, 255))
-                text_rect = text_surface.get_rect(center=(config.WIDTH // 2, config.HEIGHT - y_offset))
+        for is_active, powerup_class, label in powerup_mappings:
+            if is_active:
+                color = getattr(powerup_class, "color", (0, 255, 255))  # Fallback: cyan
+                bar_width = int((self.player.powerup_timer / 300) * 200)
+
+                # Draw timer bar
+                pygame.draw.rect(
+                    screen, color, (config.WIDTH // 2 - 100, config.HEIGHT - 30, bar_width, 10)
+                )
+
+                # Draw power-up name
+                text_surface = self.font.render(label, True, (255, 255, 255))
+                text_rect = text_surface.get_rect(
+                    center=(config.WIDTH // 2, config.HEIGHT - y_offset)
+                )
                 screen.blit(text_surface, text_rect)
+                break
+
 
     def calculate_collision_distance(self, obj1, obj2):
         """Calculates distance between two game objects."""
