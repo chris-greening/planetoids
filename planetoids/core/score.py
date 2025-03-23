@@ -92,7 +92,7 @@ class Score:
         label = self.font.render(f"{self.multiplier}x", True, color)
         screen.blit(label, (x + max_bar_width - label.get_width(), y - label.get_height() - 2))
 
-    def draw(self, screen):
+    def draw(self, screen, show_multiplier=True):
         offset = {"minimum": 200, "medium": 300, "maximum": 400}.get(
             self.settings.get("pixelation"), 200
         )
@@ -105,7 +105,8 @@ class Score:
 
         screen.blit(score_text, score_rect)
         screen.blit(high_score_text, high_score_rect)
-        self.draw_multiplier(screen)
+        if show_multiplier:
+            self.draw_multiplier(screen)
 
     def maybe_save_high_score(self):
         if self.new_high_score:

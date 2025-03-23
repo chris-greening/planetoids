@@ -30,6 +30,7 @@ def main():
         screen_mode = pygame.FULLSCREEN if settings.get("fullscreen_enabled") else 0
         if fullscreen:
             screen = pygame.display.set_mode((config.WIDTH, config.HEIGHT), pygame.FULLSCREEN)
+            # screen = pygame.display.set_mode((config.WIDTH, config.HEIGHT), pygame.RESIZABLE)
         else:
             fixed_size = (960, 540)  # Fixed window size
             screen = pygame.display.set_mode(fixed_size, pygame.RESIZABLE)
