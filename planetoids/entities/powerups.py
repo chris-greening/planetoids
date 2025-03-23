@@ -156,7 +156,7 @@ class ShieldPowerUp(PowerUp):
 class QuadShotPowerUp(PowerUp):
     """QuadShot power-up that enables four-directional bullets for a limited time."""
     spawn_chance = 1.0
-    color = (255, 0, 255) 
+    color = (255, 0, 255)
 
     def apply(self, player):
         """Grants the player QuadShot mode."""

@@ -77,8 +77,8 @@ class Player:
         logger.info("Previous shots disabled")
 
     def enable_invincibility(self):
-        """Activates quadshot mode for a limited time."""
-        self._disable_previous_shots()
+        """Activates invincibility for a limited time."""
+        # self._disable_previous_shots()
         self.set_invincibility(timer=300)
         self.powerup_timer = 300
         logger.info(f"Invincibility enabled")
