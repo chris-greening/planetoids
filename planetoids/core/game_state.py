@@ -104,6 +104,7 @@ class GameState:
 
         self.score_popups = [popup for popup in self.score_popups if popup.update()]
         self.debris = [d for d in self.debris if d.lifetime > 0]
+        self.score.update_multiplier(dt)
 
         # if not self.player.slowed_by_ice:
         #     self.player.velocity_x = max(self.player.velocity_x, self.player.base_velocity_x * dt * 60)
