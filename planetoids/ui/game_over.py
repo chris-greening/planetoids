@@ -30,6 +30,18 @@ class GameOver:
         start_time = pygame.time.get_ticks()
         game_over = True
 
+        accuracy = (
+            (self.game_state.shots_hit / self.game_state.shots_fired) * 100
+            if self.game_state.shots_fired > 0 else 0
+        )
+
+        # Time survived calculation
+        elapsed_ms = pygame.time.get_ticks() - self.game_state.start_time
+        seconds = elapsed_ms // 1000
+        minutes = seconds // 60
+        hours = minutes // 60
+        formatted_time = f"{hours:02}:{minutes % 60:02}:{seconds % 60:02}"
+
         while game_over:
             screen.fill(config.BLACK)
 
@@ -38,6 +50,7 @@ class GameOver:
                 asteroid.draw(screen)
 
             self.game_state.score.draw(screen, show_multiplier=False)
+            self.game_state.level.draw(screen)
 
             screen.blit(text, text_rect)
 
@@ -51,6 +64,20 @@ class GameOver:
                     intensity=self.settings.get("glitch_intensity"),
                     pixelation=self.settings.get("pixelation")
                 )
+
+            # Additional stats display
+            stat_font = pygame.font.Font(self.settings.FONT_PATH, font_size)
+            stats = [
+                f"Time Survived: {formatted_time}",
+                f"Shots Fired: {self.game_state.shots_fired}",
+                f"Asteroids Destroyed: {self.game_state.asteroids_destroyed}",
+                f"Accuracy: {accuracy:.1f}%"
+            ]
+
+            for i, line in enumerate(stats):
+                stat_text = stat_font.render(line, True, config.WHITE)
+                stat_rect = stat_text.get_rect(center=(config.WIDTH // 2, config.HEIGHT // 2 + 200 + i * 40))
+                screen.blit(stat_text, stat_rect)
 
             pygame.display.flip()
             self.game_state.clock.tick(config.FPS)
