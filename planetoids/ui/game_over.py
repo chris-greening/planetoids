@@ -43,6 +43,7 @@ class GameOver:
                 asteroid.draw(screen)
 
             self.game_state.score.draw(screen, show_multiplier=False)
+            self.game_state.level.draw(screen)
 
             screen.blit(text, text_rect)
 
