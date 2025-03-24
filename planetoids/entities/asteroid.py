@@ -64,6 +64,9 @@ class Asteroid:
                 angle = random.uniform(0, 360)  # Random scatter direction
                 speed = random.uniform(1, 3)  # Small speed variation
                 self.game_state.debris.append(Debris(self.x, self.y, angle, speed))
+
+        self.game_state.asteroids_destroyed += 1
+        self.game_state.shots_hit += 1
         return asteroids
 
     @classmethod

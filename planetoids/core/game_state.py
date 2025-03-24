@@ -37,6 +37,9 @@ class GameState:
         logger.info("GameState instantiated")
         self.score_popups = []
         self.debris = []
+        self.shots_fired = 0
+        self.asteroids_destroyed = 0
+        self.shots_hit = 0
 
     @property
     def font(self):

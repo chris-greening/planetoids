@@ -66,6 +66,7 @@ class Player:
             radius = 7
         for angle in angles:
             bullets.append(Bullet(self.game_state, self.x, self.y, angle, color=color, radius=radius))
+            self.game_state.shots_fired += 1
 
         return bullets
 
