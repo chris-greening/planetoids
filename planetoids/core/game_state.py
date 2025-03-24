@@ -40,6 +40,7 @@ class GameState:
         self.shots_fired = 0
         self.asteroids_destroyed = 0
         self.shots_hit = 0
+        self.start_time = pygame.time.get_ticks()
 
     @property
     def font(self):
