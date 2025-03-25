@@ -3,7 +3,7 @@ layout: splash
 permalink: /
 title: planetoids
 header:
-  overlay_image:
+  overlay_image: /images/planetoids.gif
   cta_label: "<i class='fa fa-download'></i> pip install planetoids-game"
   cta_url: "https://pypi.org/project/planetoids-game"
 excerpt: Retro-inspired arcade space shooter
