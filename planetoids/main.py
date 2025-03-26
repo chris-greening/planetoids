@@ -1,4 +1,7 @@
+"""Main entry point for the game"""
+
 import os
+from typing import Tuple
 
 import pygame
 import dotenv
@@ -6,34 +9,26 @@ import dotenv
 from planetoids.effects import crt_effect
 from planetoids.core.config import config
 from planetoids.core.game_state import GameState
-from planetoids.core.settings import Settings
-from planetoids.core.settings import get_font_path
+from planetoids.core.settings import Settings, get_font_path
 from planetoids.core.logger import logger
 from planetoids.ui import IntroAnimation, GameOver, StartMenu
 
 dotenv.load_dotenv()
 DEBUG_MODE = os.getenv("DEBUG", "False").lower() in ("true", "1")
 
-def main():
+def main() -> None:
+    """Main entry point for the game"""
     logger.info("Game start")
     pygame.init()
 
     settings = Settings()
-    fullscreen = settings.get("fullscreen_enabled")
-    # fullscreen = False
 
     game_start = True
     while True:  # Main game loop that allows restarting
         pygame.mouse.set_visible(False)
 
-        # ✅ Apply Fullscreen or Windowed Mode
-        screen_mode = pygame.FULLSCREEN if settings.get("fullscreen_enabled") else 0
-        if fullscreen:
-            screen = pygame.display.set_mode((config.WIDTH, config.HEIGHT), pygame.FULLSCREEN)
-            # screen = pygame.display.set_mode((config.WIDTH, config.HEIGHT), pygame.RESIZABLE)
-        else:
-            fixed_size = (960, 540)  # Fixed window size
-            screen = pygame.display.set_mode(fixed_size, pygame.RESIZABLE)
+        screen = pygame.display.set_mode((config.WIDTH, config.HEIGHT), pygame.FULLSCREEN)
+        print(type(screen))
 
         pygame.display.set_caption("Planetoids")
         clock = pygame.time.Clock()
@@ -52,9 +47,8 @@ def main():
         game_state = GameState(screen, settings, clock)
         game_state.spawn_asteroids(10)
 
-        # ✅ Display controls overlay for first few seconds
+        # Display controls overlay for first few seconds
         show_controls_timer = 5  # Show for 3 seconds
-        font = pygame.font.Font(get_font_path(), 36)
 
         running = True
         while running:
@@ -70,41 +64,76 @@ def main():
             keys = pygame.key.get_pressed()
             game_state.update_all(keys, dt)
             game_state.check_for_clear_map()
-            game_state.check_for_collisions(screen)
+            game_state.check_for_collisions()
 
             # Draw everything
             game_state.draw_all(screen)
 
-            if show_controls_timer > 0:
-                font_size = {"minimum":36, "medium": 48, "maximum": 64}.get(settings.get("pixelation"), 36)
+            show_controls_timer =_show_controls(
+                show_controls_timer,
+                settings,
+                screen,
+                dt
+            )
 
-                controls_font = pygame.font.Font(get_font_path(), font_size)
-
-                _draw_text(screen, "CONTROLS:", config.WIDTH // 2 - 80, config.HEIGHT // 3 + 180, config.YELLOW, controls_font)
-                _draw_text(screen, "Arrow keys - Movement", config.WIDTH // 2 - 50, config.HEIGHT // 3 + 220, config.GREEN, controls_font)
-                _draw_text(screen, "SPACE - Shoot", config.WIDTH // 2 - 50, config.HEIGHT // 3 + 260, config.GREEN, controls_font)
-                _draw_text(screen, "P - Pause", config.WIDTH // 2 - 50, config.HEIGHT // 3 + 300, config.GREEN, controls_font)
-
-                show_controls_timer -= dt  # Decrease timer
-
-            if settings.get("crt_enabled"):
-                crt_effect.apply_crt_effect(
-                    screen,
-                    intensity=settings.get("glitch_intensity"),
-                    pixelation=settings.get("pixelation")
-                )
+            _draw_crt_effects(settings, screen)
             pygame.display.flip()
 
-            # Check for Game Over condition
-            if game_state.life.lives <= 0:
-                game_state.score.maybe_save_high_score()
-                game_over_screen = GameOver(game_state, settings)
-                restart_game = game_over_screen.game_over(screen, dt)
+            running = _check_for_game_over(
+                game_state, settings, screen, dt, running
+            )
 
-                if restart_game:
-                    running = False  # Exit game loop, return to start menu
+def _check_for_game_over(
+        game_state: GameState, settings: Settings,
+        screen: pygame.Surface, dt: float,
+        running: bool
+    ) -> bool:
+    """Return Boolean check for game running"""
+    if game_state.life.lives <= 0:
+        game_state.score.maybe_save_high_score()
+        game_over_screen = GameOver(game_state, settings)
+        restart_game = game_over_screen.game_over(screen, dt)
 
-def _event_handler(game_state):
+        if restart_game:
+            running = False  # Exit game loop, return to start menu
+    return running
+
+def _draw_crt_effects(settings: Settings, screen: pygame.Surface) -> None:
+    """Draw CRT effects if enabled"""
+    if settings.get("crt_enabled"):
+        crt_effect.apply_crt_effect(
+            screen,
+            intensity=settings.get("glitch_intensity"),
+            pixelation=settings.get("pixelation")
+        )
+
+def _show_controls(
+        show_controls_timer: float, settings: Settings,
+        screen: pygame.Surface, dt: float
+    ) -> float:
+    """Return show_controls_timer and draws controls to the screen"""
+    if show_controls_timer > 0:
+        controls = (
+            ("CONTROLS:", -80, 180, config.YELLOW),
+            ("Arrow keys - Movement", -50, 220, config.GREEN),
+            ("SPACE - Shoot", -50, 260, config.GREEN),
+            ("P - Pause", -50, 300, config.GREEN)
+        )
+        half_width = config.WIDTH // 2
+        third_height = config.HEIGHT // 3
+        for control in controls:
+            coords = (half_width - control[1], third_height + control[2])
+            _draw_text(
+                screen,
+                control[0],
+                coords,
+                settings,
+                control[3]
+            )
+        show_controls_timer -= dt  # Decrease timer
+    return show_controls_timer
+
+def _event_handler(game_state: GameState) -> None:
     """Handle key input events"""
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
@@ -118,12 +147,19 @@ def _event_handler(game_state):
             pygame.display.set_mode((config.WIDTH, config.HEIGHT), pygame.RESIZABLE)
         game_state.handle_powerup_expiration(event)
 
-def _draw_text(screen, text, x, y, color=config.WHITE, font=None):
+def _draw_text(
+        screen: pygame.Surface, text: str, coords: Tuple[int, int],
+        settings: Settings, color: Tuple[int, int, int]=config.WHITE
+    ) -> None:
     """Helper function to render sharp, readable text."""
-    if font is None:
-        font = pygame.font.Font(None, 36)  # Default font if none provided
+    font_size = {
+            "minimum":36,
+            "medium": 48,
+            "maximum": 64
+        }.get(settings.get("pixelation"), 36)
+    font = pygame.font.Font(get_font_path(), font_size)
     rendered_text = font.render(text, True, color)
-    screen.blit(rendered_text, (x, y))
+    screen.blit(rendered_text, coords)
 
 if __name__ == "__main__":
     main()

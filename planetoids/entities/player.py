@@ -305,7 +305,7 @@ class Player:
         )
         pygame.draw.polygon(screen, config.ORANGE, [thruster_tip, left, right])
 
-    def _generate_explosion(self):
+    def generate_explosion(self):
         """Initializes the explosion effect when the player dies."""
         self.explosion_particles = []  # Temporary explosion effect
         self.fragments = []  # Pieces of the ship
@@ -337,7 +337,7 @@ class Player:
 
         logger.info("Player explosion generated")
 
-    def _update_explosion(self):
+    def update_explosion(self):
         """Updates explosion animation frame by frame using delta time."""
         if self.explosion_timer > 0:
             self.explosion_timer -= self.game_state.dt * 60
@@ -370,7 +370,7 @@ class Player:
                 fragment["pos"][1] + fragment["vel"][1] * self.game_state.dt * 60
             )
 
-    def _draw_explosion(self, screen):
+    def draw_explosion(self, screen):
         """Draws the explosion effect and ship fragments."""
         if self.explosion_timer > 0:
             for fragment in self.fragments:
