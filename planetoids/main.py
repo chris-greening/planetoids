@@ -78,7 +78,7 @@ def main() -> None:
             # Draw everything
             game_state.draw_all(screen)
 
-            show_controls_timer, dt =_show_controls(
+            show_controls_timer =_show_controls(
                 show_controls_timer,
                 settings,
                 screen,
@@ -102,7 +102,8 @@ def main() -> None:
                 if restart_game:
                     running = False  # Exit game loop, return to start menu
 
-def _show_controls(show_controls_timer, settings, screen, dt):
+def _show_controls(show_controls_timer, settings, screen, dt) -> float:
+    """Return show_controls_timer and draws controls to the screen"""
     if show_controls_timer > 0:
         font_size = {
             "minimum":36,
@@ -130,7 +131,7 @@ def _show_controls(show_controls_timer, settings, screen, dt):
                 controls_font
             )
         show_controls_timer -= dt  # Decrease timer
-    return show_controls_timer, dt
+    return show_controls_timer
 
 def _event_handler(game_state):
     """Handle key input events"""
