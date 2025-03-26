@@ -29,6 +29,7 @@ def main() -> None:
         pygame.mouse.set_visible(False)
 
         screen = pygame.display.set_mode((config.WIDTH, config.HEIGHT), pygame.FULLSCREEN)
+        print(type(screen))
 
         pygame.display.set_caption("Planetoids")
         clock = pygame.time.Clock()
@@ -81,7 +82,10 @@ def main() -> None:
 
             running = _check_for_game_over(game_state, settings, screen, dt)
 
-def _check_for_game_over(game_state, settings, screen, dt) -> bool:
+def _check_for_game_over(
+        game_state: GameState, settings: Settings, 
+        screen: pygame.Surface, dt: float
+    ) -> bool:
     """Return Boolean check for game running"""
     if game_state.life.lives <= 0:
         game_state.score.maybe_save_high_score()
@@ -92,7 +96,7 @@ def _check_for_game_over(game_state, settings, screen, dt) -> bool:
             running = False  # Exit game loop, return to start menu
     return running
 
-def _draw_crt_effects(settings, screen) -> None:
+def _draw_crt_effects(settings: Settings, screen: pygame.Surface) -> None:
     """Draw CRT effects if enabled"""
     if settings.get("crt_enabled"):
         crt_effect.apply_crt_effect(
@@ -101,7 +105,10 @@ def _draw_crt_effects(settings, screen) -> None:
             pixelation=settings.get("pixelation")
         )
 
-def _show_controls(show_controls_timer, settings, screen, dt) -> float:
+def _show_controls(
+        show_controls_timer: float, settings: Settings, 
+        screen: pygame.Surface, dt: float
+    ) -> float:
     """Return show_controls_timer and draws controls to the screen"""
     if show_controls_timer > 0:
         controls = (
