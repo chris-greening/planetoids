@@ -1,7 +1,5 @@
 """Main entry point for the game"""
 
-# pylint: disable=no-member,invalid-name
-
 import os
 from typing import Tuple
 
@@ -66,7 +64,7 @@ def main() -> None:
             keys = pygame.key.get_pressed()
             game_state.update_all(keys, dt)
             game_state.check_for_clear_map()
-            game_state.check_for_collisions(screen)
+            game_state.check_for_collisions()
 
             # Draw everything
             game_state.draw_all(screen)
