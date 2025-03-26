@@ -1,6 +1,8 @@
-import random
-import pygame
+"""Store central configurations"""
+
 import importlib.resources
+
+import pygame
 
 def get_local_version() -> str:
     """Return version number from version.txt"""
@@ -31,7 +33,6 @@ class Config:
     def __init__(self) -> None:
         """Initialize screen dimensions and scaled properties."""
         self._initialize_screen_size()
-        self._scale_properties()
 
     def _initialize_screen_size(self) -> None:
         """Ensure Pygame is initialized before fetching display info."""
@@ -49,7 +50,6 @@ class Config:
     def update_screen_size(self) -> None:
         """Allows dynamic screen resizing and updates dependent properties."""
         self._initialize_screen_size()
-        self._scale_properties()
 
 # Global instance
 config = Config()

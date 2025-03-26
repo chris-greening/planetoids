@@ -81,11 +81,14 @@ def main() -> None:
             _draw_crt_effects(settings, screen)
             pygame.display.flip()
 
-            running = _check_for_game_over(game_state, settings, screen, dt)
+            running = _check_for_game_over(
+                game_state, settings, screen, dt, running
+            )
 
 def _check_for_game_over(
         game_state: GameState, settings: Settings,
-        screen: pygame.Surface, dt: float
+        screen: pygame.Surface, dt: float,
+        running: bool
     ) -> bool:
     """Return Boolean check for game running"""
     if game_state.life.lives <= 0:
