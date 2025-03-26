@@ -79,14 +79,18 @@ def main() -> None:
             _draw_crt_effects(settings, screen)
             pygame.display.flip()
 
-            # Check for Game Over condition
-            if game_state.life.lives <= 0:
-                game_state.score.maybe_save_high_score()
-                game_over_screen = GameOver(game_state, settings)
-                restart_game = game_over_screen.game_over(screen, dt)
+            running = _check_for_game_over(game_state, settings, screen, dt)
 
-                if restart_game:
-                    running = False  # Exit game loop, return to start menu
+def _check_for_game_over(game_state, settings, screen, dt) -> bool:
+    """Return Boolean check for game running"""
+    if game_state.life.lives <= 0:
+        game_state.score.maybe_save_high_score()
+        game_over_screen = GameOver(game_state, settings)
+        restart_game = game_over_screen.game_over(screen, dt)
+
+        if restart_game:
+            running = False  # Exit game loop, return to start menu
+    return running
 
 def _draw_crt_effects(settings, screen) -> None:
     """Draw CRT effects if enabled"""
