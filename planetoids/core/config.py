@@ -2,7 +2,8 @@ import random
 import pygame
 import importlib.resources
 
-def get_local_version():
+def get_local_version() -> str:
+    """Return version number from version.txt"""
     with importlib.resources.open_text("planetoids.core", "version.txt") as f:
         return f.read().strip()
 
@@ -27,12 +28,12 @@ class Config:
 
     VERSION = get_local_version()
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize screen dimensions and scaled properties."""
         self._initialize_screen_size()
         self._scale_properties()
 
-    def _initialize_screen_size(self):
+    def _initialize_screen_size(self) -> None:
         """Ensure Pygame is initialized before fetching display info."""
         if not pygame.get_init():
             pygame.init()
@@ -45,15 +46,7 @@ class Config:
         self.WIDTH = int(self.SCREEN_WIDTH * (self.BASE_WIDTH / self.SCREEN_WIDTH))
         self.HEIGHT = int(self.SCREEN_HEIGHT * (self.BASE_HEIGHT / self.SCREEN_HEIGHT))
 
-        # self.WIDTH, self.HEIGHT = 960, 540
-
-    def _scale_properties(self):
-        """Update any game elements that depend on screen size."""
-        self.PLANET_X = random.randint(int(200 * (self.WIDTH / self.BASE_WIDTH)), int(self.WIDTH - 200 * (self.WIDTH / self.BASE_WIDTH)))
-        self.PLANET_Y = random.randint(int(200 * (self.HEIGHT / self.BASE_HEIGHT)), int(self.HEIGHT - 200 * (self.HEIGHT / self.BASE_HEIGHT)))
-        self.PLANET_RADIUS = random.randint(int(50 * (self.WIDTH / self.BASE_WIDTH)), int(150 * (self.WIDTH / self.BASE_WIDTH)))
-
-    def update_screen_size(self):
+    def update_screen_size(self) -> None:
         """Allows dynamic screen resizing and updates dependent properties."""
         self._initialize_screen_size()
         self._scale_properties()
