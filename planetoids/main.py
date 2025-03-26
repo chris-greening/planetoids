@@ -10,8 +10,7 @@ import dotenv
 from planetoids.effects import crt_effect
 from planetoids.core.config import config
 from planetoids.core.game_state import GameState
-from planetoids.core.settings import Settings
-from planetoids.core.settings import get_font_path
+from planetoids.core.settings import Settings, get_font_path
 from planetoids.core.logger import logger
 from planetoids.ui import IntroAnimation, GameOver, StartMenu
 
@@ -24,20 +23,12 @@ def main() -> None:
     pygame.init()
 
     settings = Settings()
-    fullscreen = settings.get("fullscreen_enabled")
 
     game_start = True
     while True:  # Main game loop that allows restarting
         pygame.mouse.set_visible(False)
 
-        # Apply Fullscreen or Windowed Mode
-        screen_mode = pygame.FULLSCREEN if settings.get("fullscreen_enabled") else 0
-        if fullscreen:
-            screen = pygame.display.set_mode((config.WIDTH, config.HEIGHT), pygame.FULLSCREEN)
-            # screen = pygame.display.set_mode((config.WIDTH, config.HEIGHT), pygame.RESIZABLE)
-        else:
-            fixed_size = (960, 540)  # Fixed window size
-            screen = pygame.display.set_mode(fixed_size, pygame.RESIZABLE)
+        screen = pygame.display.set_mode((config.WIDTH, config.HEIGHT), pygame.FULLSCREEN)
 
         pygame.display.set_caption("Planetoids")
         clock = pygame.time.Clock()
@@ -109,14 +100,6 @@ def _draw_crt_effects(settings, screen) -> None:
 def _show_controls(show_controls_timer, settings, screen, dt) -> float:
     """Return show_controls_timer and draws controls to the screen"""
     if show_controls_timer > 0:
-        font_size = {
-            "minimum":36,
-            "medium": 48,
-            "maximum": 64
-        }.get(settings.get("pixelation"), 36)
-
-        controls_font = pygame.font.Font(get_font_path(), font_size)
-
         controls = (
             ("CONTROLS:", -80, 180, config.YELLOW),
             ("Arrow keys - Movement", -50, 220, config.GREEN),
@@ -126,13 +109,13 @@ def _show_controls(show_controls_timer, settings, screen, dt) -> float:
         half_width = config.WIDTH // 2
         third_height = config.HEIGHT // 3
         for control in controls:
+            coords = (half_width - control[1], third_height + control[2])
             _draw_text(
                 screen,
                 control[0],
-                half_width - control[1],
-                third_height + control[2],
-                control[3],
-                controls_font
+                coords,
+                settings,
+                control[3]
             )
         show_controls_timer -= dt  # Decrease timer
     return show_controls_timer
@@ -151,12 +134,16 @@ def _event_handler(game_state):
             pygame.display.set_mode((config.WIDTH, config.HEIGHT), pygame.RESIZABLE)
         game_state.handle_powerup_expiration(event)
 
-def _draw_text(screen, text, x, y, color=config.WHITE, font=None):
+def _draw_text(screen, text, coords, settings, color=config.WHITE):
     """Helper function to render sharp, readable text."""
-    if font is None:
-        font = pygame.font.Font(None, 36)  # Default font if none provided
+    font_size = {
+            "minimum":36,
+            "medium": 48,
+            "maximum": 64
+        }.get(settings.get("pixelation"), 36)
+    font = pygame.font.Font(get_font_path(), font_size)
     rendered_text = font.render(text, True, color)
-    screen.blit(rendered_text, (x, y))
+    screen.blit(rendered_text, coords)
 
 if __name__ == "__main__":
     main()
