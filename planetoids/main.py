@@ -132,7 +132,7 @@ def _show_controls(
         show_controls_timer -= dt  # Decrease timer
     return show_controls_timer
 
-def _event_handler(game_state: GameState):
+def _event_handler(game_state: GameState) -> None:
     """Handle key input events"""
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
@@ -149,7 +149,7 @@ def _event_handler(game_state: GameState):
 def _draw_text(
         screen: pygame.Surface, text: str, coords: Tuple[int, int],
         settings: Settings, color: Tuple[int, int, int]=config.WHITE
-    ):
+    ) -> None:
     """Helper function to render sharp, readable text."""
     font_size = {
             "minimum":36,
