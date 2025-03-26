@@ -85,12 +85,7 @@ def main() -> None:
                 dt
             )
 
-            if settings.get("crt_enabled"):
-                crt_effect.apply_crt_effect(
-                    screen,
-                    intensity=settings.get("glitch_intensity"),
-                    pixelation=settings.get("pixelation")
-                )
+            _draw_crt_effects(settings, screen)
             pygame.display.flip()
 
             # Check for Game Over condition
@@ -101,6 +96,15 @@ def main() -> None:
 
                 if restart_game:
                     running = False  # Exit game loop, return to start menu
+
+def _draw_crt_effects(settings, screen) -> None:
+    """Draw CRT effects if enabled"""
+    if settings.get("crt_enabled"):
+        crt_effect.apply_crt_effect(
+            screen,
+            intensity=settings.get("glitch_intensity"),
+            pixelation=settings.get("pixelation")
+        )
 
 def _show_controls(show_controls_timer, settings, screen, dt) -> float:
     """Return show_controls_timer and draws controls to the screen"""
