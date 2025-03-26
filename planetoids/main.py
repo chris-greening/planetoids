@@ -1,4 +1,6 @@
-# pylint: disable=no-member
+"""Main entry point for the game"""
+
+# pylint: disable=no-member,invalid-name
 
 import os
 
@@ -16,19 +18,19 @@ from planetoids.ui import IntroAnimation, GameOver, StartMenu
 dotenv.load_dotenv()
 DEBUG_MODE = os.getenv("DEBUG", "False").lower() in ("true", "1")
 
-def main():
+def main() -> None:
+    """Main entry point for the game"""
     logger.info("Game start")
     pygame.init()
 
     settings = Settings()
     fullscreen = settings.get("fullscreen_enabled")
-    # fullscreen = False
 
     game_start = True
     while True:  # Main game loop that allows restarting
         pygame.mouse.set_visible(False)
 
-        # ✅ Apply Fullscreen or Windowed Mode
+        # Apply Fullscreen or Windowed Mode
         screen_mode = pygame.FULLSCREEN if settings.get("fullscreen_enabled") else 0
         if fullscreen:
             screen = pygame.display.set_mode((config.WIDTH, config.HEIGHT), pygame.FULLSCREEN)
@@ -54,9 +56,8 @@ def main():
         game_state = GameState(screen, settings, clock)
         game_state.spawn_asteroids(10)
 
-        # ✅ Display controls overlay for first few seconds
+        # Display controls overlay for first few seconds
         show_controls_timer = 5  # Show for 3 seconds
-        font = pygame.font.Font(get_font_path(), 36)
 
         running = True
         while running:
@@ -77,17 +78,12 @@ def main():
             # Draw everything
             game_state.draw_all(screen)
 
-            if show_controls_timer > 0:
-                font_size = {"minimum":36, "medium": 48, "maximum": 64}.get(settings.get("pixelation"), 36)
-
-                controls_font = pygame.font.Font(get_font_path(), font_size)
-
-                _draw_text(screen, "CONTROLS:", config.WIDTH // 2 - 80, config.HEIGHT // 3 + 180, config.YELLOW, controls_font)
-                _draw_text(screen, "Arrow keys - Movement", config.WIDTH // 2 - 50, config.HEIGHT // 3 + 220, config.GREEN, controls_font)
-                _draw_text(screen, "SPACE - Shoot", config.WIDTH // 2 - 50, config.HEIGHT // 3 + 260, config.GREEN, controls_font)
-                _draw_text(screen, "P - Pause", config.WIDTH // 2 - 50, config.HEIGHT // 3 + 300, config.GREEN, controls_font)
-
-                show_controls_timer -= dt  # Decrease timer
+            show_controls_timer, dt =_show_controls(
+                show_controls_timer,
+                settings,
+                screen,
+                dt
+            )
 
             if settings.get("crt_enabled"):
                 crt_effect.apply_crt_effect(
@@ -105,6 +101,36 @@ def main():
 
                 if restart_game:
                     running = False  # Exit game loop, return to start menu
+
+def _show_controls(show_controls_timer, settings, screen, dt):
+    if show_controls_timer > 0:
+        font_size = {
+            "minimum":36,
+            "medium": 48,
+            "maximum": 64
+        }.get(settings.get("pixelation"), 36)
+
+        controls_font = pygame.font.Font(get_font_path(), font_size)
+
+        controls = (
+            ("CONTROLS:", -80, 180, config.YELLOW),
+            ("Arrow keys - Movement", -50, 220, config.GREEN),
+            ("SPACE - Shoot", -50, 260, config.GREEN),
+            ("P - Pause", -50, 300, config.GREEN)
+        )
+        half_width = config.WIDTH // 2
+        third_height = config.HEIGHT // 3
+        for control in controls:
+            _draw_text(
+                screen,
+                control[0],
+                half_width - control[1],
+                third_height + control[2],
+                control[3],
+                controls_font
+            )
+        show_controls_timer -= dt  # Decrease timer
+    return show_controls_timer, dt
 
 def _event_handler(game_state):
     """Handle key input events"""
