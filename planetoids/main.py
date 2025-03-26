@@ -3,6 +3,7 @@
 # pylint: disable=no-member,invalid-name
 
 import os
+from typing import Tuple
 
 import pygame
 import dotenv
@@ -83,7 +84,7 @@ def main() -> None:
             running = _check_for_game_over(game_state, settings, screen, dt)
 
 def _check_for_game_over(
-        game_state: GameState, settings: Settings, 
+        game_state: GameState, settings: Settings,
         screen: pygame.Surface, dt: float
     ) -> bool:
     """Return Boolean check for game running"""
@@ -106,7 +107,7 @@ def _draw_crt_effects(settings: Settings, screen: pygame.Surface) -> None:
         )
 
 def _show_controls(
-        show_controls_timer: float, settings: Settings, 
+        show_controls_timer: float, settings: Settings,
         screen: pygame.Surface, dt: float
     ) -> float:
     """Return show_controls_timer and draws controls to the screen"""
@@ -131,7 +132,7 @@ def _show_controls(
         show_controls_timer -= dt  # Decrease timer
     return show_controls_timer
 
-def _event_handler(game_state):
+def _event_handler(game_state: GameState):
     """Handle key input events"""
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
@@ -145,7 +146,10 @@ def _event_handler(game_state):
             pygame.display.set_mode((config.WIDTH, config.HEIGHT), pygame.RESIZABLE)
         game_state.handle_powerup_expiration(event)
 
-def _draw_text(screen, text, coords, settings, color=config.WHITE):
+def _draw_text(
+        screen: pygame.Surface, text: str, coords: Tuple[int, int],
+        settings: Settings, color: Tuple[int, int, int]=config.WHITE
+    ):
     """Helper function to render sharp, readable text."""
     font_size = {
             "minimum":36,
